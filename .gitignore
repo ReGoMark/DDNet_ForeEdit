@@ -1,0 +1,18 @@
+## Visual Studio / VB.NET / WinForms / WPF
+
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userprefs
+.vs/
+
+# NuGet
+packages/
+*.nupkg
+
+# Publish output
+publish/

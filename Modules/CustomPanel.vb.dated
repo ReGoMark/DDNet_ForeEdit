@@ -1,0 +1,10 @@
+﻿Public Class CustomPanelBorder
+    Public Sub SetPanelBorder(panel As Panel, Optional color As Color = Nothing)
+        Dim borderColor = If(color.IsEmpty, Color.Gray, color)
+        AddHandler panel.Paint, Sub(sender As Object, e As PaintEventArgs)
+                                    Using p As New Pen(borderColor)
+                                        e.Graphics.DrawRectangle(p, 0, 0, panel.Width - 1, panel.Height - 1)
+                                    End Using
+                                End Sub
+    End Sub
+End Class
