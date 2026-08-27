@@ -268,7 +268,24 @@ Public Class FormMain
             New Win32ContextMenu.MenuItem() With {
                 .Id = 62,
                 .Text = "更新日志(&L)",
-                .OnClick = Sub() MsgBox("粘贴")
+                .OnClick = Sub()
+                               Dim filePath = Application.StartupPath & "\data\updates.txt"
+
+                               Try
+                                   If IO.File.Exists(filePath) Then
+                                       ' 方案 1：使用 ProcessStartInfo（推荐）
+                                       Dim psi As New ProcessStartInfo With {
+                                       .FileName = filePath,
+                                       .UseShellExecute = True
+                                   }
+                                       Process.Start(psi)
+                                   Else
+                                       MessageBox.Show("文件不存在: " & filePath, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                   End If
+                               Catch ex As Exception
+                                   MessageBox.Show("打开文件失败: " & ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                               End Try
+                           End Sub
             },
             New Win32ContextMenu.MenuItem() With {
                 .Id = 63,
@@ -1703,8 +1720,8 @@ Public Class FormMain
                 dlg.Text = "导入字体"
                 dlg.TitleText = $"所选 {duplicates.Count} 个字体已存在, 跳过导入"
                 dlg.DescriptionText = ""
-                dlg.ConfirmText = "确定"
-                dlg.CancelText = ""   ' 隐藏取消按钮
+                dlg.btnOK.Visible = False
+                dlg.CancelText = "确定"   ' 隐藏取消按钮
 
                 For Each dup In duplicates
                     dlg.Items.Add($"[跳过] {dup}")
@@ -1725,8 +1742,8 @@ Public Class FormMain
                 dlg.Text = "导入字体"
                 dlg.TitleText = $"成功导入 {toAdd.Count} 个字体，跳过 {duplicates.Count} 个已存在的字体"
                 dlg.DescriptionText = ""
-                dlg.ConfirmText = "确定"
-                dlg.CancelText = ""
+                dlg.btnOK.Visible = False
+                dlg.CancelText = "确定"   ' 隐藏取消按钮
 
                 ' 新增的文件不加前缀（只显示文件名）
                 For Each f As String In toAdd

@@ -10,7 +10,7 @@
     <AssemblyName>DDNet ForeEdit</AssemblyName>
     <AssemblyTitle>DDNet ForeEdit</AssemblyTitle>
     <RootNamespace>FontEditor</RootNamespace>
-    <Version></Version>
+    <Version>2602.0827.1</Version>
     <Authors>ReGoMark</Authors>
     <Company>Bilibili @ReGoMark</Company>
     <Product>DDNet ForeEdit</Product>
@@ -70,6 +70,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="data\standard\SourceHanSans.ttc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\updates.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="My Project\Application.myapp">

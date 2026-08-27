@@ -30,7 +30,6 @@ Partial Class DialogCheck
         Label3 = New Label()
         LinkLabel1 = New LinkLabel()
         btnIgnore = New Button()
-        chkNever = New CheckBox()
         Label4 = New Label()
         Label5 = New Label()
         SuspendLayout()
@@ -117,17 +116,6 @@ Partial Class DialogCheck
         btnIgnore.Text = "忽略并继续"
         btnIgnore.UseVisualStyleBackColor = True
         ' 
-        ' chkNever
-        ' 
-        chkNever.AutoSize = True
-        chkNever.Font = New Font("Segoe UI", 9F)
-        chkNever.Location = New Point(12, 225)
-        chkNever.Name = "chkNever"
-        chkNever.Size = New Size(95, 24)
-        chkNever.TabIndex = 9
-        chkNever.Text = "不再提示"
-        chkNever.UseVisualStyleBackColor = True
-        ' 
         ' Label4
         ' 
         Label4.AutoSize = True
@@ -158,7 +146,6 @@ Partial Class DialogCheck
         ClientSize = New Size(382, 263)
         Controls.Add(Label5)
         Controls.Add(Label4)
-        Controls.Add(chkNever)
         Controls.Add(btnIgnore)
         Controls.Add(LinkLabel1)
         Controls.Add(Label3)
@@ -187,7 +174,6 @@ Partial Class DialogCheck
     Friend WithEvents Label3 As Label
     Friend WithEvents LinkLabel1 As LinkLabel
     Friend WithEvents btnIgnore As Button
-    Friend WithEvents chkNever As CheckBox
     Friend WithEvents Label4 As Label
     Friend WithEvents Label5 As Label
 End Class
