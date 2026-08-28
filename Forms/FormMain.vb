@@ -265,30 +265,61 @@ Public Class FormMain
                                })
                            End Sub
             },
-            New Win32ContextMenu.MenuItem() With {
+             New Win32ContextMenu.MenuItem() With {
                 .Id = 62,
-                .Text = "更新日志(&L)",
+                .Text = "图文教程(&D)",
                 .OnClick = Sub()
-                               Dim filePath = Application.StartupPath & "\data\updates.txt"
+                               Dim filePath = Application.StartupPath & "\data\documents.png"
 
                                Try
                                    If IO.File.Exists(filePath) Then
-                                       ' 方案 1：使用 ProcessStartInfo（推荐）
                                        Dim psi As New ProcessStartInfo With {
                                        .FileName = filePath,
                                        .UseShellExecute = True
                                    }
                                        Process.Start(psi)
                                    Else
-                                       MessageBox.Show("文件不存在: " & filePath, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                       MessageBox.Show($"文件不存在：{filePath}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
                                    End If
                                Catch ex As Exception
-                                   MessageBox.Show("打开文件失败: " & ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                   MessageBox.Show($"打开文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                               End Try
+                           End Sub
+            },
+             New Win32ContextMenu.MenuItem() With {
+                .Id = 63,
+                .Text = "获取字体(&R)",
+                .OnClick = Sub()
+                               Process.Start(New ProcessStartInfo With {
+                                   .FileName = "https://www.maoken.com/",
+                                   .UseShellExecute = True
+                               })
+                           End Sub
+            },
+                Win32ContextMenu.MenuItem.Separator,
+            New Win32ContextMenu.MenuItem() With {
+                .Id = 64,
+                .Text = "更新日志(&L)",
+                .OnClick = Sub()
+                               Dim filePath = Application.StartupPath & "\data\updates.txt"
+
+                               Try
+                                   If IO.File.Exists(filePath) Then
+                                       Dim psi As New ProcessStartInfo With {
+                                       .FileName = filePath,
+                                       .UseShellExecute = True
+                                   }
+                                       Process.Start(psi)
+                                   Else
+                                       MessageBox.Show($"文件不存在：{filePath}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                   End If
+                               Catch ex As Exception
+                                   MessageBox.Show($"打开文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
                                End Try
                            End Sub
             },
             New Win32ContextMenu.MenuItem() With {
-                .Id = 63,
+                .Id = 65,
                 .Text = "获取更新(&U)",
                 .OnClick = Sub()
                                Try
@@ -601,7 +632,7 @@ Public Class FormMain
 
         ' 2. 如果目标目录不存在，询问用户是否创建
         If Not Directory.Exists(target) Then
-            Dim result = MessageBox.Show($"用户目录不存在,是否立即创建?{vbCrLf}{target}",
+            Dim result = MessageBox.Show($"用户目录不存在，是否创建？",
                                      "创建用户目录", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
             If result <> DialogResult.Yes Then
                 chkDirSelect.CheckState = CheckState.Unchecked
@@ -609,9 +640,8 @@ Public Class FormMain
             End If
             Try
                 Directory.CreateDirectory(target)
-                MessageBox.Show("用户目录已创建", "创建用户目录", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Catch ex As Exception
-                MessageBox.Show($"用户目录创建失败: {ex.Message}", "创建用户目录", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show($"用户目录创建失败：{ex.Message}", "创建用户目录", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 chkDirSelect.CheckState = CheckState.Unchecked
                 Return ""
             End Try
@@ -961,7 +991,7 @@ Public Class FormMain
                 _fallbacks.Add(mm.Groups(1).Value)
             Next
         Catch ex As Exception
-            MessageBox.Show($"读取回退字体配置时出错: {ex.Message}",
+            MessageBox.Show($"读取回退字体配置时出错：{ex.Message}",
                             "读取回退字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
@@ -1033,7 +1063,6 @@ Public Class FormMain
     ''' </summary>
     Private Sub InsertFallbackItem(sender As Object, e As EventArgs) Handles btnInsert.Click
         If cbFallbackFonts.SelectedIndex < 0 Then
-            'MessageBox.Show("请选择要插入的字体.", "插入回退字体", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
@@ -1051,7 +1080,6 @@ Public Class FormMain
         End If
 
         If _fallbacks.Contains(familyName) Then
-            MessageBox.Show($"字体已存在，跳过插入", "插入回退字体", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
@@ -1066,7 +1094,6 @@ Public Class FormMain
     Private Sub RemoveFallbackItem(sender As Object, e As EventArgs) Handles btnRemove.Click
         Dim idx As Integer = lstbFallbackFonts.SelectedIndex
         If idx < 0 Then
-            'MessageBox.Show("请先选择要移除的字体。", "移除回退字体", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
         _fallbacks.RemoveAt(idx)
@@ -1320,7 +1347,7 @@ Public Class FormMain
     ''' </summary>
     Private Sub ApplyConfiguration(sender As Object, e As EventArgs) Handles btnApply.Click
         If String.IsNullOrEmpty(_currentFontDirectory) Then
-            MessageBox.Show("数据尚未加载", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
@@ -1337,9 +1364,15 @@ Public Class FormMain
             _originalKoreanFont = GetSelectedFamilyName(cbKR)
             _originalSimplifiedChineseFont = GetSelectedFamilyName(cbSC)
             _originalTraditionalChineseFont = GetSelectedFamilyName(cbTC)
-            MessageBox.Show("配置写入成功", "写入配置", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            If (Control.ModifierKeys And Keys.Shift) = Keys.Shift Then
+                Dim parentDir = Directory.GetParent(_currentFontDirectory)?.Parent
+                Dim exePath = Path.Combine(parentDir.FullName, "ddnet.exe")
+                If File.Exists(exePath) Then
+                    Process.Start(exePath)
+                End If
+            End If
         Catch ex As Exception
-            MessageBox.Show($"配置写入失败：{vbCrLf}{ex.Message}", "写入配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show($"配置写入失败：{ex.Message}", "写入配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
@@ -1350,7 +1383,7 @@ Public Class FormMain
     ''' </summary>
     Private Sub ExportConfiguration(sender As Object, e As EventArgs) Handles btnCopy.Click
         If String.IsNullOrEmpty(_currentFontDirectory) Then
-            MessageBox.Show("数据尚未加载", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
@@ -1363,9 +1396,9 @@ Public Class FormMain
                 Dim content = BuildIndexJsonContent()
                 If File.Exists(sfd.FileName) Then File.Delete(sfd.FileName)
                 File.WriteAllText(sfd.FileName, content, Encoding.UTF8)
-                MessageBox.Show("配置导出成功", "导出配置", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                MessageBox.Show("配置文件已导出。", "导出配置", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Catch ex As Exception
-                MessageBox.Show($"配置导出失败：{vbCrLf}{ex.Message}", "导出配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show($"配置文件导出失败：{ex.Message}", "导出配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End Using
     End Sub
@@ -1377,18 +1410,15 @@ Public Class FormMain
     ''' </summary>
     Private Sub RestoreDefaultFonts(sender As Object, e As EventArgs) Handles btnDefault.Click
         If String.IsNullOrEmpty(_currentFontDirectory) Then
-            MessageBox.Show("数据尚未加载", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
         If chkDirSelect.Checked Then
-            Dim result = MessageBox.Show("默认情况下用户目录内不存在字体文件夹。若要恢复默认状态，请按以下步骤操作：" & vbCrLf &
-                                     "· 单击「确定」在资源管理器中打开该文件夹" & vbCrLf &
-                                     "· 关闭本程序，注意不是关闭资源管理器" & vbCrLf &
-                                     "· 清空配置和所有字体，或者删除整个 fonts 文件夹" & vbCrLf &
-                                     "——————" & vbCrLf &
-                                     "* 该操作会删除字体文件夹内所有数据，请注意备份数据" & vbCrLf &
-                                     "* 第三方客户端如 TClient 可能会使用 Teeworlds 目录",
+            Dim result = MessageBox.Show($"要恢复用户目录的默认状态，请按以下步骤操作：{vbCrLf}
+                                     * 单击「确定」在资源管理器中打开该文件夹{vbCrLf}
+                                     * 关闭本程序，注意不是关闭资源管理器{vbCrLf}
+                                     * 清空配置和所有字体，或删除整个 fonts 文件夹{vbCrLf}",
                                      "还原默认字体",
                                      MessageBoxButtons.OKCancel, MessageBoxIcon.Information)
             If result = DialogResult.OK Then
@@ -1402,7 +1432,7 @@ Public Class FormMain
 
         ' 检查标准字体目录是否存在
         If Not File.Exists(sourceJson) OrElse Not Directory.Exists(StandardFontsDir) Then
-            MessageBox.Show("预装配置或字体缺失，无法还原", "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("预装字体或配置文件缺失，无法还原。", "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return
         End If
 
@@ -1411,7 +1441,7 @@ Public Class FormMain
         stdFiles.AddRange(Directory.GetFiles(StandardFontsDir, "*.ttc"))
         stdFiles.AddRange(Directory.GetFiles(StandardFontsDir, "*.otf"))
         If stdFiles.Count = 0 Then
-            MessageBox.Show("预装字体不存在", "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("预装字体缺失，无法还原。", "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return
         End If
 
@@ -1449,14 +1479,14 @@ Public Class FormMain
                     Next
                     File.WriteAllLines(PendingCopiesPath, copyLines)
 
-                    MessageBox.Show("默认字体还原成功：" & vbCrLf &
-                                "* 预装配置已还原" & vbCrLf &
-                                "* 预装字体还原已挂起，将在下次启动时执行",
+                    MessageBox.Show("默认字体恢复成功：" & vbCrLf &
+                                "* 预装配置已恢复默认" & vbCrLf &
+                                "* 预装字体将在下次启动时恢复默认",
                                 "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
                     LoadFontDirectory(If(String.IsNullOrEmpty(_installDirectory), _currentFontDirectory, _installDirectory))
                 Catch ex As Exception
-                    MessageBox.Show($"还原时发生错误：{vbCrLf}{ex.Message}", "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    MessageBox.Show($"恢复默认字体时发生错误：{ex.Message}", "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End Try
             Else ' ConfigOnly
                 ' 仅恢复预装配置
@@ -1464,9 +1494,9 @@ Public Class FormMain
                     File.Copy(sourceJson, destJson, True)
                     LoadConfigurationFromJson()
                     LoadFallbackList()
-                    MessageBox.Show("预装配置已还原", "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    MessageBox.Show("默认配置已恢复。", "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 Catch ex As Exception
-                    MessageBox.Show($"还原配置时发生错误：{vbCrLf}{ex.Message}", "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    MessageBox.Show($"恢复默认配置时发生错误：{ex.Message}", "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End Try
             End If
         End Using
@@ -1478,11 +1508,15 @@ Public Class FormMain
     ''' 在资源管理器中打开当前字体目录。
     ''' </summary>
     Private Sub btnLocate_Click(sender As Object, e As EventArgs) Handles btnLocate.Click
-        OpenFontDirectory()
+        If (Control.ModifierKeys And Keys.Shift) = Keys.Shift Then
+            Clipboard.SetText(tbPath.Text)
+        Else
+            OpenFontDirectory()
+        End If
     End Sub
     Private Sub OpenFontDirectory()
         If String.IsNullOrEmpty(_currentFontDirectory) Then
-            MessageBox.Show("数据尚未加载", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
         Process.Start("explorer.exe", $"""{_currentFontDirectory}""")
@@ -1499,7 +1533,7 @@ Public Class FormMain
                 LoadFontDirectory(_currentFontDirectory, GetSourceLabel(_lastFileExtension), skipLocalCheck:=True)
             End If
         Else
-            MessageBox.Show("数据尚未加载", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
 
@@ -1546,7 +1580,7 @@ Public Class FormMain
                 _lastFileExtension = ext
             End If
         Catch ex As Exception
-            MessageBox.Show($"加载时发生错误：{vbCrLf}{ex.Message}", "加载错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show($"加载字体目录时发生错误：{ex.Message}", "加载错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
@@ -1568,7 +1602,7 @@ Public Class FormMain
                     _lastFileExtension = ext
                 End If
             Catch ex As Exception
-                MessageBox.Show($"加载时发生错误：{vbCrLf}{ex.Message}", "加载错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show($"加载字体目录时发生错误：{ex.Message}", "加载错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
         End Using
     End Sub
@@ -1584,7 +1618,7 @@ Public Class FormMain
             Case ".url"
                 Dim installPath = SteamLinkResolver.GetInstallDirectory(selectedFile)
                 If String.IsNullOrEmpty(installPath) Then
-                    MessageBox.Show("无法解析 .URL 快捷方式，请确认快捷方式有效", "解析错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    MessageBox.Show("无法解析 .URL 快捷方式，请确认快捷方式有效。", "解析错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return ""
                 End If
                 Return Path.Combine(installPath, "DDNet", "data", "fonts")
@@ -1592,7 +1626,7 @@ Public Class FormMain
             Case ".lnk"
                 Dim target = ResolveLnkTarget(selectedFile)
                 If String.IsNullOrEmpty(target) Then
-                    MessageBox.Show("无法解析 .lnk 快捷方式，请确认快捷方式有效", "解析错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    MessageBox.Show("无法解析 .lnk 快捷方式，请确认快捷方式有效。", "解析错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return ""
                 End If
                 Return BuildFontDirectoryFromExe(target)
@@ -1605,12 +1639,12 @@ Public Class FormMain
                 If Not String.IsNullOrEmpty(dir) AndAlso Directory.Exists(dir) Then
                     Return dir
                 Else
-                    MessageBox.Show("无法定位 index.json 目录，请确认目录存在", "路径错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    MessageBox.Show("无法定位 index.json 目录，请确认目录结构有效。", "路径错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     Return ""
                 End If
 
             Case Else
-                MessageBox.Show("请选择有效的文件类型：.url, .lnk, .exe, .json", "文件类型错误", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                MessageBox.Show("请选择有效的文件类型：.url, .lnk, .exe, .json。", "文件类型错误", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Return ""
         End Select
     End Function
@@ -1671,7 +1705,7 @@ Public Class FormMain
     ''' </summary>
     Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnFontInstall.Click
         If String.IsNullOrEmpty(_currentFontDirectory) Then
-            MessageBox.Show("数据尚未加载", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
@@ -1690,7 +1724,7 @@ Public Class FormMain
     ''' </summary>
     Private Sub ImportFontFiles(sourcePaths As String())
         If Not Directory.Exists(_currentFontDirectory) Then
-            MessageBox.Show("字体目录不存在，无法导入字体", "导入字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return
         End If
 
@@ -1840,7 +1874,7 @@ Public Class FormMain
     ''' </summary>
     Private Sub DeleteSelectedFonts(sender As Object, e As EventArgs) Handles btnFontUninstall.Click
         If String.IsNullOrEmpty(_currentFontDirectory) Then
-            MessageBox.Show("数据尚未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
@@ -1859,8 +1893,11 @@ Public Class FormMain
             filePathSet.Add(fp)
         Next
 
+        ' 提示被拒绝的保护字体
         If blockedNames.Count > 0 Then
-            MessageBox.Show($"该字体负责基础显示，拒绝删除。", "字体写保护", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Dim protectedFontName As String = blockedNames(0)  ' 因为只有一个
+            MessageBox.Show($"字体「{protectedFontName}」写保护。",
+            "字体写保护", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
 
         If filePathSet.Count = 0 Then Return
@@ -1911,7 +1948,7 @@ Public Class FormMain
             If affectedNames.Count > 0 Then
                 Dim ttcNames = String.Join("、", affectedNames)
                 'dlg.DescriptionText = $"来自 TTC 的子字体也会一并删除：{ttcNames}"
-                dlg.DescriptionText = $"来自 TTC 的子字体也会一并删除{Environment.NewLine}字体文件将在下次启动时删除"
+                dlg.DescriptionText = $"来自 TTC 的子字体也会一并删除{vbCrLf}字体文件将在下次启动时删除"
             Else
                 dlg.DescriptionText = "字体文件将在下次启动时删除"
             End If
@@ -1967,8 +2004,6 @@ Public Class FormMain
             SyncComboBoxItems()
             PopulateFallbackComboBox()
             UpdateFontStatisticsLabel()
-
-            'MessageBox.Show("字体删除已挂起，将在下次启动时执行。", "删除字体", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Catch ex As Exception
             MessageBox.Show($"删除字体失败：{ex.Message}", "删除字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
@@ -2199,13 +2234,13 @@ Public Class FormMain
 
     Private Sub OpenJsonConfig()
         If String.IsNullOrEmpty(_currentFontDirectory) Then
-            MessageBox.Show("数据尚未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
         Dim filePath = Path.Combine(_currentFontDirectory, "index.json")
         If Not File.Exists(filePath) Then
-            MessageBox.Show("未找到文件：" & filePath, "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("未找到配置文件：" & filePath, "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
@@ -2216,7 +2251,7 @@ Public Class FormMain
         }
             Process.Start(psi)
         Catch ex As Exception
-            MessageBox.Show("无法打开文件：" & ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("无法打开配置文件：" & ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
@@ -2237,13 +2272,13 @@ Public Class FormMain
 
         Dim jsonPath = Path.Combine(_currentFontDirectory, "index.json")
         If Not File.Exists(jsonPath) Then
-            MessageBox.Show("无法检查字体使用情况，配置或字体不存在。", "检查未使用字体", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("无法检查字体使用情况，配置或字体不存在。", "未使用字体", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
         Dim unused = GetUnusedFontFiles()
         If unused Is Nothing OrElse unused.Count = 0 Then
-            MessageBox.Show("所有字体均被引用。", "检查未使用字体", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            MessageBox.Show("所有字体均被引用。", "未使用字体", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Return
         End If
 
@@ -2659,5 +2694,4 @@ Public Class FormMain
         _menu.Dispose()
         MyBase.OnFormClosed(e)
     End Sub
-
 End Class

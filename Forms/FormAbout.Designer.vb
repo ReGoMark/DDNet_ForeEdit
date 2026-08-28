@@ -37,6 +37,7 @@ Partial Class FormAbout
         Label16 = New Label()
         lblThanks = New Label()
         btnApply = New Button()
+        Label1 = New Label()
         SuspendLayout()
         ' 
         ' lblName
@@ -98,7 +99,7 @@ Partial Class FormAbout
         Label9.AutoEllipsis = True
         Label9.AutoSize = True
         Label9.Cursor = Cursors.Hand
-        Label9.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        Label9.ForeColor = SystemColors.Highlight
         Label9.Location = New Point(166, 168)
         Label9.Margin = New Padding(3)
         Label9.Name = "Label9"
@@ -134,7 +135,7 @@ Partial Class FormAbout
         lblSponsor.AutoSize = True
         lblSponsor.Cursor = Cursors.Hand
         lblSponsor.ForeColor = SystemColors.Highlight
-        lblSponsor.Location = New Point(82, 222)
+        lblSponsor.Location = New Point(186, 222)
         lblSponsor.Margin = New Padding(3)
         lblSponsor.Name = "lblSponsor"
         lblSponsor.Size = New Size(36, 18)
@@ -146,7 +147,7 @@ Partial Class FormAbout
         lblLicense.AutoSize = True
         lblLicense.Cursor = Cursors.Hand
         lblLicense.ForeColor = SystemColors.Highlight
-        lblLicense.Location = New Point(166, 222)
+        lblLicense.Location = New Point(228, 222)
         lblLicense.Margin = New Padding(3)
         lblLicense.Name = "lblLicense"
         lblLicense.Size = New Size(92, 18)
@@ -158,7 +159,7 @@ Partial Class FormAbout
         Label14.AutoEllipsis = True
         Label14.AutoSize = True
         Label14.Cursor = Cursors.Hand
-        Label14.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        Label14.ForeColor = SystemColors.Highlight
         Label14.Location = New Point(12, 144)
         Label14.Margin = New Padding(3)
         Label14.Name = "Label14"
@@ -171,7 +172,7 @@ Partial Class FormAbout
         Label16.AutoEllipsis = True
         Label16.AutoSize = True
         Label16.Cursor = Cursors.Hand
-        Label16.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        Label16.ForeColor = SystemColors.Highlight
         Label16.Location = New Point(12, 168)
         Label16.Margin = New Padding(3)
         Label16.Name = "Label16"
@@ -184,7 +185,7 @@ Partial Class FormAbout
         lblThanks.AutoSize = True
         lblThanks.Cursor = Cursors.Hand
         lblThanks.ForeColor = SystemColors.Highlight
-        lblThanks.Location = New Point(124, 222)
+        lblThanks.Location = New Point(144, 222)
         lblThanks.Margin = New Padding(3)
         lblThanks.Name = "lblThanks"
         lblThanks.Size = New Size(36, 18)
@@ -200,12 +201,25 @@ Partial Class FormAbout
         btnApply.Text = "确定"
         btnApply.UseVisualStyleBackColor = True
         ' 
+        ' Label1
+        ' 
+        Label1.AutoSize = True
+        Label1.Cursor = Cursors.Hand
+        Label1.ForeColor = SystemColors.Highlight
+        Label1.Location = New Point(82, 222)
+        Label1.Margin = New Padding(3)
+        Label1.Name = "Label1"
+        Label1.Size = New Size(56, 18)
+        Label1.TabIndex = 40
+        Label1.Text = "Github"
+        ' 
         ' FormAbout
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(382, 288)
+        Controls.Add(Label1)
         Controls.Add(btnApply)
         Controls.Add(lblThanks)
         Controls.Add(Label16)
@@ -248,4 +262,5 @@ Partial Class FormAbout
     Friend WithEvents Label16 As Label
     Friend WithEvents lblThanks As Label
     Friend WithEvents btnApply As Button
+    Friend WithEvents Label1 As Label
 End Class

@@ -266,10 +266,8 @@ Public Class FormBlade
                     End Using
                     nstep += 1
                     ProgressBar1.Value = nstep
-                    Me.Text = $"{origTitle} - 写入: Verification.txt"
+                    Me.Text = $"{origTitle} - 写入: verification.txt"
                 End Using
-
-                MessageBox.Show("字体包导出成功。", "导出字体包", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Catch ex As Exception
                 MessageBox.Show("导出字体包时发生错误：" & ex.Message, "导出字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Finally
@@ -292,7 +290,7 @@ Public Class FormBlade
         ' 优先处理 JSON 配置
         If Not String.IsNullOrEmpty(_loadedJsonPath) AndAlso File.Exists(_loadedJsonPath) Then
             If String.IsNullOrEmpty(FontDir) OrElse Not Directory.Exists(FontDir) Then
-                MessageBox.Show("字体目录无效，无法写入配置。", "导入配置", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Return
             End If
 
@@ -333,7 +331,7 @@ Public Class FormBlade
 
         ' 原有 .dnfp 安装逻辑
         If String.IsNullOrEmpty(_loadedDnfpPath) OrElse Not File.Exists(_loadedDnfpPath) Then
-            MessageBox.Show("数据尚未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
         If String.IsNullOrEmpty(FontDir) OrElse Not Directory.Exists(FontDir) Then
@@ -356,7 +354,7 @@ Public Class FormBlade
             Dim jsonSrc = Path.Combine(srcDir, "index.json")
             If Not File.Exists(jsonSrc) Then jsonSrc = Path.Combine(srcDir, "index.JSON")
             If Not File.Exists(jsonSrc) Then
-                MessageBox.Show("字体包内未找到配置。", "导入字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show("字体包内未找到配置文件。", "导入字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Return
             End If
 
@@ -412,7 +410,7 @@ Public Class FormBlade
             ' ─── 使用 DialogPopup 确认 ──────────────────────────────────
             Using dlg As New DialogPopUp()
                 dlg.Text = "确认导入"
-                dlg.TitleText = $"确认要安装「{Path.GetFileName(_loadedDnfpPath)}」字体包吗？"
+                dlg.TitleText = $"确认要安装「{Path.GetFileName(_loadedDnfpPath)}」吗？"
                 dlg.DescriptionText = "替换字体和删除字体将在下次启动时执行"
                 dlg.ConfirmText = "安装"
                 dlg.CancelText = "取消"
@@ -430,7 +428,7 @@ Public Class FormBlade
                 Next
 
                 If toAdd.Count = 0 AndAlso toReplace.Count = 0 AndAlso toDelete.Count = 0 Then
-                    dlg.Items.Add("（没有需要操作的文件）")
+                    dlg.Items.Add("(没有需要操作的文件)")
                 End If
 
                 If dlg.ShowDialog(Me) <> DialogResult.OK Then
@@ -492,13 +490,13 @@ Public Class FormBlade
 
             MessageBox.Show(
                 "字体包导入成功：" & vbCrLf &
-                $"· 配置已覆盖" & vbCrLf &
-                $"· 新增字体已导入" & vbCrLf &
-                If(toReplace.Count > 0, $"· 替换字体已挂起，将在下次启动时执行" & vbCrLf, "") &
-                If(toDelete.Count > 0, $"· 删除字体已挂起，将在下次启动时执行" & vbCrLf, ""),
+                $"* 配置已覆盖" & vbCrLf &
+                $"* 新增字体已导入" & vbCrLf &
+                If(toReplace.Count > 0, $"* 替换字体将在下次启动时执行" & vbCrLf, "") &
+                If(toDelete.Count > 0, $"* 删除字体将在下次启动时执行" & vbCrLf, ""),
                 "导入字体包", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Catch ex As Exception
-            MessageBox.Show("导入字体包时发生错误。" & vbCrLf & $"· {ex.Message}",
+            MessageBox.Show("导入字体包时发生错误：" & $"{ex.Message}",
                             "导入字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
         Finally
             Try
@@ -538,7 +536,7 @@ Public Class FormBlade
                 ' 1. 验证 verification.txt
                 Dim verEntry = archive.GetEntry("verification.txt")
                 If verEntry Is Nothing Then
-                    MessageBox.Show("所选字体包验证失败：" & vbCrLf & "· 缺少 verification.txt。",
+                    MessageBox.Show("字体包验证失败：" & "缺少 verification.txt。",
                                     "读取字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     lblZip.Text = "等待数据加载"
                     Return
@@ -548,7 +546,7 @@ Public Class FormBlade
                 Dim jsonEntry = archive.GetEntry("fonts/index.json")
                 Dim hasIndexJson As Boolean = (jsonEntry IsNot Nothing)
                 If Not hasIndexJson Then
-                    MessageBox.Show("所选字体包验证失败：" & vbCrLf & "· 缺少 fonts/index.json 配置文件。",
+                    MessageBox.Show("所选字体包验证失败：" & "缺少 index.json 文件。",
                                     "读取字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     lblZip.Text = "等待数据加载"
                     Return

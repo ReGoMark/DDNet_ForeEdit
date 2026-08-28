@@ -4,10 +4,6 @@
         DialogLicense.ShowDialog(Me)
     End Sub
 
-    Private Sub FormAbout_Click(sender As Object, e As EventArgs) Handles Me.Click
-        Me.Close()
-    End Sub
-
     Private Sub Label11_Click(sender As Object, e As EventArgs)
         Try
             Dim psi As New ProcessStartInfo
@@ -81,5 +77,16 @@
 
     Private Sub FormAbout_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         lblVersion.Text = $"版本 26H2 ({FormMain.BuildVersion})"
+    End Sub
+
+    Private Sub Label1_Click(sender As Object, e As EventArgs) Handles Label1.Click
+        Try
+            Dim psi As New ProcessStartInfo()
+            psi.FileName = "https://github.com/ReGoMark/"
+            psi.UseShellExecute = True
+            Process.Start(psi)
+        Catch ex As Exception
+            MessageBox.Show($"无法打开链接：{ex.Message}", "打开链接失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 End Class

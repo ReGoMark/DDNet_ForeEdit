@@ -49,6 +49,7 @@ Partial Class DialogPopUp
         TableLayoutPanel1.SetColumnSpan(lstbPopup, 3)
         lstbPopup.Dock = DockStyle.Top
         lstbPopup.DrawMode = DrawMode.OwnerDrawFixed
+        lstbPopup.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lstbPopup.FormattingEnabled = True
         lstbPopup.IntegralHeight = False
         lstbPopup.ItemHeight = 25

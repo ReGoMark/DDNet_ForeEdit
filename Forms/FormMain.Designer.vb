@@ -459,6 +459,7 @@ Partial Class FormMain
         ' lstbDirFonts
         ' 
         lstbDirFonts.DrawMode = DrawMode.OwnerDrawFixed
+        lstbDirFonts.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lstbDirFonts.FormattingEnabled = True
         lstbDirFonts.IntegralHeight = False
         lstbDirFonts.ItemHeight = 25
@@ -645,6 +646,7 @@ Partial Class FormMain
         ' lstbFallbackFonts
         ' 
         lstbFallbackFonts.DrawMode = DrawMode.OwnerDrawFixed
+        lstbFallbackFonts.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lstbFallbackFonts.FormattingEnabled = True
         lstbFallbackFonts.IntegralHeight = False
         lstbFallbackFonts.ItemHeight = 25
@@ -670,6 +672,7 @@ Partial Class FormMain
         ' 
         cbFallbackFonts.AutoCompleteMode = AutoCompleteMode.SuggestAppend
         cbFallbackFonts.Dock = DockStyle.Top
+        cbFallbackFonts.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         cbFallbackFonts.FormattingEnabled = True
         cbFallbackFonts.Location = New Point(0, 0)
         cbFallbackFonts.Name = "cbFallbackFonts"
@@ -841,6 +844,7 @@ Partial Class FormMain
         ' 
         cbLA.AutoCompleteMode = AutoCompleteMode.SuggestAppend
         cbLA.Dock = DockStyle.Left
+        cbLA.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         cbLA.FormattingEnabled = True
         cbLA.Location = New Point(70, 4)
         cbLA.Margin = New Padding(3, 4, 3, 2)
@@ -852,6 +856,7 @@ Partial Class FormMain
         ' 
         cbJP.AutoCompleteMode = AutoCompleteMode.SuggestAppend
         cbJP.Dock = DockStyle.Left
+        cbJP.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         cbJP.FormattingEnabled = True
         cbJP.Location = New Point(70, 64)
         cbJP.Margin = New Padding(3, 4, 3, 2)
@@ -863,6 +868,7 @@ Partial Class FormMain
         ' 
         cbKR.AutoCompleteMode = AutoCompleteMode.SuggestAppend
         cbKR.Dock = DockStyle.Left
+        cbKR.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         cbKR.FormattingEnabled = True
         cbKR.Location = New Point(70, 96)
         cbKR.Margin = New Padding(3, 4, 3, 2)
@@ -874,6 +880,7 @@ Partial Class FormMain
         ' 
         cbSC.AutoCompleteMode = AutoCompleteMode.SuggestAppend
         cbSC.Dock = DockStyle.Left
+        cbSC.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         cbSC.FormattingEnabled = True
         cbSC.Location = New Point(70, 128)
         cbSC.Margin = New Padding(3, 4, 3, 2)
@@ -885,6 +892,7 @@ Partial Class FormMain
         ' 
         cbTC.AutoCompleteMode = AutoCompleteMode.SuggestAppend
         cbTC.Dock = DockStyle.Left
+        cbTC.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         cbTC.FormattingEnabled = True
         cbTC.Location = New Point(70, 160)
         cbTC.Margin = New Padding(3, 4, 3, 2)

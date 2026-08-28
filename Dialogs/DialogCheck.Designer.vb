@@ -32,7 +32,6 @@ Partial Class DialogCheck
         btnIgnore = New Button()
         Label4 = New Label()
         Label5 = New Label()
-        chkNever = New CheckBox()
         SuspendLayout()
         ' 
         ' Label1
@@ -139,23 +138,12 @@ Partial Class DialogCheck
         Label5.TabIndex = 11
         Label5.Text = "3. 重新启动程序"
         ' 
-        ' chkNever
-        ' 
-        chkNever.AutoSize = True
-        chkNever.Location = New Point(12, 227)
-        chkNever.Name = "chkNever"
-        chkNever.Size = New Size(91, 24)
-        chkNever.TabIndex = 12
-        chkNever.Text = "不再提示"
-        chkNever.UseVisualStyleBackColor = True
-        ' 
         ' DialogCheck
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(382, 263)
-        Controls.Add(chkNever)
         Controls.Add(Label5)
         Controls.Add(Label4)
         Controls.Add(btnIgnore)
@@ -188,5 +176,4 @@ Partial Class DialogCheck
     Friend WithEvents btnIgnore As Button
     Friend WithEvents Label4 As Label
     Friend WithEvents Label5 As Label
-    Friend WithEvents chkNever As CheckBox
 End Class

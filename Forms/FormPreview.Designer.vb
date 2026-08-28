@@ -130,6 +130,7 @@ Partial Class FormPreview
         ' 
         TableLayoutPanel1.SetColumnSpan(tbCustom, 3)
         tbCustom.Dock = DockStyle.Fill
+        tbCustom.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         tbCustom.Location = New Point(0, 36)
         tbCustom.Margin = New Padding(0, 3, 0, 3)
         tbCustom.Multiline = True

@@ -293,6 +293,7 @@ Partial Class FormBlade
         tblPackList.SetColumnSpan(lstbBlade, 2)
         lstbBlade.Dock = DockStyle.Fill
         lstbBlade.DrawMode = DrawMode.OwnerDrawFixed
+        lstbBlade.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lstbBlade.FormattingEnabled = True
         lstbBlade.IntegralHeight = False
         lstbBlade.ItemHeight = 25
@@ -369,7 +370,7 @@ Partial Class FormBlade
         ' 
         tblExportMode.SetColumnSpan(tbNote, 2)
         tbNote.Dock = DockStyle.Top
-        tbNote.ForeColor = SystemColors.WindowText
+        tbNote.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         tbNote.Location = New Point(0, 184)
         tbNote.Margin = New Padding(0, 3, 0, 0)
         tbNote.Multiline = True
