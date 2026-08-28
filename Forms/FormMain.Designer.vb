@@ -1063,12 +1063,12 @@ Partial Class FormMain
         ' 
         ' btnCopy
         ' 
-        btnCopy.Location = New Point(378, 0)
+        btnCopy.Location = New Point(356, 0)
         btnCopy.Margin = New Padding(3, 0, 3, 0)
         btnCopy.Name = "btnCopy"
-        btnCopy.Size = New Size(52, 30)
+        btnCopy.Size = New Size(74, 30)
         btnCopy.TabIndex = 6
-        btnCopy.Text = "副本"
+        btnCopy.Text = "导出配置"
         btnCopy.UseVisualStyleBackColor = True
         ' 
         ' btnDefault
@@ -1093,13 +1093,14 @@ Partial Class FormMain
         btnBlade.Size = New Size(64, 30)
         btnBlade.TabIndex = 8
         btnBlade.Text = "Blade"
+        ToolTip1.SetToolTip(btnBlade, "导入字体包或配置")
         btnBlade.UseVisualStyleBackColor = True
         ' 
         ' ProgressBar1
         ' 
         ProgressBar1.Location = New Point(178, 3)
         ProgressBar1.Name = "ProgressBar1"
-        ProgressBar1.Size = New Size(194, 24)
+        ProgressBar1.Size = New Size(172, 24)
         ProgressBar1.TabIndex = 9
         ProgressBar1.Visible = False
         ' 

@@ -78,4 +78,8 @@
     Private Sub btnApply_Click(sender As Object, e As EventArgs) Handles btnApply.Click
         Me.Close()
     End Sub
+
+    Private Sub FormAbout_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        lblVersion.Text = $"版本 26H2 ({FormMain.BuildVersion})"
+    End Sub
 End Class

@@ -58,7 +58,7 @@ Partial Class FormAbout
         lblVersion.Name = "lblVersion"
         lblVersion.Size = New Size(212, 18)
         lblVersion.TabIndex = 1
-        lblVersion.Text = "版本 26H2 (Build 260827.1)"
+        lblVersion.Text = "版本 26H2 (Build xxxxxx.x)"
         ' 
         ' lblCopyright
         ' 
@@ -66,9 +66,9 @@ Partial Class FormAbout
         lblCopyright.Location = New Point(12, 90)
         lblCopyright.Margin = New Padding(3)
         lblCopyright.Name = "lblCopyright"
-        lblCopyright.Size = New Size(296, 18)
+        lblCopyright.Size = New Size(298, 18)
         lblCopyright.TabIndex = 2
-        lblCopyright.Text = "(C) 2018-2026 ReGoMark，保留所有权利。"
+        lblCopyright.Text = "(C) 2018-2026 ReGoMark, 保留所有权利。"
         ' 
         ' splitDirectory
         ' 

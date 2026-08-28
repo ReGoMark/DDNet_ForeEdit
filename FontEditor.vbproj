@@ -10,7 +10,7 @@
     <AssemblyName>DDNet ForeEdit</AssemblyName>
     <AssemblyTitle>DDNet ForeEdit</AssemblyTitle>
     <RootNamespace>FontEditor</RootNamespace>
-    <Version>2602.0827.1</Version>
+    <Version>2602.0828.34</Version>
     <Authors>ReGoMark</Authors>
     <Company>Bilibili @ReGoMark</Company>
     <Product>DDNet ForeEdit</Product>
@@ -18,8 +18,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Modules\CustomContextMenu.vb.dated" />
-    <Compile Include="Modules\CustomPanel.vb.dated" />
+    <Compile Remove="Dialogs\dated\**" />
+    <Compile Remove="Modules\dated\**" />
+    <Compile Remove="Resources\dated\**" />
+    <EmbeddedResource Remove="Dialogs\dated\**" />
+    <EmbeddedResource Remove="Modules\dated\**" />
+    <EmbeddedResource Remove="Resources\dated\**" />
+    <None Remove="Dialogs\dated\**" />
+    <None Remove="Modules\dated\**" />
+    <None Remove="Resources\dated\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +49,11 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="My Project\Settings.Designer.vb">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
   </ItemGroup>
 
@@ -78,6 +90,11 @@
     <None Update="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Update="My Project\Settings.settings">
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
   </ItemGroup>
 

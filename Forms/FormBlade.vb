@@ -2,6 +2,7 @@
 Imports System.IO
 Imports System.IO.Compression
 Imports System.Text
+Imports System.Text.RegularExpressions
 
 ''' <summary>
 ''' BLADE 字体包管理窗体，负责导出 .dnfp 字体包和导入字体包到当前目录。
@@ -57,6 +58,12 @@ Public Class FormBlade
 
     ''' <summary>当前已加载的 .dnfp 文件路径。</summary>
     Private _loadedDnfpPath As String = ""
+
+    ''' <summary>当前已加载的 .json 配置文件路径（用于简化导入）。</summary>
+    Private _loadedJsonPath As String = ""
+
+    ''' <summary>当前加载的文件类型（"dnfp" 或 "json"）。</summary>
+    Private _loadedFileType As String = ""
 
     ' ─── 窗体生命周期 ──────────────────────────────────────────────────
 
@@ -240,11 +247,11 @@ Public Class FormBlade
                     Dim verEntry As ZipArchiveEntry = zipArchive.CreateEntry("verification.txt")
                     Dim modeStr As String
                     If rbNorm.Checked Then
-                        modeStr = "normal"
+                        modeStr = "Normal"
                     ElseIf rbStandard.Checked Then
-                        modeStr = "standard"
+                        modeStr = "Standard"
                     Else
-                        modeStr = "full"
+                        modeStr = "Full"
                     End If
 
                     Using writer As New StreamWriter(verEntry.Open(), Encoding.UTF8)
@@ -278,10 +285,53 @@ Public Class FormBlade
         End Using
     End Sub
 
-    ' ─── 导入字体包 ──────────────────────────────────────────────────
+    ' ─── 安装按钮（同时处理 .dnfp 和 .json）─────────────────────────
 
-    ''' <summary>安装字体包按钮点击事件。</summary>
+    ''' <summary>安装字体包或 JSON 配置按钮点击事件。</summary>
     Private Sub btnInstall_Click(sender As Object, e As EventArgs) Handles btnInstall.Click
+        ' 优先处理 JSON 配置
+        If Not String.IsNullOrEmpty(_loadedJsonPath) AndAlso File.Exists(_loadedJsonPath) Then
+            If String.IsNullOrEmpty(FontDir) OrElse Not Directory.Exists(FontDir) Then
+                MessageBox.Show("字体目录无效，无法写入配置。", "导入配置", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
+            End If
+
+            ' 弹出确认对话框
+            Using dlg As New DialogPopUp()
+                dlg.Text = "确认安装"
+                dlg.TitleText = $"即将覆盖配置文件, 是否继续?"
+                dlg.DescriptionText = " "
+                dlg.ConfirmText = "覆盖"
+                dlg.CancelText = "取消"
+                dlg.Items.Add("index.json")
+                If dlg.ShowDialog(Me) <> DialogResult.OK Then
+                    Return
+                End If
+            End Using
+
+            Dim destPath = Path.Combine(FontDir, "index.json")
+            Try
+                File.Copy(_loadedJsonPath, destPath, True)
+                MessageBox.Show($"配置已成功写入：{destPath}", "导入配置", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                ' 重置状态（清除加载的 JSON）
+                _loadedJsonPath = ""
+                _loadedFileType = ""
+                lstbBlade.Items.Clear()
+                lblZipName.Text = "-"
+                lblZipSize.Text = "-"
+                lblZipDate.Text = "-"
+                lblZipNote.Text = "-"
+                lblZipType.Text = "-"
+                lblZip.Text = "配置已安装"
+                btnInstall.Enabled = False
+                btnOpen.Enabled = False
+            Catch ex As Exception
+                MessageBox.Show($"写入配置失败：{ex.Message}", "导入配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+            Return
+        End If
+
+        ' 原有 .dnfp 安装逻辑
         If String.IsNullOrEmpty(_loadedDnfpPath) OrElse Not File.Exists(_loadedDnfpPath) Then
             MessageBox.Show("数据尚未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
@@ -314,11 +364,11 @@ Public Class FormBlade
 
             ' 3. 解析 index.json 引用的文件名
             Dim referencedFiles As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
-            Dim m = RegularExpressions.Regex.Match(newJson,
+            Dim m = Regex.Match(newJson,
                 """font files""\s*:\s*\[\s*(.*?)\s*\]",
-                RegularExpressions.RegexOptions.Singleline)
+                RegexOptions.Singleline)
             If m.Success Then
-                For Each mm As RegularExpressions.Match In RegularExpressions.Regex.Matches(m.Groups(1).Value, """([^""]+)""")
+                For Each mm As Match In Regex.Matches(m.Groups(1).Value, """([^""]+)""")
                     referencedFiles.Add(mm.Groups(1).Value)
                 Next
             End If
@@ -363,8 +413,8 @@ Public Class FormBlade
             Using dlg As New DialogPopUp()
                 dlg.Text = "确认导入"
                 dlg.TitleText = $"确认要安装「{Path.GetFileName(_loadedDnfpPath)}」字体包吗？"
-                dlg.DescriptionText = "以下列出了即将执行的操作："
-                dlg.ConfirmText = "确定"
+                dlg.DescriptionText = "替换字体和删除字体将在下次启动时执行"
+                dlg.ConfirmText = "安装"
                 dlg.CancelText = "取消"
 
                 For Each f In toAdd
@@ -458,12 +508,14 @@ Public Class FormBlade
         End Try
     End Sub
 
-    ' ─── 加载字体包 ──────────────────────────────────────────────────
+    ' ─── 加载字体包（.dnfp） ──────────────────────────────────────────
 
     ''' <summary>加载并验证 .dnfp 字体包，填充包信息面板。</summary>
     Private Sub LoadPackage(filePath As String)
-        ' 重置状态
+        ' 重置状态（清除可能加载的 JSON）
+        _loadedJsonPath = ""
         _loadedDnfpPath = ""
+        _loadedFileType = ""
         lstbBlade.Items.Clear()
         lblZipName.Text = "-"
         lblZipSize.Text = "-"
@@ -567,6 +619,7 @@ Public Class FormBlade
                             If(sz >= 1024, (sz / 1024).ToString("F0") & " KB", sz.ToString() & " B")))
             lblZipDate.Text = fi.LastWriteTime.ToString("yyyy/MM/dd HH:mm")
             _loadedDnfpPath = filePath
+            _loadedFileType = "dnfp"
 
             Dim hasFontDir As Boolean = Not String.IsNullOrEmpty(FontDir) AndAlso Directory.Exists(FontDir)
             btnInstall.Enabled = hasFontDir
@@ -576,25 +629,94 @@ Public Class FormBlade
         End Try
     End Sub
 
-    ' ─── 包管理按钮事件 ─────────────────────────────────────────────
+    ' ─── 导入 JSON 配置（简化版）─────────────────────────────────────
 
-    ''' <summary>浏览字体包按钮点击事件。</summary>
+    ''' <summary>
+    ''' 加载选中的 index.json 配置文件，在列表中显示一项，并启用“安装”和“打开”按钮。
+    ''' </summary>
+    Private Sub ImportJsonConfig(filePath As String)
+        ' 重置状态（清除可能加载的 .dnfp）
+        _loadedDnfpPath = ""
+        _loadedJsonPath = ""
+        _loadedFileType = ""
+        lstbBlade.Items.Clear()
+        lblZipName.Text = "-"
+        lblZipSize.Text = "-"
+        lblZipDate.Text = "-"
+        lblZipNote.Text = "-"
+        lblZipType.Text = "-"
+        btnInstall.Enabled = False
+        btnOpen.Enabled = False
+
+        If Not File.Exists(filePath) Then
+            MessageBox.Show("文件不存在。", "导入配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return
+        End If
+
+        ' 验证扩展名（必须是 .json）
+        If Not Path.GetExtension(filePath).Equals(".json", StringComparison.OrdinalIgnoreCase) Then
+            MessageBox.Show("请选择 .json 配置文件。", "导入配置", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        ' 检查目标目录是否有效
+        If String.IsNullOrEmpty(FontDir) OrElse Not Directory.Exists(FontDir) Then
+            MessageBox.Show("字体目录无效，无法导入配置。", "导入配置", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Try
+            Dim fi As New FileInfo(filePath)
+            ' 在列表中添加一行 "index.json"
+            lstbBlade.Items.Add("index.json")
+            ' 填充包信息
+            lblZipName.Text = fi.Name
+            Dim sz As Long = fi.Length
+            lblZipSize.Text = If(sz >= 1024L * 1024 * 1024, (sz / 1024 / 1024 / 1024).ToString("F2") & " GB",
+                            If(sz >= 1024L * 1024, (sz / 1024 / 1024).ToString("F2") & " MB",
+                            If(sz >= 1024, (sz / 1024).ToString("F0") & " KB", sz.ToString() & " B")))
+            lblZipDate.Text = fi.LastWriteTime.ToString("yyyy/MM/dd HH:mm")
+            lblZipNote.Text = "-"
+            lblZipType.Text = "JSON 配置"
+            lblZip.Text = "配置 1 项"
+
+            _loadedJsonPath = filePath
+            _loadedFileType = "json"
+            btnInstall.Enabled = True   ' 启用安装按钮
+            btnOpen.Enabled = True      ' 启用打开按钮（用于打开 JSON 文件）
+        Catch ex As Exception
+            MessageBox.Show("加载配置失败：" & ex.Message, "导入配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    ' ─── 包管理按钮事件（支持 .dnfp 和 .json）───────────────────────
+
+    ''' <summary>浏览字体包或 JSON 配置按钮点击事件。</summary>
     Private Sub btnZipBroswe_Click(sender As Object, e As EventArgs) Handles btnZipBroswe.Click
         Using ofd As New OpenFileDialog()
-            ofd.Title = "选择「DDNet 字体包」"
-            ofd.Filter = "DDNet 字体包 (*.dnfp)|*.dnfp|所有文件|*.*"
+            ofd.Title = "选择「DDNet 字体包」或「index.json」"
+            ' 第一项为通用筛选，同时支持 .dnfp 和 .json
+            ofd.Filter = "通用筛选 (*.dnfp;*.json)|*.dnfp;*.json|DDNet 字体包 (*.dnfp)|*.dnfp|JSON 配置 (*.json)|*.json"
             If ofd.ShowDialog(Me) <> DialogResult.OK Then Return
-            LoadPackage(ofd.FileName)
+
+            Dim ext = Path.GetExtension(ofd.FileName).ToLower()
+            If ext = ".dnfp" Then
+                LoadPackage(ofd.FileName)
+            ElseIf ext = ".json" Then
+                ImportJsonConfig(ofd.FileName)
+            Else
+                MessageBox.Show("不支持的文件类型。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            End If
         End Using
     End Sub
 
-    ''' <summary>拖放进入事件：允许拖放 .dnfp 文件。</summary>
+    ''' <summary>拖放进入事件：允许拖放 .dnfp 或 .json 文件。</summary>
     Private Sub btnZipBroswe_DragEnter(sender As Object, e As DragEventArgs) Handles btnZipBroswe.DragEnter
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
             If files.Length = 1 Then
                 Dim ext = Path.GetExtension(files(0)).ToLower()
-                If ext = ".dnfp" OrElse ext = ".zip" Then
+                If ext = ".dnfp" OrElse ext = ".zip" OrElse ext = ".json" Then
                     e.Effect = DragDropEffects.Copy
                     Return
                 End If
@@ -603,19 +725,45 @@ Public Class FormBlade
         e.Effect = DragDropEffects.None
     End Sub
 
-    ''' <summary>拖放释放事件：加载拖入的字体包。</summary>
+    ''' <summary>拖放释放事件：加载拖入的字体包或 JSON 配置。</summary>
     Private Sub btnZipBroswe_DragDrop(sender As Object, e As DragEventArgs) Handles btnZipBroswe.DragDrop
         Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
-        If files IsNot Nothing AndAlso files.Length > 0 Then LoadPackage(files(0))
+        If files Is Nothing OrElse files.Length = 0 Then Return
+        Dim file = files(0)
+        Dim ext = Path.GetExtension(file).ToLower()
+        If ext = ".dnfp" Then
+            LoadPackage(file)
+        ElseIf ext = ".json" Then
+            ImportJsonConfig(file)
+        Else
+            MessageBox.Show("请拖放 .dnfp 或 .json 文件。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End If
     End Sub
 
-    ''' <summary>打开字体包所在文件夹。</summary>
+    ''' <summary>打开字体包所在文件夹或直接打开 JSON 文件。</summary>
     Private Sub btnOpen_Click(sender As Object, e As EventArgs) Handles btnOpen.Click
-        If String.IsNullOrEmpty(_loadedDnfpPath) Then
-            MessageBox.Show("数据尚未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return
+        If _loadedFileType = "json" Then
+            ' 直接打开 JSON 文件（与主窗体 lblConfig 相同）
+            If Not String.IsNullOrEmpty(_loadedJsonPath) AndAlso File.Exists(_loadedJsonPath) Then
+                Try
+                    Dim psi As New ProcessStartInfo(_loadedJsonPath) With {.UseShellExecute = True}
+                    Process.Start(psi)
+                Catch ex As Exception
+                    MessageBox.Show($"无法打开文件：{ex.Message}", "打开文件", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                End Try
+            Else
+                MessageBox.Show("JSON 文件不存在或已移动。", "打开文件", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            End If
+        ElseIf _loadedFileType = "dnfp" Then
+            ' 打开所在文件夹（原有逻辑）
+            If String.IsNullOrEmpty(_loadedDnfpPath) Then
+                MessageBox.Show("数据尚未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                Return
+            End If
+            Process.Start("explorer.exe", $"""{_loadedDnfpPath}""")
+        Else
+            MessageBox.Show("未加载任何数据。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
-        Process.Start("explorer.exe", $"""{_loadedDnfpPath}""")
     End Sub
 
     ' ─── 列表绘制 ─────────────────────────────────────────────────────

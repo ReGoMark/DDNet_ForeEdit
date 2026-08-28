@@ -124,7 +124,7 @@ Public Class FormMain
     ''' <summary>
     ''' 构建版本号。
     ''' </summary>
-    Public ReadOnly BuildVersion As String = "Build 260827.x"
+    Public ReadOnly BuildVersion As String = "Build 260828.34"
 
     ''' <summary>
     ''' 窗体标题前缀。
@@ -209,14 +209,14 @@ Public Class FormMain
         .Id = 1,
         .Text = "预览(&P)",
         .Icon = ImageList1.Images(0),
-        .OnClick = Sub() FormPreview.Show(Me)
-    },
+        .OnClick = Sub() btnPreview.PerformClick()
+        },
     New Win32ContextMenu.MenuItem() With {
         .Id = 2,
         .Text = "Blade(&B)",
         .Icon = ImageList1.Images(1),
-        .OnClick = Sub() FormBlade.ShowDialog(Me)
-    },
+        .OnClick = Sub() btnBlade.PerformClick()
+        },
             Win32ContextMenu.MenuItem.Separator,
               New Win32ContextMenu.MenuItem() With {
         .Id = 3,
@@ -1037,9 +1037,9 @@ Public Class FormMain
             Return
         End If
 
-        Dim gdiName As String = cbFallbackFonts.SelectedItem.ToString()
-        Dim familyName As String = ""
-        If Not _gdiToFamily.TryGetValue(gdiName.ToLower(), familyName) Then
+        Dim gdiName = cbFallbackFonts.SelectedItem.ToString
+        Dim familyName = ""
+        If Not _gdiToFamily.TryGetValue(gdiName.ToLower, familyName) Then
             familyName = gdiName
         End If
 
@@ -2202,11 +2202,22 @@ Public Class FormMain
             MessageBox.Show("数据尚未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
-        ' 只有配置有效时才打开（非错误状态）
-        If lblConfig.ForeColor = Color.FromArgb(232, 17, 35) AndAlso lblConfig.Text = "配置 ✖" Then
+
+        Dim filePath = Path.Combine(_currentFontDirectory, "index.json")
+        If Not File.Exists(filePath) Then
+            MessageBox.Show("未找到文件：" & filePath, "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
-        Process.Start("explorer.exe", $"""{_currentFontDirectory}""\index.json")
+
+        Try
+            ' 优先让 Shell 打开文件（如果没有关联，Windows 会弹出“选择打开方式”）
+            Dim psi As New ProcessStartInfo(filePath) With {
+            .UseShellExecute = True
+        }
+            Process.Start(psi)
+        Catch ex As Exception
+            MessageBox.Show("无法打开文件：" & ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
     ' ─── 检查未使用字体 ──────────────────────────────────────────────
