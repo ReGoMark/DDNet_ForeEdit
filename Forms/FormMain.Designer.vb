@@ -146,8 +146,8 @@ Partial Class FormMain
         lblConfig.AutoSize = True
         lblConfig.Cursor = Cursors.Hand
         lblConfig.Dock = DockStyle.Left
-        lblConfig.Location = New Point(266, 3)
-        lblConfig.Margin = New Padding(3)
+        lblConfig.Location = New Point(260, 3)
+        lblConfig.Margin = New Padding(0, 3, 0, 3)
         lblConfig.Name = "lblConfig"
         lblConfig.Size = New Size(58, 24)
         lblConfig.TabIndex = 6
@@ -162,6 +162,7 @@ Partial Class FormMain
         btnLocate.Size = New Size(80, 30)
         btnLocate.TabIndex = 3
         btnLocate.Text = "字体目录"
+        ToolTip1.SetToolTip(btnLocate, "按 Shift + 点击 复制路径")
         btnLocate.UseVisualStyleBackColor = True
         ' 
         ' chkDirSelect
@@ -182,7 +183,7 @@ Partial Class FormMain
         lblPreset.Cursor = Cursors.Hand
         lblPreset.Dock = DockStyle.Left
         lblPreset.Location = New Point(202, 3)
-        lblPreset.Margin = New Padding(3)
+        lblPreset.Margin = New Padding(3, 3, 0, 3)
         lblPreset.Name = "lblPreset"
         lblPreset.Size = New Size(58, 24)
         lblPreset.TabIndex = 5
@@ -213,9 +214,9 @@ Partial Class FormMain
         ' 
         ' tbPath
         ' 
-        tbPath.Location = New Point(330, 3)
+        tbPath.Location = New Point(321, 3)
         tbPath.Name = "tbPath"
-        tbPath.Size = New Size(36, 26)
+        tbPath.Size = New Size(45, 26)
         tbPath.TabIndex = 7
         tbPath.Visible = False
         ' 
@@ -1067,6 +1068,7 @@ Partial Class FormMain
         btnApply.Size = New Size(52, 30)
         btnApply.TabIndex = 5
         btnApply.Text = "应用"
+        ToolTip1.SetToolTip(btnApply, "按 Shift + 点击 应用并启动 DDNet")
         btnApply.UseVisualStyleBackColor = True
         ' 
         ' btnCopy

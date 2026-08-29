@@ -124,7 +124,7 @@ Public Class FormMain
     ''' <summary>
     ''' 构建版本号。
     ''' </summary>
-    Public ReadOnly BuildVersion As String = "Build 260828.34"
+    Public ReadOnly BuildVersion As String = "Build 260829.4"
 
     ''' <summary>
     ''' 窗体标题前缀。
@@ -199,6 +199,7 @@ Public Class FormMain
         ExecutePendingDeletions()
         ExecutePendingCopies()
         Me.Text = TitleText
+        Me.KeyPreview = True
         lblDirFonts.Text = "等待数据加载"
         lstbDirFonts.ItemHeight = AwareListHeight.GetScaledItemHeight(Me)
         lstbFallbackFonts.ItemHeight = AwareListHeight.GetScaledItemHeight(Me)
@@ -288,7 +289,7 @@ Public Class FormMain
             },
              New Win32ContextMenu.MenuItem() With {
                 .Id = 63,
-                .Text = "获取字体(&R)",
+                .Text = "下载字体(&R)",
                 .OnClick = Sub()
                                Process.Start(New ProcessStartInfo With {
                                    .FileName = "https://www.maoken.com/",
@@ -1589,7 +1590,7 @@ Public Class FormMain
     ''' </summary>
     Private Sub btnBrowse_Click(sender As Object, e As EventArgs) Handles btnBrowse.Click
         Using dlg As New OpenFileDialog()
-            dlg.Title = "选择「DDNet 快捷方式、DDNet.exe 或 index.json」"
+            dlg.Title = "选择「DDNet 快捷方式」「DDNet.exe」或「index.json」"
             dlg.Filter = "通用筛选|*.lnk;*.url;*.exe;*.json|快捷方式 (*.lnk;*.url)|*.lnk;*.url|可执行程序 (*.exe)|*.exe|JSON 文档 (*.json)|*.json"
             dlg.CheckFileExists = True
             If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
