@@ -126,9 +126,9 @@ Partial Class DialogDirectory
         Label2.Location = New Point(0, 150)
         Label2.Margin = New Padding(0, 3, 0, 3)
         Label2.Name = "Label2"
-        Label2.Size = New Size(350, 72)
+        Label2.Size = New Size(328, 54)
         Label2.TabIndex = 37
-        Label2.Text = "* DDNet 目录的字体显示优先于 Teeworlds 目录" & vbCrLf & "* 用户目录的字体显示优先于安装目录" & vbCrLf & "* 其他第三方客户端如 TClient, RClient 等可能会使用 Teeworlds 目录"
+        Label2.Text = "* DDNet 目录的字体显示优先于 Teeworlds 目录" & vbCrLf & "* 用户目录的字体显示优先于安装目录" & vbCrLf & "* 旧版客户端可能会使用 Teeworlds 目录"
         ' 
         ' btnCancel
         ' 
@@ -150,7 +150,7 @@ Partial Class DialogDirectory
         btnOK.Text = "确定"
         btnOK.UseVisualStyleBackColor = True
         ' 
-        ' DialogDirSelect
+        ' DialogDirectory
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
@@ -165,7 +165,7 @@ Partial Class DialogDirectory
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
         MaximizeBox = False
         MinimizeBox = False
-        Name = "DialogDirSelect"
+        Name = "DialogDirectory"
         ShowIcon = False
         ShowInTaskbar = False
         StartPosition = FormStartPosition.CenterParent

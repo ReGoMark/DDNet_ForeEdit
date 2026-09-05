@@ -431,9 +431,9 @@ Partial Class FormBlade
         ' 
         lblNorm.AutoEllipsis = True
         lblNorm.AutoSize = True
-        lblNorm.Dock = DockStyle.Left
+        lblNorm.Dock = DockStyle.Right
         lblNorm.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblNorm.Location = New Point(144, 0)
+        lblNorm.Location = New Point(240, 0)
         lblNorm.Margin = New Padding(3, 0, 0, 3)
         lblNorm.Name = "lblNorm"
         lblNorm.Size = New Size(40, 46)
@@ -445,9 +445,9 @@ Partial Class FormBlade
         ' 
         lblStandard.AutoEllipsis = True
         lblStandard.AutoSize = True
-        lblStandard.Dock = DockStyle.Left
+        lblStandard.Dock = DockStyle.Right
         lblStandard.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblStandard.Location = New Point(144, 52)
+        lblStandard.Location = New Point(240, 52)
         lblStandard.Margin = New Padding(3, 3, 0, 3)
         lblStandard.Name = "lblStandard"
         lblStandard.Size = New Size(40, 46)
@@ -459,9 +459,9 @@ Partial Class FormBlade
         ' 
         lblFull.AutoEllipsis = True
         lblFull.AutoSize = True
-        lblFull.Dock = DockStyle.Left
+        lblFull.Dock = DockStyle.Right
         lblFull.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblFull.Location = New Point(144, 104)
+        lblFull.Location = New Point(240, 104)
         lblFull.Margin = New Padding(3, 3, 0, 0)
         lblFull.Name = "lblFull"
         lblFull.Size = New Size(40, 46)

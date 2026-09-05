@@ -37,6 +37,15 @@ Public Class FormMain
     Private _gdiToFamily As New Dictionary(Of String, String)
 
     ''' <summary>
+    ''' 映射\uff1aGDI名\uff08小写\uff09→ FontNameInfo\uff08含字重、斜体信息\uff0c用于预览渲染\uff09。
+    ''' </summary>
+    ' 字段声明
+    Private _gdiToFontInfo As New Dictionary(Of String, FontInfoTable)   ' 去掉 FontInfoReader.
+
+    ' 局部变量
+    Dim ni As FontInfoTable = Nothing   ' 同上
+
+    ''' <summary>
     ''' 映射：GDI名（小写）→ 字体文件的完整物理路径。
     ''' </summary>
     Private _gdiToFilePath As New Dictionary(Of String, String)
@@ -124,7 +133,7 @@ Public Class FormMain
     ''' <summary>
     ''' 构建版本号。
     ''' </summary>
-    Public ReadOnly BuildVersion As String = "Build 260829.4"
+    Public ReadOnly BuildVersion As String = "Build 260905.13"
 
     ''' <summary>
     ''' 窗体标题前缀。
@@ -431,6 +440,7 @@ Public Class FormMain
         _gdiToFamily.Clear()
         _familyToGdi.Clear()
         _ttcPhysicalIndex.Clear()
+        _gdiToFontInfo.Clear()
         lblFontName.Text = "-" : lblFontFamily.Text = "-" : lblFontType.Text = "-"
         lblFontCoverage.Text = "-" : lblFontModify.Text = "-" : lblFontSize.Text = "-"
 
@@ -471,7 +481,7 @@ Public Class FormMain
             For Each filePath As String In fontFiles
                 Dim fileName As String = Path.GetFileName(filePath)
                 Dim isTtc As Boolean = Path.GetExtension(filePath).ToLower() = ".ttc"
-                Dim nameInfos As List(Of FontNameInfo) = FontInfoReader.ReadAllFontNames(filePath)
+                Dim nameInfos As List(Of FontInfoTable) = FontInfoReader.ReadAllFontNames(filePath)
 
                 Try
                     Dim pfc As New PrivateFontCollection()
@@ -483,7 +493,7 @@ Public Class FormMain
                         If isTtc Then
                             ' TTC 处理：建立 GDI 名到 FamilyName 的映射
                             Dim rawToFamily As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
-                            For Each ni As FontNameInfo In nameInfos
+                            For Each ni As FontInfoTable In nameInfos
                                 For Each raw As String In ni.AllRawNames
                                     If Not rawToFamily.ContainsKey(raw) Then
                                         rawToFamily(raw) = ni.FamilyName
@@ -516,6 +526,9 @@ Public Class FormMain
                                 Next
                                 _ttcPhysicalIndex(gdiName.ToLower()) = physIdx
                                 If total > 1 Then _ttcTag(gdiName.ToLower()) = $"{idx + 1}/{total}"
+                                If physIdx >= 0 AndAlso physIdx < nameInfos.Count Then
+                                    _gdiToFontInfo(gdiName.ToLower()) = nameInfos(physIdx)
+                                End If
                             Next
                         Else
                             ' TTF / OTF
@@ -532,6 +545,9 @@ Public Class FormMain
                                 If Not _familyToGdi.ContainsKey(sharedFamilyName.ToLower()) Then
                                     _familyToGdi(sharedFamilyName.ToLower()) = gdiName
                                 End If
+                            End If
+                            If nameInfos.Count > 0 Then
+                                _gdiToFontInfo(gdiName.ToLower()) = nameInfos(0)
                             End If
                         End If
                     Else
@@ -817,12 +833,15 @@ Public Class FormMain
                 If f.Name.ToLower() = gdiName.ToLower() Then fam = f : Exit For
             Next
             If fam Is Nothing Then fam = pfc.Families(0)
-            For Each style As FontStyle In {FontStyle.Regular, FontStyle.Bold, FontStyle.Italic}
-                Try
-                    Return New Font(fam, size, style, GraphicsUnit.Point)
-                Catch ex As Exception
-                End Try
-            Next
+            ' 从 FontNameInfo 取正确的 Style�0c避免 GDI+ 静默回退到 Regular
+            Dim style As FontStyle = FontStyle.Regular
+            Dim ni As FontInfoTable = Nothing
+            If _gdiToFontInfo.TryGetValue(gdiName.ToLower(), ni) Then style = ni.GdiFontStyle
+            If Not fam.IsStyleAvailable(style) Then style = FontStyle.Regular
+            Try
+                Return New Font(fam, size, style, GraphicsUnit.Point)
+            Catch ex As Exception
+            End Try
         End If
         Return New Font(Me.Font.FontFamily, size)
     End Function
@@ -846,7 +865,7 @@ Public Class FormMain
         Dim drawFont As Font = _drawFontCache(key)
 
         Dim textColor As Color = If((e.State And DrawItemState.Selected) <> 0,
-                                SystemColors.HighlightText, SystemColors.WindowText)
+                                SystemColors.HighlightText, Color.FromArgb(64, 64, 64))
         Dim textRect As New Rectangle(e.Bounds.X + 2, e.Bounds.Y, e.Bounds.Width - 8, e.Bounds.Height)
         TextRenderer.DrawText(e.Graphics, itemText, drawFont, textRect, textColor,
                               TextFormatFlags.Left Or TextFormatFlags.VerticalCenter Or TextFormatFlags.NoPrefix)
@@ -900,8 +919,8 @@ Public Class FormMain
 
         Dim ttcIndex As Integer = 0
         _ttcPhysicalIndex.TryGetValue(gdiName.ToLower(), ttcIndex)
-        Dim nameInfos As List(Of FontNameInfo) = FontInfoReader.ReadAllFontNames(filePath)
-        Dim info As FontNameInfo = If(nameInfos.Count > ttcIndex, nameInfos(ttcIndex),
+        Dim nameInfos As List(Of FontInfoTable) = FontInfoReader.ReadAllFontNames(filePath)
+        Dim info As FontInfoTable = If(nameInfos.Count > ttcIndex, nameInfos(ttcIndex),
                                       If(nameInfos.Count > 0, nameInfos(0), Nothing))
 
         Dim tag As String = ""
@@ -963,8 +982,11 @@ Public Class FormMain
 
         If _previewWindow IsNot Nothing AndAlso _previewWindow.Visible Then
             Dim langKey = cb.Name.Replace("cb", "").ToUpper()
-            Dim fontName = If(cb.SelectedIndex >= 0, cb.SelectedItem.ToString(), "")
-            _previewWindow.UpdatePreview(langKey, fontName, AddressOf ApplyFontToLabel)
+            Dim ni2 As FontInfoTable = Nothing
+            If cb.SelectedIndex >= 0 Then
+                _gdiToFontInfo.TryGetValue(cb.SelectedItem.ToString().ToLower(), ni2)
+            End If
+            _previewWindow.UpdatePreview(langKey, ni2)
         End If
     End Sub
 
@@ -1036,7 +1058,7 @@ Public Class FormMain
 
         Dim itemText As String = lstbFallbackFonts.Items(e.Index).ToString()
         Dim textColor As Color = If((e.State And DrawItemState.Selected) <> 0,
-                                    SystemColors.HighlightText, SystemColors.WindowText)
+                                    SystemColors.HighlightText, Color.FromArgb(64, 64, 64))
 
         Dim textRect As New Rectangle(e.Bounds.X + 2, e.Bounds.Y, e.Bounds.Width - 8, e.Bounds.Height)
         TextRenderer.DrawText(e.Graphics, itemText, e.Font, textRect, textColor,
@@ -1821,7 +1843,7 @@ Public Class FormMain
 
                 If isTtc Then
                     Dim rawToFamily As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
-                    For Each ni As FontNameInfo In nameInfos
+                    For Each ni As FontInfoTable In nameInfos
                         For Each raw As String In ni.AllRawNames
                             If Not rawToFamily.ContainsKey(raw) Then rawToFamily(raw) = ni.FamilyName
                         Next
@@ -2142,8 +2164,11 @@ Public Class FormMain
             {"LA", cbLA}, {"JP", cbJP}, {"KR", cbKR}, {"SC", cbSC}, {"TC", cbTC}
         }
         For Each kvp In configs
-            Dim fontName = If(kvp.Value.SelectedIndex >= 0, kvp.Value.SelectedItem.ToString(), "")
-            _previewWindow.UpdatePreview(kvp.Key, fontName, AddressOf ApplyFontToLabel)
+            Dim ni As FontInfoTable = Nothing
+            If kvp.Value.SelectedIndex >= 0 Then
+                _gdiToFontInfo.TryGetValue(kvp.Value.SelectedItem.ToString().ToLower(), ni)
+            End If
+            _previewWindow.UpdatePreview(kvp.Key, ni)
         Next
     End Sub
 

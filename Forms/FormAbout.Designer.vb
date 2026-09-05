@@ -150,9 +150,9 @@ Partial Class FormAbout
         lblLicense.Location = New Point(228, 222)
         lblLicense.Margin = New Padding(3)
         lblLicense.Name = "lblLicense"
-        lblLicense.Size = New Size(92, 18)
+        lblLicense.Size = New Size(64, 18)
         lblLicense.TabIndex = 17
-        lblLicense.Text = "用户许可协议"
+        lblLicense.Text = "许可协议"
         ' 
         ' Label14
         ' 

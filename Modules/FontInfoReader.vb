@@ -19,8 +19,8 @@ Module FontInfoReader
     ''' </summary>
     ''' <param name="filePath">字体文件路径</param>
     ''' <returns>字体名称信息列表</returns>
-    Public Function ReadAllFontNames(filePath As String) As List(Of FontNameInfo)
-        Dim result As New List(Of FontNameInfo)
+    Public Function ReadAllFontNames(filePath As String) As List(Of FontInfoTable)
+        Dim result As New List(Of FontInfoTable)
         Try
             Using fs As New FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read)
                 Using br As New BinaryReader(fs)
@@ -112,8 +112,8 @@ Module FontInfoReader
     ' ─── 内部：表目录解析 ───────────────────────────────────────────────
 
     ''' <summary>从指定偏移处读取单个子字体的 name / OS/2 表信息。</summary>
-    Private Function ReadNameInfoAt(br As BinaryReader, tableOffset As Long) As FontNameInfo
-        Dim info As New FontNameInfo()
+    Private Function ReadNameInfoAt(br As BinaryReader, tableOffset As Long) As FontInfoTable
+        Dim info As New FontInfoTable()
         Try
             br.BaseStream.Seek(tableOffset, SeekOrigin.Begin)
             ReadUInt32BE(br) ' sfnt version
@@ -143,7 +143,7 @@ Module FontInfoReader
     End Function
 
     ''' <summary>解析 name 表，填充 FamilyName、AllRawNames 及 Version。</summary>
-    Private Sub ReadNameTable(br As BinaryReader, nameTableOffset As UInteger, info As FontNameInfo)
+    Private Sub ReadNameTable(br As BinaryReader, nameTableOffset As UInteger, info As FontInfoTable)
         br.BaseStream.Seek(nameTableOffset, SeekOrigin.Begin)
         ReadUInt16BE(br) ' format
         Dim count As UShort = ReadUInt16BE(br)
@@ -213,16 +213,20 @@ Module FontInfoReader
                                         famWinEn, famWinOther, famMac)
     End Sub
 
-    ''' <summary>解析 OS/2 表，读取字重和字宽。</summary>
-    Private Sub ReadOs2Table(br As BinaryReader, os2Offset As UInteger, info As FontNameInfo)
+    ''' <summary>解析 OS/2 表，读取字重、字宽和斜体标志。</summary>
+    Private Sub ReadOs2Table(br As BinaryReader, os2Offset As UInteger, info As FontInfoTable)
         Try
             br.BaseStream.Seek(os2Offset, SeekOrigin.Begin)
             ReadUInt16BE(br) ' version
             ReadUInt16BE(br) ' xAvgCharWidth
-            info.WeightClass = CInt(ReadUInt16BE(br))
-            info.WidthClass = CInt(ReadUInt16BE(br))
+            info.WeightClass = CInt(ReadUInt16BE(br))  ' +4
+            info.WidthClass = CInt(ReadUInt16BE(br))   ' +6
+            ' fsSelection 位于 OS/2 表偏移 +62；bit 0 = ITALIC
+            br.BaseStream.Seek(os2Offset + 62, SeekOrigin.Begin)
+            Dim fsSelection As UShort = ReadUInt16BE(br)
+            info.IsItalic = (fsSelection And &H1US) <> 0
         Catch ex As Exception
-            ' 保持默认值 0
+            ' 保持默认值
         End Try
     End Sub
 
@@ -322,78 +326,4 @@ Module FontInfoReader
     End Function
 
     ' ─── 内部数据类 ──────────────────────────────────────────────────────
-
-    ''' <summary>
-    ''' 单个子字体的元数据，由 ReadAllFontNames 填充。
-    ''' 字重、字宽和版本号已提供本地化或格式化属性。
-    ''' </summary>
-    Public Class FontNameInfo
-
-        ''' <summary>Name ID=1 所有语言版本，用于和 GDI+ FontFamily.Name 匹配。</summary>
-        Public Property AllRawNames As New List(Of String)
-
-        ''' <summary>index.json 使用的字体族名称（Name ID=16 优先，回退 Name ID=1）。</summary>
-        Public Property FamilyName As String = ""
-
-        ''' <summary>字重值（OS/2.usWeightClass，100-900）；0 表示读取失败。</summary>
-        Public Property WeightClass As Integer = 0
-
-        ''' <summary>字宽值（OS/2.usWidthClass，1-9）；0 表示读取失败。</summary>
-        Public Property WidthClass As Integer = 0
-
-        ''' <summary>版本字符串原始值（Name ID=5），如 "Version 2.003"；未读到则为空。</summary>
-        Public Property Version As String = ""
-
-        ''' <summary>
-        ''' 精简版本号：去掉 "Version " 前缀并截断分号后的内容。
-        ''' 例："Version 2.003;PS 001" → "2.003"；未读到则返回空字符串。
-        ''' </summary>
-        Public ReadOnly Property VersionShort As String
-            Get
-                If String.IsNullOrEmpty(Version) Then Return ""
-                Dim v = Version.Replace("Version ", "").Trim()
-                Dim semi = v.IndexOf(";"c)
-                Return If(semi > 0, v.Substring(0, semi).Trim(), v)
-            End Get
-        End Property
-
-        ''' <summary>字重的中文名称。</summary>
-        Public ReadOnly Property WeightName As String
-            Get
-                Select Case WeightClass
-                    Case 100 : Return "特细"
-                    Case 200 : Return "极细"
-                    Case 300 : Return "细"
-                    Case 400 : Return "常规"
-                    Case 500 : Return "中等"
-                    Case 600 : Return "半粗"
-                    Case 700 : Return "粗"
-                    Case 800 : Return "极粗"
-                    Case 900 : Return "特粗"
-                    Case 0 : Return ""
-                    Case Else : Return WeightClass.ToString()
-                End Select
-            End Get
-        End Property
-
-        ''' <summary>字宽的中文名称。</summary>
-        Public ReadOnly Property WidthName As String
-            Get
-                Select Case WidthClass
-                    Case 1 : Return "超窄"
-                    Case 2 : Return "极窄"
-                    Case 3 : Return "窄"
-                    Case 4 : Return "半窄"
-                    Case 5 : Return "正常"
-                    Case 6 : Return "半宽"
-                    Case 7 : Return "宽"
-                    Case 8 : Return "极宽"
-                    Case 9 : Return "超宽"
-                    Case Else : Return ""
-                End Select
-            End Get
-        End Property
-
-    End Class
-
 End Module

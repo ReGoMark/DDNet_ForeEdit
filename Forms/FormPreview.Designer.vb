@@ -53,7 +53,7 @@ Partial Class FormPreview
         lblTC.BackColor = Color.Transparent
         lblTC.Dock = DockStyle.Fill
         lblTC.Font = New Font("等距更纱黑体 Slab SC", 9F)
-        lblTC.ForeColor = SystemColors.WindowText
+        lblTC.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lblTC.Location = New Point(0, 576)
         lblTC.Margin = New Padding(0, 3, 0, 3)
         lblTC.Name = "lblTC"
@@ -145,7 +145,7 @@ Partial Class FormPreview
         lblSC.AutoSize = True
         lblSC.Dock = DockStyle.Fill
         lblSC.Font = New Font("等距更纱黑体 Slab SC", 9F)
-        lblSC.ForeColor = SystemColors.WindowText
+        lblSC.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lblSC.Location = New Point(0, 456)
         lblSC.Margin = New Padding(0, 3, 0, 3)
         lblSC.Name = "lblSC"
@@ -160,7 +160,7 @@ Partial Class FormPreview
         lblKR.BackColor = Color.Transparent
         lblKR.Dock = DockStyle.Fill
         lblKR.Font = New Font("等距更纱黑体 Slab SC", 9F)
-        lblKR.ForeColor = SystemColors.WindowText
+        lblKR.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lblKR.Location = New Point(0, 354)
         lblKR.Margin = New Padding(0, 3, 0, 3)
         lblKR.Name = "lblKR"
@@ -174,7 +174,7 @@ Partial Class FormPreview
         lblJP.AutoSize = True
         lblJP.Dock = DockStyle.Fill
         lblJP.Font = New Font("等距更纱黑体 Slab SC", 9F)
-        lblJP.ForeColor = SystemColors.WindowText
+        lblJP.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lblJP.Location = New Point(0, 234)
         lblJP.Margin = New Padding(0, 3, 0, 3)
         lblJP.Name = "lblJP"
@@ -189,7 +189,7 @@ Partial Class FormPreview
         lblLA.BackColor = Color.Transparent
         lblLA.Dock = DockStyle.Fill
         lblLA.Font = New Font("等距更纱黑体 Slab SC", 9F)
-        lblLA.ForeColor = SystemColors.WindowText
+        lblLA.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lblLA.Location = New Point(0, 132)
         lblLA.Margin = New Padding(0, 3, 0, 3)
         lblLA.Name = "lblLA"
@@ -202,12 +202,12 @@ Partial Class FormPreview
         ' 
         tagTC.AutoSize = True
         tagTC.BackColor = Color.Transparent
-        tagTC.Dock = DockStyle.Fill
+        tagTC.Dock = DockStyle.Left
         tagTC.ForeColor = Color.DarkGray
         tagTC.Location = New Point(0, 552)
         tagTC.Margin = New Padding(0, 3, 0, 3)
         tagTC.Name = "tagTC"
-        tagTC.Size = New Size(364, 18)
+        tagTC.Size = New Size(360, 18)
         tagTC.TabIndex = 9
         tagTC.Text = "繁体中文  ────────────────────────────────────────"
         tagTC.TextAlign = ContentAlignment.MiddleLeft
@@ -215,12 +215,12 @@ Partial Class FormPreview
         ' tagSC
         ' 
         tagSC.AutoSize = True
-        tagSC.Dock = DockStyle.Fill
+        tagSC.Dock = DockStyle.Left
         tagSC.ForeColor = Color.DarkGray
         tagSC.Location = New Point(0, 432)
         tagSC.Margin = New Padding(0, 3, 0, 3)
         tagSC.Name = "tagSC"
-        tagSC.Size = New Size(364, 18)
+        tagSC.Size = New Size(360, 18)
         tagSC.TabIndex = 8
         tagSC.Text = "简体中文  ────────────────────────────────────────"
         tagSC.TextAlign = ContentAlignment.MiddleLeft
@@ -229,12 +229,12 @@ Partial Class FormPreview
         ' 
         tagKR.AutoSize = True
         tagKR.BackColor = Color.Transparent
-        tagKR.Dock = DockStyle.Fill
+        tagKR.Dock = DockStyle.Left
         tagKR.ForeColor = Color.DarkGray
         tagKR.Location = New Point(0, 330)
         tagKR.Margin = New Padding(0, 3, 0, 3)
         tagKR.Name = "tagKR"
-        tagKR.Size = New Size(364, 18)
+        tagKR.Size = New Size(360, 18)
         tagKR.TabIndex = 7
         tagKR.Text = "韩文  ────────────────────────────────────────────"
         tagKR.TextAlign = ContentAlignment.MiddleLeft
@@ -242,12 +242,12 @@ Partial Class FormPreview
         ' tagJP
         ' 
         tagJP.AutoSize = True
-        tagJP.Dock = DockStyle.Fill
+        tagJP.Dock = DockStyle.Left
         tagJP.ForeColor = Color.DarkGray
         tagJP.Location = New Point(0, 210)
         tagJP.Margin = New Padding(0, 3, 0, 3)
         tagJP.Name = "tagJP"
-        tagJP.Size = New Size(364, 18)
+        tagJP.Size = New Size(360, 18)
         tagJP.TabIndex = 6
         tagJP.Text = "日文  ────────────────────────────────────────────"
         tagJP.TextAlign = ContentAlignment.MiddleLeft
@@ -256,12 +256,12 @@ Partial Class FormPreview
         ' 
         tagLA.AutoSize = True
         tagLA.BackColor = Color.Transparent
-        tagLA.Dock = DockStyle.Fill
+        tagLA.Dock = DockStyle.Left
         tagLA.ForeColor = Color.DarkGray
         tagLA.Location = New Point(0, 108)
         tagLA.Margin = New Padding(0, 3, 0, 3)
         tagLA.Name = "tagLA"
-        tagLA.Size = New Size(364, 18)
+        tagLA.Size = New Size(360, 18)
         tagLA.TabIndex = 5
         tagLA.Text = "默认西文  ────────────────────────────────────────"
         tagLA.TextAlign = ContentAlignment.MiddleLeft

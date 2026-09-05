@@ -179,19 +179,10 @@ Public Class FormBlade
 
         If rbNorm.Checked Then
             filesToPack = NormFontFiles
-            rbStandard.ForeColor = Color.DarkGray
-            rbFull.ForeColor = Color.DarkGray
-            rbNorm.ForeColor = Color.FromArgb(64, 64, 64)
         ElseIf rbStandard.Checked Then
             filesToPack = StdFontFiles
-            rbNorm.ForeColor = Color.DarkGray
-            rbFull.ForeColor = Color.DarkGray
-            rbStandard.ForeColor = Color.FromArgb(64, 64, 64)
         Else
             filesToPack = FullFontFiles
-            rbNorm.ForeColor = Color.DarkGray
-            rbStandard.ForeColor = Color.DarkGray
-            rbFull.ForeColor = Color.FromArgb(64, 64, 64)
         End If
 
         If filesToPack Is Nothing OrElse filesToPack.Count = 0 Then
@@ -772,7 +763,7 @@ Public Class FormBlade
         e.DrawBackground()
 
         Dim itemText As String = lstbBlade.Items(e.Index).ToString()
-        Dim textColor As Color = If((e.State And DrawItemState.Selected) <> 0, SystemColors.HighlightText, SystemColors.WindowText)
+        Dim textColor As Color = If((e.State And DrawItemState.Selected) <> 0, SystemColors.HighlightText, Color.FromArgb(64, 64, 64))
 
         Dim textY As Integer = e.Bounds.Y + (e.Bounds.Height - e.Font.Height) \ 2
         Dim textRect As New Rectangle(e.Bounds.X + 2, textY, e.Bounds.Width - 8, e.Font.Height)
@@ -810,17 +801,17 @@ Public Class FormBlade
     ''' <summary>更新打包模式 RadioButton 的标签颜色。</summary>
     Private Sub UpdateRadioButtonLabels()
         If rbNorm.Checked Then
-            lblFull.ForeColor = Color.Gray
-            lblStandard.ForeColor = Color.Gray
-            lblNorm.ForeColor = SystemColors.WindowText
+            lblFull.ForeColor = Color.DarkGray
+            lblStandard.ForeColor = Color.DarkGray
+            lblNorm.ForeColor = Color.FromArgb(64, 64, 64)
         ElseIf rbStandard.Checked Then
-            lblNorm.ForeColor = Color.Gray
-            lblFull.ForeColor = Color.Gray
-            lblStandard.ForeColor = SystemColors.WindowText
+            lblNorm.ForeColor = Color.DarkGray
+            lblFull.ForeColor = Color.DarkGray
+            lblStandard.ForeColor = Color.FromArgb(64, 64, 64)
         Else
-            lblNorm.ForeColor = Color.Gray
-            lblStandard.ForeColor = Color.Gray
-            lblFull.ForeColor = SystemColors.WindowText
+            lblNorm.ForeColor = Color.DarkGray
+            lblStandard.ForeColor = Color.DarkGray
+            lblFull.ForeColor = Color.FromArgb(64, 64, 64)
         End If
     End Sub
 

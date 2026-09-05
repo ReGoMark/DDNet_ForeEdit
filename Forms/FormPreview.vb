@@ -64,7 +64,9 @@ Public Class FormPreview
 
         _currentSize = _sizeMap(rb)
         For Each lbl In GetPreviewLabels()
+            Dim oldFont = lbl.Font
             lbl.Font = New Font(lbl.Font.FontFamily, _currentSize, lbl.Font.Style)
+            oldFont?.Dispose()
         Next
     End Sub
 
@@ -74,20 +76,27 @@ Public Class FormPreview
     ''' 由主窗体调用，更新指定语言的预览标签字体。
     ''' </summary>
     ''' <param name="langKey">语言键（"LA","JP","KR","SC","TC"）。</param>
-    ''' <param name="fontName">GDI+ 字体名称（由主窗体提供）。</param>
-    ''' <param name="applyFontFunc">主窗体传入的字体应用委托，负责根据 fontName 创建 Font 对象并赋予标签。</param>
-    Public Sub UpdatePreview(langKey As String, fontName As String,
-                             applyFontFunc As Action(Of Label, String))
+    ''' <param name="info">
+    ''' 已解析的 FontNameInfo，包含 AllRawNames / GdiFontStyle 等信息；
+    ''' 传 Nothing 或空名称时恢复为窗体默认字体。
+    ''' </param>
+    Public Sub UpdatePreview(langKey As String, info As FontInfoTable)
         Dim lbl As Label = GetLabelByLang(langKey)
         If lbl Is Nothing Then Return
 
-        If Not String.IsNullOrEmpty(fontName) AndAlso fontName <> "(不指定)" Then
-            applyFontFunc(lbl, fontName)
-            ' 统一应用当前字号
-            lbl.Font = New Font(lbl.Font.FontFamily, _currentSize, lbl.Font.Style)
-        Else
-            lbl.Font = New Font(Me.Font.FontFamily, _currentSize)
+        Dim oldFont = lbl.Font
+        If info IsNot Nothing Then
+            Dim f As Font = info.TryCreateFont(_currentSize)
+            If f IsNot Nothing Then
+                lbl.Font = f
+                oldFont?.Dispose()
+                Return
+            End If
         End If
+
+        ' 兜底：恢复窗体默认字体（当前字号）
+        lbl.Font = New Font(Me.Font.FontFamily, _currentSize)
+        oldFont?.Dispose()
     End Sub
 
     ' ─── 私有辅助方法 ──────────────────────────────────────────────────
