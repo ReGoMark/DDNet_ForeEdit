@@ -134,9 +134,9 @@ Partial Class DialogCheck
         Label5.Location = New Point(12, 192)
         Label5.Margin = New Padding(3, 3, 3, 6)
         Label5.Name = "Label5"
-        Label5.Size = New Size(120, 20)
+        Label5.Size = New Size(175, 20)
         Label5.TabIndex = 11
-        Label5.Text = "3. 重新启动程序"
+        Label5.Text = "3. 关闭本程序, 重新启动"
         ' 
         ' DialogCheck
         ' 
