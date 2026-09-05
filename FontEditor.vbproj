@@ -15,6 +15,7 @@
     <Company>Bilibili @ReGoMark</Company>
     <Product>DDNet ForeEdit</Product>
     <Copyright>Copyright © 2026 ReGoMark</Copyright>
+	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
