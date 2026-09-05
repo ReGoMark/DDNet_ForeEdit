@@ -1,28 +1,52 @@
-# This workflow will build a .NET project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
-
-name: .NET
+name: Build and Release (Windows)
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    tags:
+      - 'v*'        # 仅当 push 的 tag 以 v 开头时触发，例如 v26.02.905.13
 
 jobs:
-  build:
-
+  build-and-release:
     runs-on: windows-latest
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore
+        run: dotnet restore DNFE.slnx
+
+      - name: Publish (Release, win-x64)
+        run: |
+          dotnet publish FontEditor.vbproj -c Release -r win-x64 --self-contained false -p:PublishSingleFile=false -o publish
+
+      - name: Create release dir and zip
+        run: |
+          mkdir release
+          powershell -Command "Compress-Archive -Path publish/* -DestinationPath release/DDNet_ForeEdit-${{ github.ref_name }}.zip"
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref }}
+          name: ${{ github.ref_name }}
+          body: "Release ${{ github.ref_name }}"
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v2
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: release/DDNet_ForeEdit-${{ github.ref_name }}.zip
+          asset_name: DDNet_ForeEdit-${{ github.ref_name }}.zip
+          asset_content_type: application/zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
