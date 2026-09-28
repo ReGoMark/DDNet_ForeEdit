@@ -36,6 +36,7 @@ Partial Class DialogPopUp
         ' lblTitle
         ' 
         TableLayoutPanel1.SetColumnSpan(lblTitle, 3)
+        lblTitle.ForeColor = SystemColors.Highlight
         lblTitle.Location = New Point(0, 0)
         lblTitle.Margin = New Padding(0, 0, 0, 3)
         lblTitle.Name = "lblTitle"
@@ -123,6 +124,7 @@ Partial Class DialogPopUp
         lblNote.AutoEllipsis = True
         TableLayoutPanel1.SetColumnSpan(lblNote, 3)
         lblNote.Dock = DockStyle.Fill
+        lblNote.ForeColor = Color.Silver
         lblNote.Location = New Point(0, 214)
         lblNote.Margin = New Padding(0, 3, 0, 3)
         lblNote.Name = "lblNote"

@@ -80,6 +80,7 @@ Partial Class DialogRestore
         ' 
         TableLayoutPanel1.SetColumnSpan(lblTitle, 2)
         lblTitle.Dock = DockStyle.Fill
+        lblTitle.ForeColor = SystemColors.Highlight
         lblTitle.Location = New Point(0, 0)
         lblTitle.Margin = New Padding(0, 0, 0, 3)
         lblTitle.Name = "lblTitle"
@@ -91,7 +92,8 @@ Partial Class DialogRestore
         ' 
         rbFontConfig.Appearance = Appearance.Button
         TableLayoutPanel1.SetColumnSpan(rbFontConfig, 2)
-        rbFontConfig.Dock = DockStyle.Top
+        rbFontConfig.Dock = DockStyle.Fill
+        rbFontConfig.Image = CType(resources.GetObject("rbFontConfig.Image"), Image)
         rbFontConfig.ImageAlign = ContentAlignment.MiddleLeft
         rbFontConfig.Location = New Point(0, 24)
         rbFontConfig.Margin = New Padding(0, 3, 0, 3)
@@ -108,7 +110,8 @@ Partial Class DialogRestore
         ' 
         rbConfig.Appearance = Appearance.Button
         TableLayoutPanel1.SetColumnSpan(rbConfig, 2)
-        rbConfig.Dock = DockStyle.Top
+        rbConfig.Dock = DockStyle.Fill
+        rbConfig.Image = CType(resources.GetObject("rbConfig.Image"), Image)
         rbConfig.ImageAlign = ContentAlignment.MiddleLeft
         rbConfig.Location = New Point(0, 76)
         rbConfig.Margin = New Padding(0, 3, 0, 3)

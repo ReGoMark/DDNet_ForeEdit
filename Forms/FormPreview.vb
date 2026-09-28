@@ -13,23 +13,27 @@ Public Class FormPreview
     Private ReadOnly _defaultTexts As New Dictionary(Of Label, String)
 
     ''' <summary>当前生效的字号（磅值）。</summary>
-    Private _currentSize As Single = 10.0F
+    Private _currentSize As Single = 9.0F
 
     ' ─── 窗体生命周期 ──────────────────────────────────────────────────
 
     ''' <summary>窗体加载时初始化字号映射、默认文本，并禁用“确认”按钮。</summary>
     Private Sub FormPreview_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        _sizeMap(rbFont9) = 9.0F
         _sizeMap(rbFont10) = 10.0F
         _sizeMap(rbFont12) = 12.0F
         _sizeMap(rbFont16) = 16.0F
-        rbFont10.Checked = True
+        _sizeMap(rbFont32) = 32.0F
+        rbFont9.Checked = True
 
         ' 记录各标签的初始显示文本
         For Each lbl In GetPreviewLabels()
             _defaultTexts(lbl) = lbl.Text
         Next
         btnApply.Enabled = False
+
     End Sub
+
 
     ' ─── 自定义文本控制 ──────────────────────────────────────────────
 
@@ -57,7 +61,7 @@ Public Class FormPreview
 
     ''' <summary>字号单选按钮切换时更新所有预览标签的字号。</summary>
     Private Sub rbFontSize_CheckedChanged(sender As Object, e As EventArgs) _
-        Handles rbFont10.CheckedChanged, rbFont12.CheckedChanged, rbFont16.CheckedChanged
+        Handles rbFont9.CheckedChanged, rbFont10.CheckedChanged, rbFont12.CheckedChanged, rbFont16.CheckedChanged, rbFont32.CheckedChanged
 
         Dim rb = CType(sender, RadioButton)
         If Not rb.Checked Then Return

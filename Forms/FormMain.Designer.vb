@@ -29,9 +29,9 @@ Partial Class FormMain
         btnLocate = New Button()
         chkDirSelect = New CheckBox()
         lblPreset = New Label()
-        btnBrowse = New Button()
         btnRefresh = New Button()
         tbPath = New TextBox()
+        btnBrowse = New Button()
         pnlFontInfo = New Panel()
         tblFontInfo = New TableLayoutPanel()
         tagFontFamily = New Label()
@@ -105,6 +105,7 @@ Partial Class FormMain
         ToolTip1 = New ToolTip(components)
         pnlDirFonts = New Panel()
         ImageList1 = New ImageList(components)
+        lblOSVersion = New Label()
         tblTopBar.SuspendLayout()
         pnlFontInfo.SuspendLayout()
         tblFontInfo.SuspendLayout()
@@ -131,9 +132,9 @@ Partial Class FormMain
         tblTopBar.Controls.Add(btnLocate, 6, 0)
         tblTopBar.Controls.Add(chkDirSelect, 1, 0)
         tblTopBar.Controls.Add(lblPreset, 2, 0)
-        tblTopBar.Controls.Add(btnBrowse, 0, 0)
         tblTopBar.Controls.Add(btnRefresh, 5, 0)
         tblTopBar.Controls.Add(tbPath, 4, 0)
+        tblTopBar.Controls.Add(btnBrowse, 0, 0)
         tblTopBar.Location = New Point(12, 12)
         tblTopBar.Name = "tblTopBar"
         tblTopBar.RowCount = 1
@@ -146,7 +147,7 @@ Partial Class FormMain
         lblConfig.AutoSize = True
         lblConfig.Cursor = Cursors.Hand
         lblConfig.Dock = DockStyle.Left
-        lblConfig.Location = New Point(260, 3)
+        lblConfig.Location = New Point(237, 3)
         lblConfig.Margin = New Padding(0, 3, 0, 3)
         lblConfig.Name = "lblConfig"
         lblConfig.Size = New Size(58, 24)
@@ -162,19 +163,20 @@ Partial Class FormMain
         btnLocate.Size = New Size(80, 30)
         btnLocate.TabIndex = 3
         btnLocate.Text = "字体目录"
-        ToolTip1.SetToolTip(btnLocate, "按 Shift + 点击 复制路径")
+        ToolTip1.SetToolTip(btnLocate, "Shift+点击 复制路径")
         btnLocate.UseVisualStyleBackColor = True
         ' 
         ' chkDirSelect
         ' 
         chkDirSelect.Appearance = Appearance.Button
-        chkDirSelect.Location = New Point(94, 0)
+        chkDirSelect.Location = New Point(71, 0)
         chkDirSelect.Margin = New Padding(3, 0, 3, 0)
         chkDirSelect.Name = "chkDirSelect"
         chkDirSelect.Size = New Size(102, 30)
         chkDirSelect.TabIndex = 5
         chkDirSelect.Text = "用户目录 ✔"
         chkDirSelect.TextAlign = ContentAlignment.MiddleCenter
+        ToolTip1.SetToolTip(chkDirSelect, "切换用户目录")
         chkDirSelect.UseVisualStyleBackColor = True
         ' 
         ' lblPreset
@@ -182,24 +184,13 @@ Partial Class FormMain
         lblPreset.AutoSize = True
         lblPreset.Cursor = Cursors.Hand
         lblPreset.Dock = DockStyle.Left
-        lblPreset.Location = New Point(202, 3)
+        lblPreset.Location = New Point(179, 3)
         lblPreset.Margin = New Padding(3, 3, 0, 3)
         lblPreset.Name = "lblPreset"
         lblPreset.Size = New Size(58, 24)
         lblPreset.TabIndex = 5
         lblPreset.Text = "预装 ✔"
         lblPreset.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' btnBrowse
-        ' 
-        btnBrowse.AllowDrop = True
-        btnBrowse.Location = New Point(0, 0)
-        btnBrowse.Margin = New Padding(0, 0, 3, 0)
-        btnBrowse.Name = "btnBrowse"
-        btnBrowse.Size = New Size(88, 30)
-        btnBrowse.TabIndex = 1
-        btnBrowse.Text = "浏览/拖放"
-        btnBrowse.UseVisualStyleBackColor = True
         ' 
         ' btnRefresh
         ' 
@@ -214,11 +205,26 @@ Partial Class FormMain
         ' 
         ' tbPath
         ' 
-        tbPath.Location = New Point(321, 3)
+        tbPath.Location = New Point(298, 3)
         tbPath.Name = "tbPath"
-        tbPath.Size = New Size(45, 26)
+        tbPath.Size = New Size(68, 26)
         tbPath.TabIndex = 7
         tbPath.Visible = False
+        ' 
+        ' btnBrowse
+        ' 
+        btnBrowse.AllowDrop = True
+        btnBrowse.Image = CType(resources.GetObject("btnBrowse.Image"), Image)
+        btnBrowse.Location = New Point(0, 0)
+        btnBrowse.Margin = New Padding(0, 0, 3, 0)
+        btnBrowse.Name = "btnBrowse"
+        btnBrowse.Size = New Size(65, 30)
+        btnBrowse.TabIndex = 1
+        btnBrowse.Text = "浏览"
+        btnBrowse.TextAlign = ContentAlignment.MiddleRight
+        btnBrowse.TextImageRelation = TextImageRelation.ImageBeforeText
+        ToolTip1.SetToolTip(btnBrowse, "浏览/拖放快捷方式")
+        btnBrowse.UseVisualStyleBackColor = True
         ' 
         ' pnlFontInfo
         ' 
@@ -429,12 +435,16 @@ Partial Class FormMain
         ' btnFontInstall
         ' 
         btnFontInstall.AllowDrop = True
+        btnFontInstall.Image = CType(resources.GetObject("btnFontInstall.Image"), Image)
         btnFontInstall.Location = New Point(0, 0)
         btnFontInstall.Margin = New Padding(0, 0, 3, 0)
         btnFontInstall.Name = "btnFontInstall"
-        btnFontInstall.Size = New Size(88, 30)
+        btnFontInstall.Size = New Size(65, 30)
         btnFontInstall.TabIndex = 2
-        btnFontInstall.Text = "安装/拖放"
+        btnFontInstall.Text = "安装"
+        btnFontInstall.TextAlign = ContentAlignment.MiddleRight
+        btnFontInstall.TextImageRelation = TextImageRelation.ImageBeforeText
+        ToolTip1.SetToolTip(btnFontInstall, "安装/拖放字体")
         btnFontInstall.UseVisualStyleBackColor = True
         ' 
         ' btnFontInfo
@@ -445,16 +455,18 @@ Partial Class FormMain
         btnFontInfo.Size = New Size(52, 30)
         btnFontInfo.TabIndex = 5
         btnFontInfo.Text = "属性"
+        ToolTip1.SetToolTip(btnFontInfo, "打开字体属性对话框")
         btnFontInfo.UseVisualStyleBackColor = True
         ' 
         ' btnFontUninstall
         ' 
-        btnFontUninstall.Location = New Point(94, 0)
+        btnFontUninstall.Location = New Point(71, 0)
         btnFontUninstall.Margin = New Padding(3, 0, 3, 0)
         btnFontUninstall.Name = "btnFontUninstall"
         btnFontUninstall.Size = New Size(52, 30)
         btnFontUninstall.TabIndex = 4
         btnFontUninstall.Text = "卸载"
+        ToolTip1.SetToolTip(btnFontUninstall, "卸载字体")
         btnFontUninstall.UseVisualStyleBackColor = True
         ' 
         ' lstbDirFonts
@@ -493,6 +505,7 @@ Partial Class FormMain
         lblDirFonts.TabIndex = 0
         lblDirFonts.Text = "等待数据加载......"
         lblDirFonts.TextAlign = ContentAlignment.MiddleLeft
+        ToolTip1.SetToolTip(lblDirFonts, "单击查看未使用字体")
         ' 
         ' lblLocalFonts
         ' 
@@ -505,6 +518,7 @@ Partial Class FormMain
         lblLocalFonts.TabIndex = 1
         lblLocalFonts.Text = "用户"
         lblLocalFonts.TextAlign = ContentAlignment.MiddleLeft
+        ToolTip1.SetToolTip(lblLocalFonts, "打开用户字体目录")
         ' 
         ' splitFont
         ' 
@@ -528,6 +542,7 @@ Partial Class FormMain
         lblSystemFonts.TabIndex = 3
         lblSystemFonts.Text = "系统"
         lblSystemFonts.TextAlign = ContentAlignment.MiddleLeft
+        ToolTip1.SetToolTip(lblSystemFonts, "打开系统字体目录")
         ' 
         ' tblDirFonts
         ' 
@@ -551,8 +566,8 @@ Partial Class FormMain
         ' splitConfig
         ' 
         splitConfig.ForeColor = Color.Silver
-        splitConfig.Location = New Point(12, 293)
-        splitConfig.Margin = New Padding(3)
+        splitConfig.Location = New Point(12, 296)
+        splitConfig.Margin = New Padding(3, 6, 3, 3)
         splitConfig.Name = "splitConfig"
         splitConfig.Size = New Size(488, 18)
         splitConfig.TabIndex = 5
@@ -594,7 +609,7 @@ Partial Class FormMain
         tblConfigFonts.Controls.Add(btnRecoveryTC, 4, 5)
         tblConfigFonts.Controls.Add(tagLA, 0, 0)
         tblConfigFonts.Controls.Add(tagJP, 0, 2)
-        tblConfigFonts.Location = New Point(12, 317)
+        tblConfigFonts.Location = New Point(12, 320)
         tblConfigFonts.Margin = New Padding(3, 3, 3, 6)
         tblConfigFonts.Name = "tblConfigFonts"
         tblConfigFonts.RowCount = 8
@@ -606,7 +621,7 @@ Partial Class FormMain
         tblConfigFonts.RowStyles.Add(New RowStyle())
         tblConfigFonts.RowStyles.Add(New RowStyle())
         tblConfigFonts.RowStyles.Add(New RowStyle(SizeType.Absolute, 20F))
-        tblConfigFonts.Size = New Size(488, 335)
+        tblConfigFonts.Size = New Size(488, 338)
         tblConfigFonts.TabIndex = 6
         ' 
         ' btnRecoveryLA
@@ -641,7 +656,7 @@ Partial Class FormMain
         pnlFallbackFonts.Location = New Point(0, 216)
         pnlFallbackFonts.Margin = New Padding(0)
         pnlFallbackFonts.Name = "pnlFallbackFonts"
-        pnlFallbackFonts.Size = New Size(488, 117)
+        pnlFallbackFonts.Size = New Size(488, 101)
         pnlFallbackFonts.TabIndex = 30
         ' 
         ' lstbFallbackFonts
@@ -673,7 +688,7 @@ Partial Class FormMain
         ' 
         cbFallbackFonts.AutoCompleteMode = AutoCompleteMode.SuggestAppend
         cbFallbackFonts.Dock = DockStyle.Top
-        cbFallbackFonts.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        cbFallbackFonts.ForeColor = Color.Black
         cbFallbackFonts.FormattingEnabled = True
         cbFallbackFonts.Location = New Point(0, 0)
         cbFallbackFonts.Name = "cbFallbackFonts"
@@ -761,6 +776,7 @@ Partial Class FormMain
         lblLA.AutoEllipsis = True
         lblLA.AutoSize = True
         tblConfigFonts.SetColumnSpan(lblLA, 2)
+        lblLA.Cursor = Cursors.Hand
         lblLA.Dock = DockStyle.Left
         lblLA.Location = New Point(266, 0)
         lblLA.Name = "lblLA"
@@ -845,7 +861,7 @@ Partial Class FormMain
         ' 
         cbLA.AutoCompleteMode = AutoCompleteMode.SuggestAppend
         cbLA.Dock = DockStyle.Left
-        cbLA.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        cbLA.ForeColor = Color.Black
         cbLA.FormattingEnabled = True
         cbLA.Location = New Point(70, 4)
         cbLA.Margin = New Padding(3, 4, 3, 2)
@@ -857,7 +873,7 @@ Partial Class FormMain
         ' 
         cbJP.AutoCompleteMode = AutoCompleteMode.SuggestAppend
         cbJP.Dock = DockStyle.Left
-        cbJP.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        cbJP.ForeColor = Color.Black
         cbJP.FormattingEnabled = True
         cbJP.Location = New Point(70, 64)
         cbJP.Margin = New Padding(3, 4, 3, 2)
@@ -869,7 +885,7 @@ Partial Class FormMain
         ' 
         cbKR.AutoCompleteMode = AutoCompleteMode.SuggestAppend
         cbKR.Dock = DockStyle.Left
-        cbKR.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        cbKR.ForeColor = Color.Black
         cbKR.FormattingEnabled = True
         cbKR.Location = New Point(70, 96)
         cbKR.Margin = New Padding(3, 4, 3, 2)
@@ -881,7 +897,7 @@ Partial Class FormMain
         ' 
         cbSC.AutoCompleteMode = AutoCompleteMode.SuggestAppend
         cbSC.Dock = DockStyle.Left
-        cbSC.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        cbSC.ForeColor = Color.Black
         cbSC.FormattingEnabled = True
         cbSC.Location = New Point(70, 128)
         cbSC.Margin = New Padding(3, 4, 3, 2)
@@ -893,7 +909,7 @@ Partial Class FormMain
         ' 
         cbTC.AutoCompleteMode = AutoCompleteMode.SuggestAppend
         cbTC.Dock = DockStyle.Left
-        cbTC.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        cbTC.ForeColor = Color.Black
         cbTC.FormattingEnabled = True
         cbTC.Location = New Point(70, 160)
         cbTC.Margin = New Padding(3, 4, 3, 2)
@@ -1046,7 +1062,7 @@ Partial Class FormMain
         btnPreview.Name = "btnPreview"
         btnPreview.Size = New Size(30, 30)
         btnPreview.TabIndex = 2
-        ToolTip1.SetToolTip(btnPreview, "预览")
+        ToolTip1.SetToolTip(btnPreview, "打开预览工具")
         btnPreview.UseVisualStyleBackColor = True
         ' 
         ' btnMenu
@@ -1057,18 +1073,18 @@ Partial Class FormMain
         btnMenu.Name = "btnMenu"
         btnMenu.Size = New Size(30, 30)
         btnMenu.TabIndex = 1
-        ToolTip1.SetToolTip(btnMenu, "功能")
         btnMenu.UseVisualStyleBackColor = True
         ' 
         ' btnApply
         ' 
+        btnApply.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         btnApply.Location = New Point(436, 0)
         btnApply.Margin = New Padding(3, 0, 0, 0)
         btnApply.Name = "btnApply"
         btnApply.Size = New Size(52, 30)
         btnApply.TabIndex = 5
         btnApply.Text = "应用"
-        ToolTip1.SetToolTip(btnApply, "按 Shift + 点击 应用并启动 DDNet")
+        ToolTip1.SetToolTip(btnApply, "Shift+点击 应用并启动")
         btnApply.UseVisualStyleBackColor = True
         ' 
         ' btnCopy
@@ -1089,6 +1105,7 @@ Partial Class FormMain
         btnDefault.Name = "btnDefault"
         btnDefault.Size = New Size(30, 30)
         btnDefault.TabIndex = 3
+        btnDefault.TextImageRelation = TextImageRelation.ImageBeforeText
         ToolTip1.SetToolTip(btnDefault, "恢复默认")
         btnDefault.UseVisualStyleBackColor = True
         ' 
@@ -1103,7 +1120,7 @@ Partial Class FormMain
         btnBlade.Size = New Size(64, 30)
         btnBlade.TabIndex = 8
         btnBlade.Text = "Blade"
-        ToolTip1.SetToolTip(btnBlade, "导入字体包或配置")
+        ToolTip1.SetToolTip(btnBlade, "打开管理器")
         btnBlade.UseVisualStyleBackColor = True
         ' 
         ' ProgressBar1
@@ -1135,6 +1152,17 @@ Partial Class FormMain
         ImageList1.Images.SetKeyName(2, "options_16.ico")
         ImageList1.Images.SetKeyName(3, "help_c.ico")
         ' 
+        ' lblOSVersion
+        ' 
+        lblOSVersion.AutoSize = True
+        lblOSVersion.ForeColor = Color.FromArgb(CByte(232), CByte(17), CByte(35))
+        lblOSVersion.Location = New Point(12, 640)
+        lblOSVersion.Name = "lblOSVersion"
+        lblOSVersion.Size = New Size(352, 18)
+        lblOSVersion.TabIndex = 9
+        lblOSVersion.Text = "警告: 在 Windows 7 操作系统上, 部分功能无法使用"
+        lblOSVersion.Visible = False
+        ' 
         ' FormMain
         ' 
         AllowDrop = True
@@ -1142,6 +1170,7 @@ Partial Class FormMain
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(512, 703)
+        Controls.Add(lblOSVersion)
         Controls.Add(tblBottonBar)
         Controls.Add(tblConfigFonts)
         Controls.Add(splitConfig)
@@ -1259,5 +1288,6 @@ Partial Class FormMain
     Friend WithEvents pnlFallbackFonts As Panel
     Friend WithEvents pnlDirFonts As Panel
     Friend WithEvents ImageList1 As ImageList
+    Friend WithEvents lblOSVersion As Label
 
 End Class

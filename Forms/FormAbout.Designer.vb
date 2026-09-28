@@ -44,6 +44,7 @@ Partial Class FormAbout
         ' 
         lblName.AutoSize = True
         lblName.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
+        lblName.ForeColor = Color.Black
         lblName.Location = New Point(12, 12)
         lblName.Margin = New Padding(3)
         lblName.Name = "lblName"
@@ -99,7 +100,7 @@ Partial Class FormAbout
         Label9.AutoEllipsis = True
         Label9.AutoSize = True
         Label9.Cursor = Cursors.Hand
-        Label9.ForeColor = SystemColors.Highlight
+        Label9.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         Label9.Location = New Point(166, 168)
         Label9.Margin = New Padding(3)
         Label9.Name = "Label9"
@@ -159,7 +160,7 @@ Partial Class FormAbout
         Label14.AutoEllipsis = True
         Label14.AutoSize = True
         Label14.Cursor = Cursors.Hand
-        Label14.ForeColor = SystemColors.Highlight
+        Label14.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         Label14.Location = New Point(12, 144)
         Label14.Margin = New Padding(3)
         Label14.Name = "Label14"
@@ -172,7 +173,7 @@ Partial Class FormAbout
         Label16.AutoEllipsis = True
         Label16.AutoSize = True
         Label16.Cursor = Cursors.Hand
-        Label16.ForeColor = SystemColors.Highlight
+        Label16.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         Label16.Location = New Point(12, 168)
         Label16.Margin = New Padding(3)
         Label16.Name = "Label16"
@@ -194,7 +195,8 @@ Partial Class FormAbout
         ' 
         ' btnApply
         ' 
-        btnApply.Location = New Point(318, 246)
+        btnApply.Location = New Point(318, 249)
+        btnApply.Margin = New Padding(3, 6, 3, 3)
         btnApply.Name = "btnApply"
         btnApply.Size = New Size(52, 30)
         btnApply.TabIndex = 39
@@ -218,7 +220,7 @@ Partial Class FormAbout
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 288)
+        ClientSize = New Size(382, 291)
         Controls.Add(Label1)
         Controls.Add(btnApply)
         Controls.Add(lblThanks)

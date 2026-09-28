@@ -306,15 +306,17 @@ Partial Class FormBlade
         ' btnZipBroswe
         ' 
         btnZipBroswe.AllowDrop = True
-        btnZipBroswe.AutoSize = True
         btnZipBroswe.BackColor = Color.Transparent
         btnZipBroswe.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        btnZipBroswe.Image = CType(resources.GetObject("btnZipBroswe.Image"), Image)
         btnZipBroswe.Location = New Point(0, 0)
         btnZipBroswe.Margin = New Padding(0, 0, 3, 0)
         btnZipBroswe.Name = "btnZipBroswe"
-        btnZipBroswe.Size = New Size(85, 30)
+        btnZipBroswe.Size = New Size(65, 30)
         btnZipBroswe.TabIndex = 1
-        btnZipBroswe.Text = "安装/拖放"
+        btnZipBroswe.Text = "安装"
+        btnZipBroswe.TextAlign = ContentAlignment.MiddleRight
+        btnZipBroswe.TextImageRelation = TextImageRelation.ImageBeforeText
         btnZipBroswe.UseVisualStyleBackColor = False
         ' 
         ' lblZip
@@ -400,14 +402,16 @@ Partial Class FormBlade
         rbStandard.BackColor = Color.Transparent
         rbStandard.Dock = DockStyle.Fill
         rbStandard.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        rbStandard.Image = CType(resources.GetObject("rbStandard.Image"), Image)
         rbStandard.Location = New Point(0, 52)
         rbStandard.Margin = New Padding(0, 3, 3, 3)
         rbStandard.Name = "rbStandard"
         rbStandard.Padding = New Padding(3, 0, 3, 0)
-        rbStandard.Size = New Size(138, 46)
+        rbStandard.Size = New Size(170, 46)
         rbStandard.TabIndex = 5
         rbStandard.TabStop = True
         rbStandard.Text = "标准" & vbCrLf & "(也包含预装字体)"
+        rbStandard.TextImageRelation = TextImageRelation.ImageBeforeText
         rbStandard.UseVisualStyleBackColor = False
         ' 
         ' rbFull
@@ -417,14 +421,16 @@ Partial Class FormBlade
         rbFull.BackColor = Color.Transparent
         rbFull.Dock = DockStyle.Fill
         rbFull.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        rbFull.Image = CType(resources.GetObject("rbFull.Image"), Image)
         rbFull.Location = New Point(0, 104)
         rbFull.Margin = New Padding(0, 3, 3, 0)
         rbFull.Name = "rbFull"
         rbFull.Padding = New Padding(3, 0, 3, 0)
-        rbFull.Size = New Size(138, 46)
+        rbFull.Size = New Size(170, 46)
         rbFull.TabIndex = 14
         rbFull.TabStop = True
         rbFull.Text = "完整" & vbCrLf & "(附加未使用字体)"
+        rbFull.TextImageRelation = TextImageRelation.ImageBeforeText
         rbFull.UseVisualStyleBackColor = False
         ' 
         ' lblNorm
@@ -433,8 +439,8 @@ Partial Class FormBlade
         lblNorm.AutoSize = True
         lblNorm.Dock = DockStyle.Right
         lblNorm.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblNorm.Location = New Point(240, 0)
-        lblNorm.Margin = New Padding(3, 0, 0, 3)
+        lblNorm.Location = New Point(237, 0)
+        lblNorm.Margin = New Padding(3, 0, 3, 3)
         lblNorm.Name = "lblNorm"
         lblNorm.Size = New Size(40, 46)
         lblNorm.TabIndex = 12
@@ -447,8 +453,8 @@ Partial Class FormBlade
         lblStandard.AutoSize = True
         lblStandard.Dock = DockStyle.Right
         lblStandard.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblStandard.Location = New Point(240, 52)
-        lblStandard.Margin = New Padding(3, 3, 0, 3)
+        lblStandard.Location = New Point(237, 52)
+        lblStandard.Margin = New Padding(3)
         lblStandard.Name = "lblStandard"
         lblStandard.Size = New Size(40, 46)
         lblStandard.TabIndex = 13
@@ -461,8 +467,8 @@ Partial Class FormBlade
         lblFull.AutoSize = True
         lblFull.Dock = DockStyle.Right
         lblFull.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblFull.Location = New Point(240, 104)
-        lblFull.Margin = New Padding(3, 3, 0, 0)
+        lblFull.Location = New Point(237, 104)
+        lblFull.Margin = New Padding(3, 3, 3, 0)
         lblFull.Name = "lblFull"
         lblFull.Size = New Size(40, 46)
         lblFull.TabIndex = 15
@@ -475,14 +481,16 @@ Partial Class FormBlade
         rbNorm.AutoSize = True
         rbNorm.BackColor = Color.Transparent
         rbNorm.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        rbNorm.Image = CType(resources.GetObject("rbNorm.Image"), Image)
         rbNorm.Location = New Point(0, 0)
         rbNorm.Margin = New Padding(0, 0, 3, 3)
         rbNorm.Name = "rbNorm"
         rbNorm.Padding = New Padding(3, 0, 3, 0)
-        rbNorm.Size = New Size(138, 46)
+        rbNorm.Size = New Size(170, 46)
         rbNorm.TabIndex = 4
         rbNorm.TabStop = True
         rbNorm.Text = "默认" & vbCrLf & "(当前已使用字体)"
+        rbNorm.TextImageRelation = TextImageRelation.ImageBeforeText
         rbNorm.UseVisualStyleBackColor = False
         ' 
         ' tblExport

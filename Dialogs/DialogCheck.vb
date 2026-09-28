@@ -34,7 +34,7 @@ Public Class DialogCheck
         Dim fontFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", FontFileName)
 
         If File.Exists(fontFile) Then
-            Dim psi As New ProcessStartInfo()
+            Dim psi As New ProcessStartInfo
             psi.FileName = "explorer.exe"
             psi.Arguments = $"/select,""{fontFile}"""
             psi.UseShellExecute = True
@@ -61,6 +61,10 @@ Public Class DialogCheck
         Catch ex As Exception
             MessageBox.Show($"无法打开链接：{ex.Message}", "打开链接失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
+    End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        Me.Close()
     End Sub
 
 #End Region

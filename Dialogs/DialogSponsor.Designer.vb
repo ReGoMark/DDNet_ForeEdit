@@ -40,9 +40,9 @@ Partial Class DialogSponsor
         ' PictureBox1
         ' 
         PictureBox1.Image = CType(resources.GetObject("PictureBox1.Image"), Image)
-        PictureBox1.Location = New Point(12, 111)
+        PictureBox1.Location = New Point(12, 93)
         PictureBox1.Name = "PictureBox1"
-        PictureBox1.Size = New Size(358, 109)
+        PictureBox1.Size = New Size(358, 114)
         PictureBox1.SizeMode = PictureBoxSizeMode.Zoom
         PictureBox1.TabIndex = 1
         PictureBox1.TabStop = False
@@ -52,7 +52,7 @@ Partial Class DialogSponsor
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 253)
+        ClientSize = New Size(382, 223)
         Controls.Add(PictureBox1)
         Controls.Add(Label1)
         Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))

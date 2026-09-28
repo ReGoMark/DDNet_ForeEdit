@@ -36,7 +36,6 @@ Partial Class DialogDirectory
         ' 
         ' TableLayoutPanel1
         ' 
-        TableLayoutPanel1.AutoSize = True
         TableLayoutPanel1.ColumnCount = 2
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
@@ -61,6 +60,7 @@ Partial Class DialogDirectory
         ' 
         TableLayoutPanel1.SetColumnSpan(lblTitle, 2)
         lblTitle.Dock = DockStyle.Fill
+        lblTitle.ForeColor = SystemColors.Highlight
         lblTitle.Location = New Point(0, 0)
         lblTitle.Margin = New Padding(0, 0, 0, 3)
         lblTitle.Name = "lblTitle"
@@ -122,13 +122,14 @@ Partial Class DialogDirectory
         ' 
         Label2.AutoSize = True
         TableLayoutPanel1.SetColumnSpan(Label2, 2)
+        Label2.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
         Label2.ForeColor = Color.DarkGray
         Label2.Location = New Point(0, 150)
         Label2.Margin = New Padding(0, 3, 0, 3)
         Label2.Name = "Label2"
-        Label2.Size = New Size(328, 54)
+        Label2.Size = New Size(358, 72)
         Label2.TabIndex = 37
-        Label2.Text = "* DDNet 目录的字体显示优先于 Teeworlds 目录" & vbCrLf & "* 用户目录的字体显示优先于安装目录" & vbCrLf & "* 旧版客户端可能会使用 Teeworlds 目录"
+        Label2.Text = "* DDNet 目录的字体显示优先于 Teeworlds 目录, 用户目录的字体显示优先于安装目录" & vbCrLf & "* 旧版客户端可能会使用 Teeworlds 目录" & vbCrLf & "* 该功能将在后续版本中下线"
         ' 
         ' btnCancel
         ' 
@@ -173,7 +174,6 @@ Partial Class DialogDirectory
         TableLayoutPanel1.ResumeLayout(False)
         TableLayoutPanel1.PerformLayout()
         ResumeLayout(False)
-        PerformLayout()
     End Sub
 
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel

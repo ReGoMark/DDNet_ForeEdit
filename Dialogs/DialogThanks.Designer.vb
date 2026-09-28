@@ -30,14 +30,15 @@ Partial Class DialogThanks
         Label5 = New Label()
         Label8 = New Label()
         Label1 = New Label()
-        Label7 = New Label()
         Label6 = New Label()
+        splitDirectory = New Label()
         SuspendLayout()
         ' 
         ' lblNote
         ' 
         lblNote.AutoEllipsis = True
         lblNote.AutoSize = True
+        lblNote.ForeColor = SystemColors.Highlight
         lblNote.Location = New Point(12, 12)
         lblNote.Margin = New Padding(3)
         lblNote.Name = "lblNote"
@@ -49,17 +50,18 @@ Partial Class DialogThanks
         ' 
         Label2.AutoEllipsis = True
         Label2.AutoSize = True
-        Label2.Location = New Point(12, 204)
+        Label2.Location = New Point(12, 210)
         Label2.Margin = New Padding(3)
         Label2.Name = "Label2"
-        Label2.Size = New Size(324, 18)
+        Label2.Size = New Size(310, 18)
         Label2.TabIndex = 13
-        Label2.Text = "DDNet ForeEdit 的诞生也感谢开源社区的支持。"
+        Label2.Text = "DDNet ForeEdit 的诞生也感谢开源社区的支持"
         ' 
         ' Label3
         ' 
         Label3.AutoEllipsis = True
         Label3.AutoSize = True
+        Label3.ForeColor = Color.Black
         Label3.Location = New Point(12, 36)
         Label3.Margin = New Padding(3)
         Label3.Name = "Label3"
@@ -71,6 +73,7 @@ Partial Class DialogThanks
         ' 
         Label4.AutoEllipsis = True
         Label4.AutoSize = True
+        Label4.ForeColor = Color.Black
         Label4.Location = New Point(12, 60)
         Label4.Margin = New Padding(3)
         Label4.Name = "Label4"
@@ -82,6 +85,7 @@ Partial Class DialogThanks
         ' 
         Label5.AutoEllipsis = True
         Label5.AutoSize = True
+        Label5.ForeColor = Color.Black
         Label5.Location = New Point(12, 84)
         Label5.Margin = New Padding(3)
         Label5.Name = "Label5"
@@ -93,6 +97,7 @@ Partial Class DialogThanks
         ' 
         Label8.AutoEllipsis = True
         Label8.AutoSize = True
+        Label8.ForeColor = Color.Black
         Label8.Location = New Point(12, 132)
         Label8.Margin = New Padding(3)
         Label8.Name = "Label8"
@@ -104,6 +109,7 @@ Partial Class DialogThanks
         ' 
         Label1.AutoEllipsis = True
         Label1.AutoSize = True
+        Label1.ForeColor = Color.Black
         Label1.Location = New Point(12, 156)
         Label1.Margin = New Padding(3)
         Label1.Name = "Label1"
@@ -111,21 +117,11 @@ Partial Class DialogThanks
         Label1.TabIndex = 20
         Label1.Text = "@ yellow_qwq"
         ' 
-        ' Label7
-        ' 
-        Label7.AutoEllipsis = True
-        Label7.AutoSize = True
-        Label7.Location = New Point(12, 180)
-        Label7.Margin = New Padding(3)
-        Label7.Name = "Label7"
-        Label7.Size = New Size(108, 18)
-        Label7.TabIndex = 21
-        Label7.Text = "(排名不分先后)"
-        ' 
         ' Label6
         ' 
         Label6.AutoEllipsis = True
         Label6.AutoSize = True
+        Label6.ForeColor = Color.Black
         Label6.Location = New Point(12, 108)
         Label6.Margin = New Padding(3)
         Label6.Name = "Label6"
@@ -133,14 +129,26 @@ Partial Class DialogThanks
         Label6.TabIndex = 22
         Label6.Text = "@ 秦龙不是龙"
         ' 
+        ' splitDirectory
+        ' 
+        splitDirectory.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        splitDirectory.ForeColor = Color.Silver
+        splitDirectory.Location = New Point(12, 183)
+        splitDirectory.Margin = New Padding(3, 6, 3, 6)
+        splitDirectory.Name = "splitDirectory"
+        splitDirectory.Size = New Size(358, 18)
+        splitDirectory.TabIndex = 23
+        splitDirectory.Text = "───────────────────────────────────────────────────────"
+        splitDirectory.TextAlign = ContentAlignment.MiddleLeft
+        ' 
         ' DialogThanks
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 234)
+        ClientSize = New Size(382, 240)
+        Controls.Add(splitDirectory)
         Controls.Add(Label6)
-        Controls.Add(Label7)
         Controls.Add(Label1)
         Controls.Add(Label8)
         Controls.Add(Label5)
@@ -169,6 +177,6 @@ Partial Class DialogThanks
     Friend WithEvents Label5 As Label
     Friend WithEvents Label8 As Label
     Friend WithEvents Label1 As Label
-    Friend WithEvents Label7 As Label
     Friend WithEvents Label6 As Label
+    Friend WithEvents splitDirectory As Label
 End Class

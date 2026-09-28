@@ -763,7 +763,7 @@ Public Class FormBlade
         e.DrawBackground()
 
         Dim itemText As String = lstbBlade.Items(e.Index).ToString()
-        Dim textColor As Color = If((e.State And DrawItemState.Selected) <> 0, SystemColors.HighlightText, Color.FromArgb(64, 64, 64))
+        Dim textColor As Color = If((e.State And DrawItemState.Selected) <> 0, SystemColors.HighlightText, Color.Black)
 
         Dim textY As Integer = e.Bounds.Y + (e.Bounds.Height - e.Font.Height) \ 2
         Dim textRect As New Rectangle(e.Bounds.X + 2, textY, e.Bounds.Width - 8, e.Font.Height)

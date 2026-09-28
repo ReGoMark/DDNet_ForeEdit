@@ -133,7 +133,7 @@ Public Class FormMain
     ''' <summary>
     ''' 构建版本号。
     ''' </summary>
-    Public ReadOnly BuildVersion As String = "Build 260905.13"
+    Public ReadOnly BuildVersion As String = "Build 2600928.41"
 
     ''' <summary>
     ''' 窗体标题前缀。
@@ -207,6 +207,7 @@ Public Class FormMain
         UpdateFallbackControls()
         ExecutePendingDeletions()
         ExecutePendingCopies()
+        CheckCurrentOSVersion()
         Me.Text = TitleText
         Me.KeyPreview = True
         lblDirFonts.Text = "等待数据加载"
@@ -227,7 +228,7 @@ Public Class FormMain
         .Icon = ImageList1.Images(1),
         .OnClick = Sub() btnBlade.PerformClick()
         },
-            Win32ContextMenu.MenuItem.Separator,
+        Win32ContextMenu.MenuItem.Separator,
               New Win32ContextMenu.MenuItem() With {
         .Id = 3,
         .Text = "管理(&M)",
@@ -242,6 +243,7 @@ Public Class FormMain
                 .Text = "预装字体验证(&V)",
                 .OnClick = Sub() VerifyStandardFonts()
             },
+            Win32ContextMenu.MenuItem.Separator,
             New Win32ContextMenu.MenuItem() With {
                 .Id = 43,
                 .Text = "配置文件(&J)",
@@ -277,7 +279,7 @@ Public Class FormMain
             },
              New Win32ContextMenu.MenuItem() With {
                 .Id = 62,
-                .Text = "图文教程(&D)",
+                .Text = "说明文档(&D)",
                 .OnClick = Sub()
                                Dim filePath = Application.StartupPath & "\data\documents.png"
 
@@ -298,7 +300,7 @@ Public Class FormMain
             },
              New Win32ContextMenu.MenuItem() With {
                 .Id = 63,
-                .Text = "下载字体(&R)",
+                .Text = "获取字体资源(&R)",
                 .OnClick = Sub()
                                Process.Start(New ProcessStartInfo With {
                                    .FileName = "https://www.maoken.com/",
@@ -365,6 +367,13 @@ Public Class FormMain
                 End Try
             End If
         Next
+    End Sub
+
+    Private Sub CheckCurrentOSVersion()
+        Dim osVersion As Version = Environment.OSVersion.Version
+        If osVersion.Major < 6.2 Then
+            lblOSVersion.Visible = True
+        End If
     End Sub
 
     ''' <summary>
@@ -865,7 +874,7 @@ Public Class FormMain
         Dim drawFont As Font = _drawFontCache(key)
 
         Dim textColor As Color = If((e.State And DrawItemState.Selected) <> 0,
-                                SystemColors.HighlightText, Color.FromArgb(64, 64, 64))
+                                SystemColors.HighlightText, Color.Black)
         Dim textRect As New Rectangle(e.Bounds.X + 2, e.Bounds.Y, e.Bounds.Width - 8, e.Bounds.Height)
         TextRenderer.DrawText(e.Graphics, itemText, drawFont, textRect, textColor,
                               TextFormatFlags.Left Or TextFormatFlags.VerticalCenter Or TextFormatFlags.NoPrefix)
@@ -1058,7 +1067,7 @@ Public Class FormMain
 
         Dim itemText As String = lstbFallbackFonts.Items(e.Index).ToString()
         Dim textColor As Color = If((e.State And DrawItemState.Selected) <> 0,
-                                    SystemColors.HighlightText, Color.FromArgb(64, 64, 64))
+                                    SystemColors.HighlightText, Color.Black)
 
         Dim textRect As New Rectangle(e.Bounds.X + 2, e.Bounds.Y, e.Bounds.Width - 8, e.Bounds.Height)
         TextRenderer.DrawText(e.Graphics, itemText, e.Font, textRect, textColor,
@@ -2719,5 +2728,14 @@ Public Class FormMain
     Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
         _menu.Dispose()
         MyBase.OnFormClosed(e)
+    End Sub
+
+    Private Sub lblLA_Click(sender As Object, e As EventArgs) Handles lblLA.Click
+        Select Case lblLA.Text
+            Case "Font demo text."
+                lblLA.Text = "Thisはい세례示範"
+            Case "Thisはい세례示範"
+                lblLA.Text = "Font demo text."
+        End Select
     End Sub
 End Class

@@ -30,7 +30,7 @@ Partial Class DialogLicense
         ' 
         TextBox1.BackColor = Color.White
         TextBox1.BorderStyle = BorderStyle.None
-        TextBox1.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        TextBox1.ForeColor = Color.Black
         TextBox1.Location = New Point(12, 12)
         TextBox1.Multiline = True
         TextBox1.Name = "TextBox1"

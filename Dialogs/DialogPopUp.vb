@@ -67,7 +67,7 @@ Public Class DialogPopUp
 
         Dim itemText As String = lstbPopup.Items(e.Index).ToString()
         Dim textColor As Color = If((e.State And DrawItemState.Selected) <> 0,
-                                SystemColors.HighlightText, Color.FromArgb(64, 64, 64))
+                                SystemColors.HighlightText, Color.Black)
 
         Dim textRect As New Rectangle(e.Bounds.X + 2, e.Bounds.Y,
                                   e.Bounds.Width - 8, e.Bounds.Height)
