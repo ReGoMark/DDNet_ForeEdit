@@ -94,18 +94,18 @@ Partial Class FormMain
         btnRecoveryTC = New Button()
         tagLA = New Label()
         tagJP = New Label()
+        btnSearch = New Button()
         tblBottonBar = New TableLayoutPanel()
-        btnPreview = New Button()
         btnMenu = New Button()
         btnApply = New Button()
         btnCopy = New Button()
         btnDefault = New Button()
         btnBlade = New Button()
         ProgressBar1 = New ProgressBar()
+        btnPreview = New Button()
         ToolTip1 = New ToolTip(components)
         pnlDirFonts = New Panel()
         ImageList1 = New ImageList(components)
-        lblOSVersion = New Label()
         tblTopBar.SuspendLayout()
         pnlFontInfo.SuspendLayout()
         tblFontInfo.SuspendLayout()
@@ -154,6 +154,7 @@ Partial Class FormMain
         lblConfig.TabIndex = 6
         lblConfig.Text = "配置 ✔"
         lblConfig.TextAlign = ContentAlignment.MiddleLeft
+        ToolTip1.SetToolTip(lblConfig, "配置文件(Ctrl+Shift+J)")
         ' 
         ' btnLocate
         ' 
@@ -163,7 +164,7 @@ Partial Class FormMain
         btnLocate.Size = New Size(80, 30)
         btnLocate.TabIndex = 3
         btnLocate.Text = "字体目录"
-        ToolTip1.SetToolTip(btnLocate, "Shift+点击 复制路径")
+        ToolTip1.SetToolTip(btnLocate, "打开字体目录(Ctrl+L)" & vbCrLf & "复制路径(Shift+点击)")
         btnLocate.UseVisualStyleBackColor = True
         ' 
         ' chkDirSelect
@@ -176,7 +177,7 @@ Partial Class FormMain
         chkDirSelect.TabIndex = 5
         chkDirSelect.Text = "用户目录 ✔"
         chkDirSelect.TextAlign = ContentAlignment.MiddleCenter
-        ToolTip1.SetToolTip(chkDirSelect, "切换用户目录")
+        ToolTip1.SetToolTip(chkDirSelect, "切换用户目录(Ctrl+U)")
         chkDirSelect.UseVisualStyleBackColor = True
         ' 
         ' lblPreset
@@ -191,6 +192,7 @@ Partial Class FormMain
         lblPreset.TabIndex = 5
         lblPreset.Text = "预装 ✔"
         lblPreset.TextAlign = ContentAlignment.MiddleLeft
+        ToolTip1.SetToolTip(lblPreset, "预装字体验证(Ctrl+Shift+S)")
         ' 
         ' btnRefresh
         ' 
@@ -200,14 +202,16 @@ Partial Class FormMain
         btnRefresh.Name = "btnRefresh"
         btnRefresh.Size = New Size(30, 30)
         btnRefresh.TabIndex = 2
-        ToolTip1.SetToolTip(btnRefresh, "刷新")
+        ToolTip1.SetToolTip(btnRefresh, "刷新(F5)")
         btnRefresh.UseVisualStyleBackColor = True
         ' 
         ' tbPath
         ' 
-        tbPath.Location = New Point(298, 3)
+        tbPath.Location = New Point(298, 0)
+        tbPath.Margin = New Padding(3, 0, 3, 0)
+        tbPath.Multiline = True
         tbPath.Name = "tbPath"
-        tbPath.Size = New Size(68, 26)
+        tbPath.Size = New Size(68, 30)
         tbPath.TabIndex = 7
         tbPath.Visible = False
         ' 
@@ -223,7 +227,7 @@ Partial Class FormMain
         btnBrowse.Text = "浏览"
         btnBrowse.TextAlign = ContentAlignment.MiddleRight
         btnBrowse.TextImageRelation = TextImageRelation.ImageBeforeText
-        ToolTip1.SetToolTip(btnBrowse, "浏览/拖放快捷方式")
+        ToolTip1.SetToolTip(btnBrowse, "浏览/拖放快捷方式(Ctrl+O)")
         btnBrowse.UseVisualStyleBackColor = True
         ' 
         ' pnlFontInfo
@@ -441,10 +445,10 @@ Partial Class FormMain
         btnFontInstall.Name = "btnFontInstall"
         btnFontInstall.Size = New Size(65, 30)
         btnFontInstall.TabIndex = 2
-        btnFontInstall.Text = "安装"
+        btnFontInstall.Text = "浏览"
         btnFontInstall.TextAlign = ContentAlignment.MiddleRight
         btnFontInstall.TextImageRelation = TextImageRelation.ImageBeforeText
-        ToolTip1.SetToolTip(btnFontInstall, "安装/拖放字体")
+        ToolTip1.SetToolTip(btnFontInstall, "安装/拖放字体(Ctrl+I)")
         btnFontInstall.UseVisualStyleBackColor = True
         ' 
         ' btnFontInfo
@@ -455,7 +459,7 @@ Partial Class FormMain
         btnFontInfo.Size = New Size(52, 30)
         btnFontInfo.TabIndex = 5
         btnFontInfo.Text = "属性"
-        ToolTip1.SetToolTip(btnFontInfo, "打开字体属性对话框")
+        ToolTip1.SetToolTip(btnFontInfo, "字体属性(Alt+Return)")
         btnFontInfo.UseVisualStyleBackColor = True
         ' 
         ' btnFontUninstall
@@ -466,7 +470,7 @@ Partial Class FormMain
         btnFontUninstall.Size = New Size(52, 30)
         btnFontUninstall.TabIndex = 4
         btnFontUninstall.Text = "卸载"
-        ToolTip1.SetToolTip(btnFontUninstall, "卸载字体")
+        ToolTip1.SetToolTip(btnFontUninstall, "卸载字体(Delete)")
         btnFontUninstall.UseVisualStyleBackColor = True
         ' 
         ' lstbDirFonts
@@ -501,11 +505,11 @@ Partial Class FormMain
         lblDirFonts.Location = New Point(0, 3)
         lblDirFonts.Margin = New Padding(0, 3, 3, 3)
         lblDirFonts.Name = "lblDirFonts"
-        lblDirFonts.Size = New Size(140, 18)
+        lblDirFonts.Size = New Size(92, 18)
         lblDirFonts.TabIndex = 0
-        lblDirFonts.Text = "等待数据加载......"
+        lblDirFonts.Text = "等待数据加载"
         lblDirFonts.TextAlign = ContentAlignment.MiddleLeft
-        ToolTip1.SetToolTip(lblDirFonts, "单击查看未使用字体")
+        ToolTip1.SetToolTip(lblDirFonts, "查看未使用字体(Ctrl+Shift+U)")
         ' 
         ' lblLocalFonts
         ' 
@@ -518,7 +522,7 @@ Partial Class FormMain
         lblLocalFonts.TabIndex = 1
         lblLocalFonts.Text = "用户"
         lblLocalFonts.TextAlign = ContentAlignment.MiddleLeft
-        ToolTip1.SetToolTip(lblLocalFonts, "打开用户字体目录")
+        ToolTip1.SetToolTip(lblLocalFonts, "用户字体目录")
         ' 
         ' splitFont
         ' 
@@ -542,7 +546,7 @@ Partial Class FormMain
         lblSystemFonts.TabIndex = 3
         lblSystemFonts.Text = "系统"
         lblSystemFonts.TextAlign = ContentAlignment.MiddleLeft
-        ToolTip1.SetToolTip(lblSystemFonts, "打开系统字体目录")
+        ToolTip1.SetToolTip(lblSystemFonts, "系统字体目录")
         ' 
         ' tblDirFonts
         ' 
@@ -621,7 +625,7 @@ Partial Class FormMain
         tblConfigFonts.RowStyles.Add(New RowStyle())
         tblConfigFonts.RowStyles.Add(New RowStyle())
         tblConfigFonts.RowStyles.Add(New RowStyle(SizeType.Absolute, 20F))
-        tblConfigFonts.Size = New Size(488, 338)
+        tblConfigFonts.Size = New Size(488, 329)
         tblConfigFonts.TabIndex = 6
         ' 
         ' btnRecoveryLA
@@ -1029,9 +1033,21 @@ Partial Class FormMain
         tagJP.Text = "日文"
         tagJP.TextAlign = ContentAlignment.MiddleLeft
         ' 
+        ' btnSearch
+        ' 
+        btnSearch.Image = CType(resources.GetObject("btnSearch.Image"), Image)
+        btnSearch.Location = New Point(72, 0)
+        btnSearch.Margin = New Padding(3, 0, 3, 0)
+        btnSearch.Name = "btnSearch"
+        btnSearch.Size = New Size(30, 30)
+        btnSearch.TabIndex = 29
+        ToolTip1.SetToolTip(btnSearch, "查找(Ctrl+F)")
+        btnSearch.UseVisualStyleBackColor = True
+        ' 
         ' tblBottonBar
         ' 
-        tblBottonBar.ColumnCount = 7
+        tblBottonBar.ColumnCount = 8
+        tblBottonBar.ColumnStyles.Add(New ColumnStyle())
         tblBottonBar.ColumnStyles.Add(New ColumnStyle())
         tblBottonBar.ColumnStyles.Add(New ColumnStyle())
         tblBottonBar.ColumnStyles.Add(New ColumnStyle())
@@ -1039,31 +1055,20 @@ Partial Class FormMain
         tblBottonBar.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         tblBottonBar.ColumnStyles.Add(New ColumnStyle())
         tblBottonBar.ColumnStyles.Add(New ColumnStyle())
-        tblBottonBar.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 20F))
-        tblBottonBar.Controls.Add(btnPreview, 1, 0)
+        tblBottonBar.Controls.Add(btnSearch, 2, 0)
         tblBottonBar.Controls.Add(btnMenu, 0, 0)
-        tblBottonBar.Controls.Add(btnApply, 6, 0)
-        tblBottonBar.Controls.Add(btnCopy, 5, 0)
-        tblBottonBar.Controls.Add(btnDefault, 2, 0)
-        tblBottonBar.Controls.Add(btnBlade, 3, 0)
-        tblBottonBar.Controls.Add(ProgressBar1, 4, 0)
+        tblBottonBar.Controls.Add(btnApply, 7, 0)
+        tblBottonBar.Controls.Add(btnCopy, 6, 0)
+        tblBottonBar.Controls.Add(btnDefault, 3, 0)
+        tblBottonBar.Controls.Add(btnBlade, 4, 0)
+        tblBottonBar.Controls.Add(ProgressBar1, 5, 0)
+        tblBottonBar.Controls.Add(btnPreview, 1, 0)
         tblBottonBar.Location = New Point(12, 661)
         tblBottonBar.Name = "tblBottonBar"
         tblBottonBar.RowCount = 1
         tblBottonBar.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
         tblBottonBar.Size = New Size(488, 30)
         tblBottonBar.TabIndex = 7
-        ' 
-        ' btnPreview
-        ' 
-        btnPreview.Image = CType(resources.GetObject("btnPreview.Image"), Image)
-        btnPreview.Location = New Point(36, 0)
-        btnPreview.Margin = New Padding(3, 0, 3, 0)
-        btnPreview.Name = "btnPreview"
-        btnPreview.Size = New Size(30, 30)
-        btnPreview.TabIndex = 2
-        ToolTip1.SetToolTip(btnPreview, "打开预览工具")
-        btnPreview.UseVisualStyleBackColor = True
         ' 
         ' btnMenu
         ' 
@@ -1073,6 +1078,7 @@ Partial Class FormMain
         btnMenu.Name = "btnMenu"
         btnMenu.Size = New Size(30, 30)
         btnMenu.TabIndex = 1
+        ToolTip1.SetToolTip(btnMenu, "菜单(Application)")
         btnMenu.UseVisualStyleBackColor = True
         ' 
         ' btnApply
@@ -1084,52 +1090,65 @@ Partial Class FormMain
         btnApply.Size = New Size(52, 30)
         btnApply.TabIndex = 5
         btnApply.Text = "应用"
-        ToolTip1.SetToolTip(btnApply, "Shift+点击 应用并启动")
+        ToolTip1.SetToolTip(btnApply, "应用修改(Ctrl+S)" & vbCrLf & "应用修改并启动(Shift+点击)")
         btnApply.UseVisualStyleBackColor = True
         ' 
         ' btnCopy
         ' 
-        btnCopy.Location = New Point(356, 0)
+        btnCopy.Location = New Point(350, 0)
         btnCopy.Margin = New Padding(3, 0, 3, 0)
         btnCopy.Name = "btnCopy"
-        btnCopy.Size = New Size(74, 30)
+        btnCopy.Padding = New Padding(3, 0, 3, 0)
+        btnCopy.Size = New Size(80, 30)
         btnCopy.TabIndex = 6
         btnCopy.Text = "导出配置"
+        ToolTip1.SetToolTip(btnCopy, "导出配置文件(Ctrl+J)")
         btnCopy.UseVisualStyleBackColor = True
         ' 
         ' btnDefault
         ' 
         btnDefault.Image = CType(resources.GetObject("btnDefault.Image"), Image)
-        btnDefault.Location = New Point(72, 0)
+        btnDefault.Location = New Point(108, 0)
         btnDefault.Margin = New Padding(3, 0, 3, 0)
         btnDefault.Name = "btnDefault"
         btnDefault.Size = New Size(30, 30)
         btnDefault.TabIndex = 3
         btnDefault.TextImageRelation = TextImageRelation.ImageBeforeText
-        ToolTip1.SetToolTip(btnDefault, "恢复默认")
+        ToolTip1.SetToolTip(btnDefault, "恢复默认(F8)")
         btnDefault.UseVisualStyleBackColor = True
         ' 
         ' btnBlade
         ' 
         btnBlade.AllowDrop = True
         btnBlade.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Italic, GraphicsUnit.Point, CByte(134))
-        btnBlade.Location = New Point(108, 0)
+        btnBlade.Location = New Point(144, 0)
         btnBlade.Margin = New Padding(3, 0, 3, 0)
         btnBlade.Name = "btnBlade"
         btnBlade.Padding = New Padding(3, 0, 3, 0)
         btnBlade.Size = New Size(64, 30)
         btnBlade.TabIndex = 8
         btnBlade.Text = "Blade"
-        ToolTip1.SetToolTip(btnBlade, "打开管理器")
+        ToolTip1.SetToolTip(btnBlade, "字体管理器(Ctrl+B)")
         btnBlade.UseVisualStyleBackColor = True
         ' 
         ' ProgressBar1
         ' 
-        ProgressBar1.Location = New Point(178, 3)
+        ProgressBar1.Location = New Point(214, 3)
         ProgressBar1.Name = "ProgressBar1"
-        ProgressBar1.Size = New Size(172, 24)
+        ProgressBar1.Size = New Size(130, 24)
         ProgressBar1.TabIndex = 9
         ProgressBar1.Visible = False
+        ' 
+        ' btnPreview
+        ' 
+        btnPreview.Image = CType(resources.GetObject("btnPreview.Image"), Image)
+        btnPreview.Location = New Point(36, 0)
+        btnPreview.Margin = New Padding(3, 0, 3, 0)
+        btnPreview.Name = "btnPreview"
+        btnPreview.Size = New Size(30, 30)
+        btnPreview.TabIndex = 2
+        ToolTip1.SetToolTip(btnPreview, "预览(Ctrl+P)")
+        btnPreview.UseVisualStyleBackColor = True
         ' 
         ' pnlDirFonts
         ' 
@@ -1148,20 +1167,10 @@ Partial Class FormMain
         ImageList1.ImageStream = CType(resources.GetObject("ImageList1.ImageStream"), ImageListStreamer)
         ImageList1.TransparentColor = Color.Transparent
         ImageList1.Images.SetKeyName(0, "preview_16.ico")
-        ImageList1.Images.SetKeyName(1, "blade_c.ico")
+        ImageList1.Images.SetKeyName(1, "blade_16.ico")
         ImageList1.Images.SetKeyName(2, "options_16.ico")
         ImageList1.Images.SetKeyName(3, "help_c.ico")
-        ' 
-        ' lblOSVersion
-        ' 
-        lblOSVersion.AutoSize = True
-        lblOSVersion.ForeColor = Color.FromArgb(CByte(232), CByte(17), CByte(35))
-        lblOSVersion.Location = New Point(12, 640)
-        lblOSVersion.Name = "lblOSVersion"
-        lblOSVersion.Size = New Size(352, 18)
-        lblOSVersion.TabIndex = 9
-        lblOSVersion.Text = "警告: 在 Windows 7 操作系统上, 部分功能无法使用"
-        lblOSVersion.Visible = False
+        ImageList1.Images.SetKeyName(4, "search_c.ico")
         ' 
         ' FormMain
         ' 
@@ -1170,7 +1179,6 @@ Partial Class FormMain
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(512, 703)
-        Controls.Add(lblOSVersion)
         Controls.Add(tblBottonBar)
         Controls.Add(tblConfigFonts)
         Controls.Add(splitConfig)
@@ -1288,6 +1296,6 @@ Partial Class FormMain
     Friend WithEvents pnlFallbackFonts As Panel
     Friend WithEvents pnlDirFonts As Panel
     Friend WithEvents ImageList1 As ImageList
-    Friend WithEvents lblOSVersion As Label
+    Friend WithEvents btnSearch As Button
 
 End Class

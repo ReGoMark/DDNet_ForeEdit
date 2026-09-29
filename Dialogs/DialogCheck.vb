@@ -63,7 +63,11 @@ Public Class DialogCheck
         End Try
     End Sub
 
+    ''' <summary>
+    ''' 点击「退出程序」：返回 DialogResult.Abort，通知启动流程取消主窗体创建。
+    ''' </summary>
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        Me.DialogResult = DialogResult.Abort
         Me.Close()
     End Sub
 

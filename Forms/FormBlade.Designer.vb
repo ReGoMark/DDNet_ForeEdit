@@ -314,7 +314,7 @@ Partial Class FormBlade
         btnZipBroswe.Name = "btnZipBroswe"
         btnZipBroswe.Size = New Size(65, 30)
         btnZipBroswe.TabIndex = 1
-        btnZipBroswe.Text = "安装"
+        btnZipBroswe.Text = "浏览"
         btnZipBroswe.TextAlign = ContentAlignment.MiddleRight
         btnZipBroswe.TextImageRelation = TextImageRelation.ImageBeforeText
         btnZipBroswe.UseVisualStyleBackColor = False
@@ -325,8 +325,8 @@ Partial Class FormBlade
         lblZip.AutoSize = True
         lblZip.Dock = DockStyle.Right
         lblZip.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblZip.Location = New Point(185, 3)
-        lblZip.Margin = New Padding(3)
+        lblZip.Location = New Point(188, 3)
+        lblZip.Margin = New Padding(3, 3, 0, 3)
         lblZip.Name = "lblZip"
         lblZip.Size = New Size(92, 24)
         lblZip.TabIndex = 16
@@ -439,8 +439,8 @@ Partial Class FormBlade
         lblNorm.AutoSize = True
         lblNorm.Dock = DockStyle.Right
         lblNorm.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblNorm.Location = New Point(237, 0)
-        lblNorm.Margin = New Padding(3, 0, 3, 3)
+        lblNorm.Location = New Point(240, 0)
+        lblNorm.Margin = New Padding(3, 0, 0, 3)
         lblNorm.Name = "lblNorm"
         lblNorm.Size = New Size(40, 46)
         lblNorm.TabIndex = 12
@@ -453,8 +453,8 @@ Partial Class FormBlade
         lblStandard.AutoSize = True
         lblStandard.Dock = DockStyle.Right
         lblStandard.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblStandard.Location = New Point(237, 52)
-        lblStandard.Margin = New Padding(3)
+        lblStandard.Location = New Point(240, 52)
+        lblStandard.Margin = New Padding(3, 3, 0, 3)
         lblStandard.Name = "lblStandard"
         lblStandard.Size = New Size(40, 46)
         lblStandard.TabIndex = 13
@@ -467,8 +467,8 @@ Partial Class FormBlade
         lblFull.AutoSize = True
         lblFull.Dock = DockStyle.Right
         lblFull.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblFull.Location = New Point(237, 104)
-        lblFull.Margin = New Padding(3, 3, 3, 0)
+        lblFull.Location = New Point(240, 104)
+        lblFull.Margin = New Padding(3, 3, 0, 0)
         lblFull.Name = "lblFull"
         lblFull.Size = New Size(40, 46)
         lblFull.TabIndex = 15
@@ -514,12 +514,13 @@ Partial Class FormBlade
         btnExport.AutoSize = True
         btnExport.BackColor = Color.Transparent
         btnExport.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        btnExport.Location = New Point(196, 0)
+        btnExport.Location = New Point(180, 0)
         btnExport.Margin = New Padding(3, 0, 0, 0)
         btnExport.Name = "btnExport"
-        btnExport.Size = New Size(84, 30)
+        btnExport.Padding = New Padding(3, 0, 3, 0)
+        btnExport.Size = New Size(100, 30)
         btnExport.TabIndex = 2
-        btnExport.Text = "导出到..."
+        btnExport.Text = "导出字体包"
         btnExport.UseVisualStyleBackColor = False
         ' 
         ' ProgressBar1
@@ -528,7 +529,7 @@ Partial Class FormBlade
         ProgressBar1.Dock = DockStyle.Fill
         ProgressBar1.Location = New Point(3, 3)
         ProgressBar1.Name = "ProgressBar1"
-        ProgressBar1.Size = New Size(187, 24)
+        ProgressBar1.Size = New Size(171, 24)
         ProgressBar1.TabIndex = 7
         ProgressBar1.Visible = False
         ' 

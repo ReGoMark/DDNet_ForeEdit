@@ -10,7 +10,7 @@
     <AssemblyName>DDNet ForeEdit</AssemblyName>
     <AssemblyTitle>DDNet ForeEdit</AssemblyTitle>
     <RootNamespace>FontEditor</RootNamespace>
-    <Version>26.02.928.41</Version>
+    <Version>26.02.929.43</Version>
     <Authors>ReGoMark</Authors>
     <Company>Bilibili @ReGoMark</Company>
     <Product>DDNet ForeEdit</Product>
@@ -67,7 +67,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\documents.png">
+    <None Update="Data\documents.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\hotkeys.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="data\SarasaMonoSlabSC-Regular.ttf">

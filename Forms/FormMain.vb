@@ -5,183 +5,169 @@ Imports System.Text
 Imports System.Text.RegularExpressions
 
 ''' <summary>
-''' DDNet ForeEdit 主窗体，负责字体目录加载、配置编辑、回退字体管理及打包导出。
+''' DDNet ForeEdit 主窗体。
+''' 职责：字体目录加载、配置编辑、回退字体管理、字体包导出/导入、快捷键分发。
 ''' </summary>
 Public Class FormMain
 
-    ' ─── 私有字段 ────────────────────────────────────────────────────────
+#Region "── 窗口截图 ────────────────────────────────"
+    ''' <summary>截取指定窗口的完整内容（含标题栏），即使被遮挡也能正确捕获。</summary>
+    <DllImport("user32.dll")>
+    Private Shared Function PrintWindow(hwnd As IntPtr, hdcBlt As IntPtr, nFlags As UInteger) As Boolean
+    End Function
 
-    ''' <summary>
-    ''' 回退字体列表，存储 FontFamily 名称。
-    ''' </summary>
+    ''' <summary>PW_RENDERFULLCONTENT：支持 DWM 合成窗口（Win8+），必须加这个标志。</summary>
+    Private Const PW_RENDERFULLCONTENT As UInteger = &H2
+    <StructLayout(LayoutKind.Sequential)>
+    Private Structure RECT
+        Public Left As Integer
+        Public Top As Integer
+        Public Right As Integer
+        Public Bottom As Integer
+    End Structure
+#End Region
+
+#Region "── 状态字段：字体映射与缓存 ────────────────────────────────"
+
+    ''' <summary>回退字体列表，存储 FontFamily 名称。</summary>
     Private _fallbacks As New List(Of String)
 
-    ''' <summary>
-    ''' 映射：FamilyName（小写）→ GDI+ 显示名称。
-    ''' </summary>
+    ''' <summary>映射：FamilyName（小写）→ GDI+ 显示名称。</summary>
     Private _familyToGdi As New Dictionary(Of String, String)
 
-    ''' <summary>
-    ''' 映射：GDI名（小写）→ TTC 序号标签，如 "1/3"。
-    ''' </summary>
+    ''' <summary>映射：GDI名（小写）→ TTC 序号标签（如 "1/3"）。</summary>
     Private _ttcTag As New Dictionary(Of String, String)
 
-    ''' <summary>
-    ''' 映射：GDI名（小写）→ TTC 物理索引（0-based）。
-    ''' </summary>
+    ''' <summary>映射：GDI名（小写）→ TTC 物理索引（0-based）。</summary>
     Private _ttcPhysicalIndex As New Dictionary(Of String, Integer)
 
-    ''' <summary>
-    ''' 映射：GDI名（小写）→ 配置文件使用的 FamilyName。
-    ''' </summary>
+    ''' <summary>映射：GDI名（小写）→ 配置文件使用的 FamilyName。</summary>
     Private _gdiToFamily As New Dictionary(Of String, String)
 
-    ''' <summary>
-    ''' 映射\uff1aGDI名\uff08小写\uff09→ FontNameInfo\uff08含字重、斜体信息\uff0c用于预览渲染\uff09。
-    ''' </summary>
-    ' 字段声明
-    Private _gdiToFontInfo As New Dictionary(Of String, FontInfoTable)   ' 去掉 FontInfoReader.
+    ''' <summary>映射：GDI名（小写）→ FontInfoTable（含字重、斜体信息，用于预览渲染）。</summary>
+    Private _gdiToFontInfo As New Dictionary(Of String, FontInfoTable)
 
-    ' 局部变量
-    Dim ni As FontInfoTable = Nothing   ' 同上
+    ' 注：以下字段在整个类中从未被实际使用（局部变量遮蔽了它），仅为保留原有代码结构而保留。
+    Dim ni As FontInfoTable = Nothing
 
-    ''' <summary>
-    ''' 映射：GDI名（小写）→ 字体文件的完整物理路径。
-    ''' </summary>
+    ''' <summary>映射：GDI名（小写）→ 字体文件的完整物理路径。</summary>
     Private _gdiToFilePath As New Dictionary(Of String, String)
 
-    ''' <summary>
-    ''' 缓存：GDI名（小写）→ PrivateFontCollection 实例。
-    ''' </summary>
+    ''' <summary>缓存：GDI名（小写）→ PrivateFontCollection 实例。</summary>
     Private _fontCache As New Dictionary(Of String, PrivateFontCollection)
 
-    ''' <summary>
-    ''' 所有已加载的 PrivateFontCollection 实例，用于统一释放。
-    ''' </summary>
+    ''' <summary>所有已加载的 PrivateFontCollection 实例，用于统一释放。</summary>
     Private _fontCollections As New List(Of PrivateFontCollection)
 
-    ''' <summary>
-    ''' DPI 缩放后的标准行高（供子窗体使用）。
-    ''' </summary>
-    Public Shared Property SharedItemHeight As Integer = 20
+#End Region
 
-    ' 窗口级别，构造一次复用
-    Private _menu As New Win32ContextMenu()
+#Region "── 状态字段：配置与目录 ──────────────────────────────────"
 
-    ' 原始配置值（用于“恢复”按钮）
-    Private _originalDefaultFont As String = ""
-
-    Private _originalJapaneseFont As String = ""
-    Private _originalKoreanFont As String = ""
-    Private _originalSimplifiedChineseFont As String = ""
-    Private _originalTraditionalChineseFont As String = ""
-
-    ''' <summary>
-    ''' 当前正在操作的字体目录路径。
-    ''' </summary>
+    ''' <summary>当前正在操作的字体目录路径。</summary>
     Private _currentFontDirectory As String = ""
 
-    ''' <summary>
-    ''' 安装目录路径（非用户目录）。
-    ''' </summary>
+    ''' <summary>安装目录路径（非用户目录）。</summary>
     Private _installDirectory As String = ""
 
-    ''' <summary>
-    ''' 上次加载的文件扩展名（用于标题显示）。
-    ''' </summary>
+    ''' <summary>上次加载的文件扩展名（用于标题显示）。</summary>
     Private _lastFileExtension As String = ""
 
-    ''' <summary>
-    ''' 防止 ComboBox 事件循环的锁定标志。
-    ''' </summary>
+    ''' <summary>防止 ComboBox 事件循环的锁定标志。</summary>
     Private _isFillingComboBoxes As Boolean = False
 
-    ''' <summary>
-    ''' 预览窗体实例。
-    ''' </summary>
+    ''' <summary>原始默认西文字体（用于“恢复”按钮）。</summary>
+    Private _originalDefaultFont As String = ""
+
+    ''' <summary>原始日文字体（用于“恢复”按钮）。</summary>
+    Private _originalJapaneseFont As String = ""
+
+    ''' <summary>原始韩文字体（用于“恢复”按钮）。</summary>
+    Private _originalKoreanFont As String = ""
+
+    ''' <summary>原始简体中文字体（用于“恢复”按钮）。</summary>
+    Private _originalSimplifiedChineseFont As String = ""
+
+    ''' <summary>原始繁体中文字体（用于“恢复”按钮）。</summary>
+    Private _originalTraditionalChineseFont As String = ""
+
+#End Region
+
+#Region "── 状态字段：子窗体与共享资源 ────────────────────────────"
+
+    ''' <summary>DPI 缩放后的标准行高（供子窗体使用）。</summary>
+    Public Shared Property SharedItemHeight As Integer = 20
+
+    ''' <summary>主菜单（btnMenu 弹出）。</summary>
+    Private _menu As New Win32ContextMenu()
+
+    ''' <summary>字体列表专用的右键菜单。</summary>
+    Private _listContextMenu As New Win32ContextMenu()
+
+    ''' <summary>预览窗体实例（非模态，全局唯一）。</summary>
     Private _previewWindow As FormPreview = Nothing
 
-    ' ─── DrawItem 绘制缓存 ───────────────────────────────────────────────
+    ''' <summary>查找窗体实例（非模态，全局唯一）。</summary>
+    Private _searchWindow As FormSearch = Nothing
 
-    ''' <summary>
-    ''' 缓存：GDI名（小写）→ 绘制用的 Font 实例。
-    ''' </summary>
+#End Region
+
+#Region "── 绘制缓存（字体列表 / 回退列表自绘） ─────────────────"
+
+    ''' <summary>缓存：GDI名（小写）→ 绘制用的 Font 实例。</summary>
     Private _drawFontCache As New Dictionary(Of String, Font)
 
-    ''' <summary>
-    ''' 缓存：TTC 序号标签字符串 → 测量尺寸。
-    ''' </summary>
+    ''' <summary>缓存：TTC 序号标签字符串 → 测量尺寸。</summary>
     Private _tagSizeCache As New Dictionary(Of String, SizeF)
 
-    ''' <summary>
-    ''' 绘制 TTC 标签的普通画刷。
-    ''' </summary>
+    ''' <summary>绘制 TTC 标签的普通画刷。</summary>
     Private ReadOnly _tagBrushNormal As New SolidBrush(Color.Gray)
 
-    ''' <summary>
-    ''' 绘制 TTC 标签的选中画刷。
-    ''' </summary>
+    ''' <summary>绘制 TTC 标签的选中画刷。</summary>
     Private ReadOnly _tagBrushSelected As New SolidBrush(Color.FromArgb(200, 255, 255, 255))
 
-    ''' <summary>
-    ''' 绘制 TTC 标签的字体。
-    ''' </summary>
+    ''' <summary>绘制 TTC 标签的字体。</summary>
     Private ReadOnly _tagFont As New Font("Consolas", 7.5F, FontStyle.Regular, GraphicsUnit.Point)
 
-    ' ─── 版本信息 ──────────────────────────────────────────────────────
+#End Region
 
-    ''' <summary>
-    ''' 构建版本号。
-    ''' </summary>
-    Public ReadOnly BuildVersion As String = "Build 2600928.41"
+#Region "── 常量：版本与标题 ──────────────────────────────────────"
 
-    ''' <summary>
-    ''' 窗体标题前缀。
-    ''' </summary>
+    ''' <summary>构建版本号。</summary>
+    Public ReadOnly BuildVersion As String = "Build 2600929.43"
+
+    ''' <summary>窗体标题前缀。</summary>
     Private ReadOnly TitleText As String = "DDNet ForeEdit"
 
-    ' ─── 目录结构常量 ──────────────────────────────────────────────────
+#End Region
 
-    ''' <summary>
-    ''' 程序根目录（exe 所在目录）。
-    ''' </summary>
+#Region "── 常量：目录结构 ────────────────────────────────────────"
+
+    ''' <summary>程序根目录（exe 所在目录）。</summary>
     Private ReadOnly AppRoot As String = Application.StartupPath
 
-    ''' <summary>
-    ''' 预装标准字体目录（data\standard）。
-    ''' </summary>
+    ''' <summary>预装标准字体目录（data\standard）。</summary>
     Private ReadOnly StandardFontsDir As String = Path.Combine(AppRoot, "data", "standard")
 
-    ''' <summary>
-    ''' 内容文件目录（data\content）。
-    ''' </summary>
-    Private ReadOnly ContentDir As String = Path.Combine(AppRoot, "data", "content")
+    ' 内容文件目录（data\content）—— 已废弃，保留注释供参考
+    'Private ReadOnly ContentDir As String = Path.Combine(AppRoot, "data", "content")
 
-    ''' <summary>
-    ''' 清单目录（manifest）。
-    ''' </summary>
+    ''' <summary>清单目录（manifest）。</summary>
     Private ReadOnly ManifestDir As String = Path.Combine(AppRoot, "manifest")
 
-    ''' <summary>
-    ''' 待删除清单文件路径。
-    ''' </summary>
+    ''' <summary>待删除清单文件路径。</summary>
     Private ReadOnly PendingDeletionsPath As String = Path.Combine(ManifestDir, "pendingdeletions.txt")
 
-    ''' <summary>
-    ''' 待复制清单文件路径。
-    ''' </summary>
+    ''' <summary>待复制清单文件路径。</summary>
     Private ReadOnly PendingCopiesPath As String = Path.Combine(ManifestDir, "pendingcopies.txt")
 
-    ''' <summary>
-    ''' 临时缓存目录（cache，仅用于 FormBlade 导入）。
-    ''' </summary>
+    ''' <summary>临时缓存目录（cache，仅用于 FormBlade 导入）。</summary>
     Private ReadOnly CacheDir As String = Path.Combine(AppRoot, "cache")
 
-    ' ─── 常量定义 ────────────────────────────────────────────────────────
+#End Region
 
-    ''' <summary>
-    ''' 预装标准字体文件列表。
-    ''' </summary>
+#Region "── 常量：字体文件清单 ────────────────────────────────────"
+
+    ''' <summary>预装标准字体文件列表。</summary>
     Private ReadOnly StandardFontFiles() As String = {
         "DejaVuSans.ttf",
         "Font_Awesome_6_Free-Solid-900.otf",
@@ -189,176 +175,264 @@ Public Class FormMain
         "SourceHanSans.ttc"
     }
 
-    ''' <summary>
-    ''' 受保护的字体文件（禁止删除）。
-    ''' </summary>
+    ''' <summary>受保护的字体文件（禁止删除）。</summary>
     Private ReadOnly ProtectedFontFiles() As String = {
         "Font_Awesome_6_Free-Solid-900.otf"
     }
 
-    ' ─── 窗体生命周期 ────────────────────────────────────────────────────
+#End Region
+
+#Region "── 窗体生命周期 ──────────────────────────────────────────"
 
     ''' <summary>
-    ''' 窗体加载事件：初始化目录、UI 状态、清理挂起操作。
+    ''' 窗体加载事件：初始化目录、UI 状态、右键菜单、清理挂起操作。
     ''' </summary>
     Private Sub FormMain_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' 1. 确保程序运行所需的目录存在
         EnsureDirectoriesExist()
+
+        ' 2. 初始化复选框/开关所控制控件的启用状态
         UpdateLanguageVariantControls()
         UpdateFallbackControls()
+
+        ' 3. 执行上次退出时挂起的文件操作
         ExecutePendingDeletions()
         ExecutePendingCopies()
-        CheckCurrentOSVersion()
+
+        ' Windows 7 兼容性检测（已注释停用）
+        'CheckCurrentOSVersion()
+
+        ' 4. 初始化窗体基本属性
         Me.Text = TitleText
         Me.KeyPreview = True
         lblDirFonts.Text = "等待数据加载"
+
+        ' 5. 应用 DPI 缩放后的行高
         lstbDirFonts.ItemHeight = AwareListHeight.GetScaledItemHeight(Me)
         lstbFallbackFonts.ItemHeight = AwareListHeight.GetScaledItemHeight(Me)
         SharedItemHeight = AwareListHeight.GetScaledItemHeight(Me)
 
+        ' 6. 构造主菜单
         _menu.AddRange({
-    New Win32ContextMenu.MenuItem() With {
-        .Id = 1,
-        .Text = "预览(&P)",
-        .Icon = ImageList1.Images(0),
-        .OnClick = Sub() btnPreview.PerformClick()
-        },
-    New Win32ContextMenu.MenuItem() With {
-        .Id = 2,
-        .Text = "Blade(&B)",
-        .Icon = ImageList1.Images(1),
-        .OnClick = Sub() btnBlade.PerformClick()
-        },
-        Win32ContextMenu.MenuItem.Separator,
-              New Win32ContextMenu.MenuItem() With {
-        .Id = 3,
-        .Text = "管理(&M)",
-        .SubItems = New List(Of Win32ContextMenu.MenuItem) From {
             New Win32ContextMenu.MenuItem() With {
-                .Id = 41,
-                .Text = "未使用字体(&U)",
-                .OnClick = Sub() CheckFontJsonMatch()
+                .Id = 1,
+                .Text = "预览(&P)",
+                .ShortcutText = "Ctrl+P",
+                .Icon = ImageList1.Images(0),
+                .OnClick = Sub() btnPreview.PerformClick()
             },
             New Win32ContextMenu.MenuItem() With {
-                .Id = 42,
-                .Text = "预装字体验证(&V)",
-                .OnClick = Sub() VerifyStandardFonts()
+                .Id = 2,
+                .Text = "查找(&F)",
+                .ShortcutText = "Ctrl+F",
+                .Icon = ImageList1.Images(4),
+                .OnClick = Sub() btnSearch.PerformClick()
+            },
+            New Win32ContextMenu.MenuItem() With {
+                .Id = 3,
+                .Text = "Blade(&B)",
+                .ShortcutText = "Ctrl+B",
+                .Icon = ImageList1.Images(1),
+                .OnClick = Sub() btnBlade.PerformClick()
             },
             Win32ContextMenu.MenuItem.Separator,
             New Win32ContextMenu.MenuItem() With {
-                .Id = 43,
-                .Text = "配置文件(&J)",
-                .OnClick = Sub() OpenJsonConfig()
+                .Id = 4,
+                .Text = "管理(&M)",
+                .SubItems = New List(Of Win32ContextMenu.MenuItem) From {
+                    New Win32ContextMenu.MenuItem() With {
+                        .Id = 41,
+                        .Text = "未使用字体(&U)",
+                        .ShortcutText = "Ctrl+Shift+U",
+                        .OnClick = Sub() CheckFontJsonMatch()
+                    },
+                    New Win32ContextMenu.MenuItem() With {
+                        .Id = 42,
+                        .Text = "预装字体验证(&V)",
+                        .ShortcutText = "Ctrl+Shift+V",
+                        .OnClick = Sub() VerifyStandardFonts()
+                    },
+                    Win32ContextMenu.MenuItem.Separator,
+                    New Win32ContextMenu.MenuItem() With {
+                        .Id = 43,
+                        .Text = "配置文件(&J)",
+                        .ShortcutText = "Ctrl+Shift+J",
+                        .OnClick = Sub() OpenJsonConfig()
+                    },
+                    New Win32ContextMenu.MenuItem() With {
+                        .Id = 44,
+                        .Text = "字体目录(&D)",
+                        .ShortcutText = "Ctrl+L",
+                        .OnClick = Sub() OpenFontDirectory()
+                    }
+                }
             },
             New Win32ContextMenu.MenuItem() With {
-                .Id = 44,
-                .Text = "字体目录(&D)",
-                .OnClick = Sub() OpenFontDirectory()
+                .Id = 5,
+                .Text = "刷新(&R)",
+                .ShortcutText = "F5",
+                .OnClick = Sub() btnRefresh.PerformClick()
+            },
+            Win32ContextMenu.MenuItem.Separator,
+            New Win32ContextMenu.MenuItem() With {
+                .Id = 6,
+                .Text = "帮助(&H)",
+                .Icon = ImageList1.Images(3),
+                .SubItems = New List(Of Win32ContextMenu.MenuItem) From {
+                    New Win32ContextMenu.MenuItem() With {
+                        .Id = 61,
+                        .Text = "视频教程(&V)",
+                        .OnClick = Sub()
+                                       Process.Start(New ProcessStartInfo With {
+                                           .FileName = "https://www.bilibili.com/video/BV1h7PezCE2i/?spm_id_from=333.1387.0.0&vd_source=c4099c355c2d06f10ac210fe7bae65a6",
+                                           .UseShellExecute = True
+                                       })
+                                   End Sub
+                    },
+                    New Win32ContextMenu.MenuItem() With {
+                        .Id = 62,
+                        .Text = "说明文档(&D)",
+                        .OnClick = Sub()
+                                       Dim filePath = Application.StartupPath & "\data\documents.pdf"
+                                       Try
+                                           If IO.File.Exists(filePath) Then
+                                               Dim psi As New ProcessStartInfo With {
+                                                   .FileName = filePath,
+                                                   .UseShellExecute = True
+                                               }
+                                               Process.Start(psi)
+                                           Else
+                                               MessageBox.Show($"文件不存在：{filePath}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                           End If
+                                       Catch ex As Exception
+                                           MessageBox.Show($"打开文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                       End Try
+                                   End Sub
+                    },
+                    New Win32ContextMenu.MenuItem() With {
+                        .Id = 63,
+                        .Text = "快捷键参考(&K)",
+                        .OnClick = Sub()
+                                       Dim filePath = Application.StartupPath & "\data\hotkeys.pdf"
+                                       Try
+                                           If IO.File.Exists(filePath) Then
+                                               Dim psi As New ProcessStartInfo With {
+                                                   .FileName = filePath,
+                                                   .UseShellExecute = True
+                                               }
+                                               Process.Start(psi)
+                                           Else
+                                               MessageBox.Show($"文件不存在：{filePath}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                           End If
+                                       Catch ex As Exception
+                                           MessageBox.Show($"打开文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                       End Try
+                                   End Sub
+                    },
+                    New Win32ContextMenu.MenuItem() With {
+                        .Id = 64,
+                        .Text = "获取字体资源(&R)",
+                        .OnClick = Sub()
+                                       Process.Start(New ProcessStartInfo With {
+                                           .FileName = "https://www.maoken.com/",
+                                           .UseShellExecute = True
+                                       })
+                                   End Sub
+                    },
+                    Win32ContextMenu.MenuItem.Separator,
+                    New Win32ContextMenu.MenuItem() With {
+                        .Id = 65,
+                        .Text = "更新日志(&L)",
+                        .OnClick = Sub()
+                                       Dim filePath = Application.StartupPath & "\data\updates.txt"
+                                       Try
+                                           If IO.File.Exists(filePath) Then
+                                               Dim psi As New ProcessStartInfo With {
+                                                   .FileName = filePath,
+                                                   .UseShellExecute = True
+                                               }
+                                               Process.Start(psi)
+                                           Else
+                                               MessageBox.Show($"文件不存在：{filePath}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                           End If
+                                       Catch ex As Exception
+                                           MessageBox.Show($"打开文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                       End Try
+                                   End Sub
+                    },
+                    New Win32ContextMenu.MenuItem() With {
+                        .Id = 65,
+                        .Text = "获取更新(&U)",
+                        .OnClick = Sub()
+                                       Try
+                                           Dim psi As New ProcessStartInfo()
+                                           psi.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit/Release"
+                                           psi.UseShellExecute = True
+                                           Process.Start(psi)
+                                       Catch ex As Exception
+                                           MessageBox.Show($"无法打开链接：{ex.Message}", "打开链接失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                                       End Try
+                                   End Sub
+                    }
+                }
+            },
+            New Win32ContextMenu.MenuItem() With {
+                .Id = 7,
+                .Text = "关于(&A)",
+                .OnClick = Sub() FormAbout.ShowDialog(Me)
             }
-        }
-    },
-        New Win32ContextMenu.MenuItem() With {
-        .Id = 5,
-        .Text = "刷新(&R)",
-        .OnClick = Sub() btnRefresh.PerformClick()
-    },
-    Win32ContextMenu.MenuItem.Separator,
-    New Win32ContextMenu.MenuItem() With {
-        .Id = 6,
-        .Text = "帮助(&H)",
-        .Icon = ImageList1.Images(3),
-        .SubItems = New List(Of Win32ContextMenu.MenuItem) From {
-            New Win32ContextMenu.MenuItem() With {
-                .Id = 61,
-                .Text = "视频教程(&V)",
-                .OnClick = Sub()
-                               Process.Start(New ProcessStartInfo With {
-                                   .FileName = "https://www.bilibili.com/video/BV1h7PezCE2i/?spm_id_from=333.1387.0.0&vd_source=c4099c355c2d06f10ac210fe7bae65a6",
-                                   .UseShellExecute = True
-                               })
-                           End Sub
-            },
-             New Win32ContextMenu.MenuItem() With {
-                .Id = 62,
-                .Text = "说明文档(&D)",
-                .OnClick = Sub()
-                               Dim filePath = Application.StartupPath & "\data\documents.png"
+        })
 
-                               Try
-                                   If IO.File.Exists(filePath) Then
-                                       Dim psi As New ProcessStartInfo With {
-                                       .FileName = filePath,
-                                       .UseShellExecute = True
-                                   }
-                                       Process.Start(psi)
-                                   Else
-                                       MessageBox.Show($"文件不存在：{filePath}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                                   End If
-                               Catch ex As Exception
-                                   MessageBox.Show($"打开文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                               End Try
-                           End Sub
-            },
-             New Win32ContextMenu.MenuItem() With {
-                .Id = 63,
-                .Text = "获取字体资源(&R)",
-                .OnClick = Sub()
-                               Process.Start(New ProcessStartInfo With {
-                                   .FileName = "https://www.maoken.com/",
-                                   .UseShellExecute = True
-                               })
-                           End Sub
-            },
-                Win32ContextMenu.MenuItem.Separator,
+        ' 7. 构造字体列表右键菜单
+        _listContextMenu.AddRange({
             New Win32ContextMenu.MenuItem() With {
-                .Id = 64,
-                .Text = "更新日志(&L)",
-                .OnClick = Sub()
-                               Dim filePath = Application.StartupPath & "\data\updates.txt"
-
-                               Try
-                                   If IO.File.Exists(filePath) Then
-                                       Dim psi As New ProcessStartInfo With {
-                                       .FileName = filePath,
-                                       .UseShellExecute = True
-                                   }
-                                       Process.Start(psi)
-                                   Else
-                                       MessageBox.Show($"文件不存在：{filePath}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                                   End If
-                               Catch ex As Exception
-                                   MessageBox.Show($"打开文件失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                               End Try
-                           End Sub
+                .Id = 101,
+                .Text = "查看(&V)",
+                .ShortcutText = "Return",
+                .OnClick = Sub() OpenSelectedFontFile()
             },
             New Win32ContextMenu.MenuItem() With {
-                .Id = 65,
-                .Text = "获取更新(&U)",
-                .OnClick = Sub()
-                               Try
-                                   Dim psi As New ProcessStartInfo()
-                                   psi.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit"
-                                   psi.UseShellExecute = True
-                                   Process.Start(psi)
-                               Catch ex As Exception
-                                   MessageBox.Show($"无法打开链接：{ex.Message}", "打开链接失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                               End Try
-                           End Sub
+                .Id = 107,
+                .Text = "卸载(&U)",
+                .ShortcutText = "Delete",
+                .OnClick = Sub() UninstallSelectedFont()
+            },
+            New Win32ContextMenu.MenuItem() With {
+                .Id = 102,
+                .Text = "另存为(&S)",
+                .OnClick = Sub() SaveSelectedFontAs()
+            },
+            Win32ContextMenu.MenuItem.Separator,
+            New Win32ContextMenu.MenuItem() With {
+                .Id = 104,
+                .Text = "打开所在位置(&L)",
+                .OnClick = Sub() OpenSelectedFontFolder()
+            },
+            New Win32ContextMenu.MenuItem() With {
+                .Id = 105,
+                .Text = "复制文件名称(&N)",
+                .ShortcutText = "Ctrl+Shift+N",
+                .OnClick = Sub() CopySelectedFontName()
+            },
+            New Win32ContextMenu.MenuItem() With {
+                .Id = 106,
+                .Text = "复制家族名称(&F)",
+                .ShortcutText = "Ctrl+Shift+F",
+                .OnClick = Sub() CopySelectedFamilyName()
+            },
+            Win32ContextMenu.MenuItem.Separator,
+            New Win32ContextMenu.MenuItem() With {
+                .Id = 103,
+                .Text = "属性(&I)",
+                .ShortcutText = "Alt+Return",
+                .OnClick = Sub() ShowFontPropertiesForSelected()
             }
-        }
-    },
-    New Win32ContextMenu.MenuItem() With {
-        .Id = 7,
-        .Text = "关于(&A)",
-        .OnClick = Sub() FormAbout.ShowDialog(Me)
-    }
-})
+        })
     End Sub
 
-    ''' <summary>
-    ''' 确保所有必需目录存在。
-    ''' </summary>
+    ''' <summary>确保所有必需目录存在。</summary>
     Private Sub EnsureDirectoriesExist()
-        For Each dir As String In {StandardFontsDir, ContentDir, ManifestDir, CacheDir}
+        For Each dir As String In {StandardFontsDir, ManifestDir, CacheDir}
             If Not Directory.Exists(dir) Then
                 Try
                     Directory.CreateDirectory(dir)
@@ -369,48 +443,112 @@ Public Class FormMain
         Next
     End Sub
 
-    Private Sub CheckCurrentOSVersion()
-        Dim osVersion As Version = Environment.OSVersion.Version
-        If osVersion.Major < 6.2 Then
-            lblOSVersion.Visible = True
+    ''' <summary>
+    ''' 检测 Windows 版本；若低于 Windows 8 则显示兼容性警告标签。
+    ''' （当前已在 Load 中注释停用，保留此方法以便将来启用。）
+    ''' </summary>
+    'Private Sub CheckCurrentOSVersion()
+    '    Dim osVersion As Version = Environment.OSVersion.Version
+    '    If osVersion.Major < 6.2 Then
+    '        lblOSVersion.Visible = True
+    '    End If
+    'End Sub
+
+    ''' <summary>
+    ''' 截取当前主窗体的完整外观（含标题栏与边框）。
+    ''' </summary>
+    ''' <summary>
+    ''' 截取主窗体完整外观（含标题栏与边框）并直接复制到剪贴板。
+    ''' </summary>
+    ''' <summary>
+    ''' 截取主窗体完整外观并复制到剪贴板。
+    ''' 使用 GetWindowRect 获取精确物理尺寸，避免 DPI 缩放与不可见边框导致的黑边。
+    ''' </summary>
+    ''' <summary>
+    ''' 截取主窗体完整外观（含标题栏与边框）并直接复制到剪贴板。
+    ''' </summary>
+    Private Sub CopyScreenshotToClipboard()
+        If Me.WindowState = FormWindowState.Minimized Then
+            MessageBox.Show("窗口已最小化，无法截图。", "截图",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
         End If
+
+        Try
+            Using bmp As New Bitmap(Me.Width, Me.Height, Imaging.PixelFormat.Format32bppArgb)
+                Using g As Graphics = Graphics.FromImage(bmp)
+                    Dim hdc As IntPtr = g.GetHdc()
+                    Try
+                        PrintWindow(Me.Handle, hdc, PW_RENDERFULLCONTENT)
+                    Finally
+                        g.ReleaseHdc(hdc)
+                    End Try
+                End Using
+                Clipboard.SetImage(bmp)
+            End Using
+
+            ' 轻提示：不打断操作
+            ToolTip1.Show("已复制到剪贴板", Me, Me.Width \ 2 - 30, Me.Height \ 2, 1500)
+        Catch ex As Exception
+            MessageBox.Show($"截图失败：{ex.Message}", "截图",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
     ''' <summary>
     ''' 窗体关闭事件：释放所有 GDI 资源和子窗体。
     ''' </summary>
     Private Sub FormMain_FormClosed(sender As Object, e As FormClosedEventArgs) Handles MyBase.FormClosed
+        ' 释放字体集合
         For Each pfc As PrivateFontCollection In _fontCollections
             pfc.Dispose()
         Next
         _fontCollections.Clear()
         _fontCache.Clear()
 
+        ' 关闭预览窗体
         If _previewWindow IsNot Nothing AndAlso Not _previewWindow.IsDisposed Then
             _previewWindow.Close()
             _previewWindow.Dispose()
         End If
 
+        ' 释放绘制缓存
         For Each f In _drawFontCache.Values
             f.Dispose()
         Next
         _tagFont.Dispose()
         _tagBrushNormal.Dispose()
         _tagBrushSelected.Dispose()
+
+        ' 关闭查找窗体（当前已注释停用）
+        'If _searchWindow IsNot Nothing AndAlso Not _searchWindow.IsDisposed Then
+        '    _searchWindow.Close()
+        '    _searchWindow.Dispose()
+        'End If
     End Sub
 
-    ' ─── 核心加载逻辑 ────────────────────────────────────────────────────
+    ''' <summary>释放菜单资源。</summary>
+    Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
+        _menu.Dispose()
+        _listContextMenu.Dispose()
+        MyBase.OnFormClosed(e)
+    End Sub
+
+#End Region
+
+#Region "── 核心加载逻辑 ──────────────────────────────────────────"
 
     ''' <summary>
     ''' 全量加载字体目录：扫描字体文件、构建缓存、读取 index.json 并更新 UI。
     ''' </summary>
     ''' <param name="fdirectory">目标字体目录路径。</param>
-    ''' <param name="sourceLabel">来源标签（如“快捷方式”），用于标题显示。</param>
+    ''' <param name="sourceLabel">来源标签（如"快捷方式"），用于标题显示。</param>
     ''' <param name="skipLocalCheck">是否跳过用户目录切换检查（刷新时使用）。</param>
     Private Sub LoadFontDirectory(fdirectory As String,
-                                 Optional sourceLabel As String = "",
-                                 Optional skipLocalCheck As Boolean = False)
+                                  Optional sourceLabel As String = "",
+                                  Optional skipLocalCheck As Boolean = False)
 
+        ' 步骤 1：探测用户目录存在情况
         Dim appData As String = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
         Dim ddnetFonts As String = Path.Combine(appData, "DDNet", "fonts")
         Dim teeworldsFonts As String = Path.Combine(appData, "Teeworlds", "fonts")
@@ -425,7 +563,7 @@ Public Class FormMain
 
         UpdateLocalDirectoryIndicator(hasDDNet, hasTeeworlds)
 
-        ' 根据用户目录复选框决定实际目录
+        ' 步骤 2：根据用户目录复选框决定实际目录
         If chkDirSelect.Checked AndAlso Not skipLocalCheck Then
             fdirectory = ResolveUserDirectory(hasDDNet, hasTeeworlds, ddnetFonts, teeworldsFonts)
             If String.IsNullOrEmpty(fdirectory) Then Return
@@ -438,34 +576,15 @@ Public Class FormMain
         _currentFontDirectory = fdirectory
         tbPath.Text = fdirectory
 
-        ' 清空旧缓存
-        For Each pfc As PrivateFontCollection In _fontCollections
-            pfc.Dispose()
-        Next
-        _fontCollections.Clear()
-        _fontCache.Clear()
-        _ttcTag.Clear()
-        _gdiToFilePath.Clear()
-        _gdiToFamily.Clear()
-        _familyToGdi.Clear()
-        _ttcPhysicalIndex.Clear()
-        _gdiToFontInfo.Clear()
-        lblFontName.Text = "-" : lblFontFamily.Text = "-" : lblFontType.Text = "-"
-        lblFontCoverage.Text = "-" : lblFontModify.Text = "-" : lblFontSize.Text = "-"
+        ' 步骤 3：清空旧缓存
+        ClearAllCaches()
 
-        For Each f In _drawFontCache.Values
-            f.Dispose()
-        Next
-        _drawFontCache.Clear()
-        _tagSizeCache.Clear()
-
+        ' 步骤 4：完整性检查
         Dim dirExists As Boolean = Directory.Exists(fdirectory)
-        Dim jsonPath As String = Path.Combine(fdirectory, "index.json")
-
-        ' 完整性检查
         CheckStandardFontIntegrity()
         CheckJsonIntegrity()
 
+        ' 步骤 5：枚举并逐个加载字体文件
         lstbDirFonts.Items.Clear()
         If dirExists Then
             Dim fontFiles As New List(Of String)
@@ -500,7 +619,7 @@ Public Class FormMain
                         Dim total As Integer = pfc.Families.Length
 
                         If isTtc Then
-                            ' TTC 处理：建立 GDI 名到 FamilyName 的映射
+                            ' ── TTC 处理：建立 GDI 名到 FamilyName 的映射 ──
                             Dim rawToFamily As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
                             For Each ni As FontInfoTable In nameInfos
                                 For Each raw As String In ni.AllRawNames
@@ -540,7 +659,7 @@ Public Class FormMain
                                 End If
                             Next
                         Else
-                            ' TTF / OTF
+                            ' ── TTF / OTF ──
                             Dim sharedFamilyName As String = If(nameInfos.Count > 0, nameInfos(0).FamilyName, "")
                             Dim gdiName As String = pfc.Families(0).Name
                             If String.IsNullOrEmpty(gdiName) Then gdiName = sharedFamilyName
@@ -580,7 +699,7 @@ Public Class FormMain
             End If
         End If
 
-        ' 更新 UI
+        ' 步骤 6：更新 UI
         UpdateFontStatisticsLabel()
         PopulateComboBoxes()
         LoadFallbackList()
@@ -593,7 +712,36 @@ Public Class FormMain
         End If
     End Sub
 
-    ' ─── 辅助方法（用户目录、指示器） ───────────────────────────────
+    ''' <summary>
+    ''' 清空所有字体映射缓存、绘制缓存、属性面板显示。
+    ''' 供 LoadFontDirectory 每次重新加载时调用。
+    ''' </summary>
+    Private Sub ClearAllCaches()
+        For Each pfc As PrivateFontCollection In _fontCollections
+            pfc.Dispose()
+        Next
+        _fontCollections.Clear()
+        _fontCache.Clear()
+        _ttcTag.Clear()
+        _gdiToFilePath.Clear()
+        _gdiToFamily.Clear()
+        _familyToGdi.Clear()
+        _ttcPhysicalIndex.Clear()
+        _gdiToFontInfo.Clear()
+
+        lblFontName.Text = "-" : lblFontFamily.Text = "-" : lblFontType.Text = "-"
+        lblFontCoverage.Text = "-" : lblFontModify.Text = "-" : lblFontSize.Text = "-"
+
+        For Each f In _drawFontCache.Values
+            f.Dispose()
+        Next
+        _drawFontCache.Clear()
+        _tagSizeCache.Clear()
+    End Sub
+
+#End Region
+
+#Region "── 用户目录与指示器 ──────────────────────────────────────"
 
     ''' <summary>
     ''' 更新用户目录复选框的显示状态和提示。
@@ -627,7 +775,7 @@ Public Class FormMain
     ''' <param name="teeworldsPath">Teeworlds 目录完整路径。</param>
     ''' <returns>用户选择的目录路径；若取消则返回空字符串。</returns>
     Private Function ResolveUserDirectory(hasDDNet As Boolean, hasTeeworlds As Boolean,
-                                      ddnetPath As String, teeworldsPath As String) As String
+                                          ddnetPath As String, teeworldsPath As String) As String
 
         ' 1. 根据目录存在情况决定目标路径
         Dim target As String = ""
@@ -659,7 +807,7 @@ Public Class FormMain
         ' 2. 如果目标目录不存在，询问用户是否创建
         If Not Directory.Exists(target) Then
             Dim result = MessageBox.Show($"用户目录不存在，是否创建？",
-                                     "创建用户目录", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                                         "创建用户目录", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
             If result <> DialogResult.Yes Then
                 chkDirSelect.CheckState = CheckState.Unchecked
                 Return ""
@@ -676,7 +824,9 @@ Public Class FormMain
         Return target
     End Function
 
-    ' ─── 更新统计标签 ──────────────────────────────────────────────────
+#End Region
+
+#Region "── 字体统计与组合框 ──────────────────────────────────────"
 
     ''' <summary>
     ''' 更新状态栏显示字体总数、实际文件数、未使用数量。
@@ -697,8 +847,6 @@ Public Class FormMain
         lblDirFonts.Text = If(unusedCount > 0, $"{baseText}, 未使用 {unusedCount} 项", baseText)
     End Sub
 
-    ' ─── 组合框填充与同步 ─────────────────────────────────────────────
-
     ''' <summary>
     ''' 填充所有语言组合框并从配置加载选中项。
     ''' </summary>
@@ -711,6 +859,7 @@ Public Class FormMain
     ''' 同步所有语言组合框的项列表，恢复先前选中项。
     ''' </summary>
     Private Sub SyncComboBoxItems()
+        ' 加锁防止 SelectedIndexChanged 递归触发
         _isFillingComboBoxes = True
         For Each cb As ComboBox In {cbLA, cbJP, cbKR, cbSC, cbTC}
             Dim previousSelection As String = If(cb.SelectedIndex >= 0, cb.SelectedItem.ToString(), "")
@@ -720,6 +869,7 @@ Public Class FormMain
                 cb.Items.Add(item)
             Next
 
+            ' 尽量恢复之前的选中项
             Dim restored As Boolean = False
             If Not String.IsNullOrEmpty(previousSelection) Then
                 For i As Integer = 0 To cb.Items.Count - 1
@@ -735,6 +885,7 @@ Public Class FormMain
             End If
         Next
         _isFillingComboBoxes = False
+
         RefreshAllPreviewLabels()
         If _previewWindow IsNot Nothing AndAlso Not _previewWindow.IsDisposed AndAlso _previewWindow.Visible Then
             SynchronizePreviewWindow()
@@ -756,11 +907,11 @@ Public Class FormMain
             _isFillingComboBoxes = True
             Dim jsonText As String = File.ReadAllText(jsonPath, Encoding.UTF8)
 
-            ' 默认字体
+            ' ── 默认字体 ──
             _originalDefaultFont = ParseJsonString(jsonText, "default")
             SelectComboBoxItemByFamilyName(cbLA, _originalDefaultFont)
 
-            ' 语言变体
+            ' ── 语言变体 ──
             Dim variantsBlock As String = ParseJsonBlock(jsonText, "language variants")
             Dim hasVariants As Boolean = Not String.IsNullOrWhiteSpace(variantsBlock) AndAlso variantsBlock.Contains(":")
             chkLanguageVariants.Checked = hasVariants
@@ -776,7 +927,7 @@ Public Class FormMain
                 SelectComboBoxItemByFamilyName(cbTC, _originalTraditionalChineseFont)
             End If
 
-            ' 回退列表
+            ' ── 回退列表 ──
             Dim fallbackPattern As String = """fallbacks""\s*:\s*\[([\s\S]*?)\]"
             Dim fbMatch As Match = Regex.Match(jsonText, fallbackPattern, RegexOptions.IgnoreCase)
             Dim hasFallbacks As Boolean = fbMatch.Success AndAlso Regex.IsMatch(fbMatch.Groups(1).Value, """[^""]+""")
@@ -809,7 +960,9 @@ Public Class FormMain
         Next
     End Sub
 
-    ' ─── 预览标签刷新 ──────────────────────────────────────────────────
+#End Region
+
+#Region "── 预览标签与字体获取 ────────────────────────────────────"
 
     ''' <summary>
     ''' 刷新所有语言预览标签的字体。
@@ -828,7 +981,9 @@ Public Class FormMain
     ''' 为标签应用指定 GDI 名称的字体。
     ''' </summary>
     Private Sub ApplyFontToLabel(lbl As Label, gdiName As String)
+        Dim oldFont = lbl.Font
         lbl.Font = GetFontForGdiName(gdiName, 9.0F)
+        oldFont?.Dispose()
     End Sub
 
     ''' <summary>
@@ -842,7 +997,8 @@ Public Class FormMain
                 If f.Name.ToLower() = gdiName.ToLower() Then fam = f : Exit For
             Next
             If fam Is Nothing Then fam = pfc.Families(0)
-            ' 从 FontNameInfo 取正确的 Style�0c避免 GDI+ 静默回退到 Regular
+
+            ' 从 FontInfoTable 取正确的 Style，避免 GDI+ 静默回退到 Regular
             Dim style As FontStyle = FontStyle.Regular
             Dim ni As FontInfoTable = Nothing
             If _gdiToFontInfo.TryGetValue(gdiName.ToLower(), ni) Then style = ni.GdiFontStyle
@@ -855,7 +1011,9 @@ Public Class FormMain
         Return New Font(Me.Font.FontFamily, size)
     End Function
 
-    ' ─── 字体列表自绘（显示 TTC 序号） ────────────────────────────────
+#End Region
+
+#Region "── 字体列表自绘与选中 ────────────────────────────────────"
 
     ''' <summary>
     ''' 自定义绘制字体列表项，显示 TTC 序号标签。
@@ -874,7 +1032,7 @@ Public Class FormMain
         Dim drawFont As Font = _drawFontCache(key)
 
         Dim textColor As Color = If((e.State And DrawItemState.Selected) <> 0,
-                                SystemColors.HighlightText, Color.Black)
+                                    SystemColors.HighlightText, Color.Black)
         Dim textRect As New Rectangle(e.Bounds.X + 2, e.Bounds.Y, e.Bounds.Width - 8, e.Bounds.Height)
         TextRenderer.DrawText(e.Graphics, itemText, drawFont, textRect, textColor,
                               TextFormatFlags.Left Or TextFormatFlags.VerticalCenter Or TextFormatFlags.NoPrefix)
@@ -888,19 +1046,18 @@ Public Class FormMain
             Dim tagSize = _tagSizeCache(tag)
             Dim tagBrush = If((e.State And DrawItemState.Selected) <> 0, _tagBrushSelected, _tagBrushNormal)
             e.Graphics.DrawString(tag, _tagFont, tagBrush,
-            New PointF(e.Bounds.Right - tagSize.Width - 4,
-                       e.Bounds.Y + (e.Bounds.Height - tagSize.Height) / 2 + 1))
+                New PointF(e.Bounds.Right - tagSize.Width - 4,
+                           e.Bounds.Y + (e.Bounds.Height - tagSize.Height) / 2 + 1))
         End If
 
         e.DrawFocusRectangle()
     End Sub
 
-    ' ─── 选中字体显示详细信息 ──────────────────────────────────────────
-
     ''' <summary>
     ''' 字体列表选中项改变时，在右侧面板显示详细信息。
     ''' </summary>
     Private Sub lstbDirectoryFonts_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstbDirFonts.SelectedIndexChanged
+        ' ── 多选：只更新统计文本 ──
         If lstbDirFonts.SelectedItems.Count > 1 Then
             lblDirFonts.Text = $"字体 {lstbDirFonts.Items.Count} 项, 选中 {lstbDirFonts.SelectedItems.Count} 项"
             Return
@@ -913,6 +1070,7 @@ Public Class FormMain
             Return
         End If
 
+        ' ── 单选：读取文件信息 ──
         Dim gdiName As String = lstbDirFonts.SelectedItem.ToString()
         Dim filePath As String = ""
         If Not _gdiToFilePath.TryGetValue(gdiName.ToLower(), filePath) Then
@@ -924,14 +1082,15 @@ Public Class FormMain
         lblFontName.Text = fileInfo.Name
         Dim fileSize As Long = fileInfo.Length
         lblFontSize.Text = If(fileSize >= 1024 * 1024, $"{fileSize / 1024 / 1024:F2} MB",
-                         If(fileSize >= 1024, $"{fileSize / 1024:F1} KB", $"{fileSize} B"))
+                              If(fileSize >= 1024, $"{fileSize / 1024:F1} KB", $"{fileSize} B"))
 
         Dim ttcIndex As Integer = 0
         _ttcPhysicalIndex.TryGetValue(gdiName.ToLower(), ttcIndex)
         Dim nameInfos As List(Of FontInfoTable) = FontInfoReader.ReadAllFontNames(filePath)
         Dim info As FontInfoTable = If(nameInfos.Count > ttcIndex, nameInfos(ttcIndex),
-                                      If(nameInfos.Count > 0, nameInfos(0), Nothing))
+                                       If(nameInfos.Count > 0, nameInfos(0), Nothing))
 
+        ' 构造类型描述：TTC / 字体文件后缀 + 字重/字宽
         Dim tag As String = ""
         Dim baseType As String = If(_ttcTag.TryGetValue(gdiName.ToLower(), tag),
                                     "TTC",
@@ -949,7 +1108,7 @@ Public Class FormMain
         Dim familyName As String = ""
         lblFontFamily.Text = If(_gdiToFamily.TryGetValue(gdiName.ToLower(), familyName), familyName, "-")
 
-        ' 语言覆盖信息
+        ' ── 语言覆盖信息 ──
         Dim ext As String = Path.GetExtension(filePath).ToLower()
         Dim coverage As String = ""
         If ext = ".ttc" Then
@@ -971,7 +1130,109 @@ Public Class FormMain
         lblFontFamily.Text = "-" : lblFontCoverage.Text = "-"
     End Sub
 
-    ' ─── ComboBox 选择变更事件 ─────────────────────────────────────────
+#End Region
+
+#Region "── 字体列表右键菜单与相关操作 ────────────────────────────"
+
+    ''' <summary>
+    ''' 右键点击字体列表：先确保右键点中的项被选中，再弹出上下文菜单。
+    ''' </summary>
+    Private Sub lstbDirFonts_MouseDown(sender As Object, e As MouseEventArgs) Handles lstbDirFonts.MouseDown
+        If e.Button <> MouseButtons.Right Then Return
+
+        ' 命中测试
+        Dim idx As Integer = lstbDirFonts.IndexFromPoint(e.Location)
+        If idx < 0 OrElse idx >= lstbDirFonts.Items.Count Then Return
+
+        ' 若右键点中的项不在当前选择集合里，则单独选中它
+        If Not lstbDirFonts.SelectedIndices.Contains(idx) Then
+            lstbDirFonts.ClearSelected()
+            lstbDirFonts.SelectedIndex = idx
+        End If
+
+        ' 只支持单选（多选时可后续扩展批量另存/批量删除）
+        If lstbDirFonts.SelectedIndices.Count <> 1 Then Return
+
+        ' 弹出（鼠标位置版 Show）
+        _listContextMenu.Show(lstbDirFonts, e.Location)
+    End Sub
+
+    ''' <summary>用系统默认程序打开当前选中字体文件。</summary>
+    Private Sub OpenSelectedFontFile()
+        If lstbDirFonts.SelectedIndex < 0 Then Return
+        Dim gdiName = lstbDirFonts.SelectedItem.ToString()
+        Dim filePath As String = ""
+        If Not _gdiToFilePath.TryGetValue(gdiName.ToLower(), filePath) Then Return
+        If Not File.Exists(filePath) Then Return
+
+        Try
+            Process.Start(New ProcessStartInfo(filePath) With {.UseShellExecute = True})
+        Catch ex As Exception
+            MessageBox.Show($"无法打开字体：{ex.Message}", "打开字体",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    ''' <summary>将当前选中字体文件另存到用户指定位置。</summary>
+    Private Sub SaveSelectedFontAs()
+        If lstbDirFonts.SelectedIndex < 0 Then Return
+        Dim gdiName = lstbDirFonts.SelectedItem.ToString()
+        Dim filePath As String = ""
+        If Not _gdiToFilePath.TryGetValue(gdiName.ToLower(), filePath) Then Return
+        If Not File.Exists(filePath) Then Return
+
+        Dim ext As String = Path.GetExtension(filePath)
+        Using sfd As New SaveFileDialog
+            sfd.Title = "另存为"
+            sfd.FileName = Path.GetFileName(filePath)
+            sfd.Filter = $"{ext.TrimStart("."c).ToUpper()} 字体文件|*{ext}|所有文件|*.*"
+            sfd.DefaultExt = ext.TrimStart("."c)
+            If sfd.ShowDialog(Me) <> DialogResult.OK Then Return
+
+            Try
+                File.Copy(filePath, sfd.FileName, True)
+                MessageBox.Show($"字体文件已保存。")
+            Catch ex As Exception
+                MessageBox.Show($"另存为失败：{ex.Message}", "另存为",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End Using
+    End Sub
+
+    ''' <summary>在资源管理器中定位并选中当前字体文件。</summary>
+    Private Sub OpenSelectedFontFolder()
+        If lstbDirFonts.SelectedIndex < 0 Then Return
+        Dim gdiName = lstbDirFonts.SelectedItem.ToString()
+        Dim filePath As String = ""
+        If Not _gdiToFilePath.TryGetValue(gdiName.ToLower(), filePath) Then Return
+        If Not File.Exists(filePath) Then Return
+        Process.Start("explorer.exe", $"/select,""{filePath}""")
+    End Sub
+
+    ''' <summary>复制当前选中字体的完整物理路径。</summary>
+    Private Sub CopySelectedFontPath()
+        If lstbDirFonts.SelectedIndex < 0 Then Return
+        Dim gdiName = lstbDirFonts.SelectedItem.ToString()
+        Dim filePath As String = ""
+        If Not _gdiToFilePath.TryGetValue(gdiName.ToLower(), filePath) Then Return
+        Clipboard.SetText(filePath)
+    End Sub
+
+    ''' <summary>
+    ''' 全选字体列表中的所有项（仅当列表非空且支持多选时生效）。
+    ''' </summary>
+    Private Sub SelectAllFonts()
+        If lstbDirFonts.Items.Count = 0 Then Return
+        If lstbDirFonts.SelectionMode = SelectionMode.One Then Return
+
+        lstbDirFonts.ClearSelected()
+        For i As Integer = 0 To lstbDirFonts.Items.Count - 1
+            lstbDirFonts.SetSelected(i, True)
+        Next
+    End Sub
+#End Region
+
+#Region "── ComboBox 事件 ─────────────────────────────────────────"
 
     ''' <summary>
     ''' 语言组合框选择变更时更新预览标签，并同步预览窗体。
@@ -989,6 +1250,7 @@ Public Class FormMain
             ApplyFontToLabel(labelMap(cb), cb.SelectedItem.ToString())
         End If
 
+        ' 同步到预览窗口
         If _previewWindow IsNot Nothing AndAlso _previewWindow.Visible Then
             Dim langKey = cb.Name.Replace("cb", "").ToUpper()
             Dim ni2 As FontInfoTable = Nothing
@@ -999,7 +1261,9 @@ Public Class FormMain
         End If
     End Sub
 
-    ' ─── 回退字体相关 ──────────────────────────────────────────────────
+#End Region
+
+#Region "── 回退字体管理 ──────────────────────────────────────────"
 
     ''' <summary>
     ''' 从 index.json 加载回退字体列表。
@@ -1043,7 +1307,7 @@ Public Class FormMain
     End Sub
 
     ''' <summary>
-    ''' 刷新回退字体列表显示。
+    ''' 刷新回退字体列表显示（FamilyName → GDI 显示名）。
     ''' </summary>
     Private Sub RefreshFallbackListBox()
         lstbFallbackFonts.Items.Clear()
@@ -1088,15 +1352,11 @@ Public Class FormMain
         e.DrawFocusRectangle()
     End Sub
 
-    ' ─── 回退操作（插入、移除、移动） ─────────────────────────────────
-
     ''' <summary>
     ''' 在回退列表中插入当前选中的字体。
     ''' </summary>
     Private Sub InsertFallbackItem(sender As Object, e As EventArgs) Handles btnInsert.Click
-        If cbFallbackFonts.SelectedIndex < 0 Then
-            Return
-        End If
+        If cbFallbackFonts.SelectedIndex < 0 Then Return
 
         Dim gdiName = cbFallbackFonts.SelectedItem.ToString
         Dim familyName = ""
@@ -1111,9 +1371,7 @@ Public Class FormMain
             insertIndex = _fallbacks.Count
         End If
 
-        If _fallbacks.Contains(familyName) Then
-            Return
-        End If
+        If _fallbacks.Contains(familyName) Then Return
 
         _fallbacks.Insert(insertIndex, familyName)
         RefreshFallbackListBox()
@@ -1125,9 +1383,7 @@ Public Class FormMain
     ''' </summary>
     Private Sub RemoveFallbackItem(sender As Object, e As EventArgs) Handles btnRemove.Click
         Dim idx As Integer = lstbFallbackFonts.SelectedIndex
-        If idx < 0 Then
-            Return
-        End If
+        If idx < 0 Then Return
         _fallbacks.RemoveAt(idx)
         RefreshFallbackListBox()
         If _fallbacks.Count > 0 Then
@@ -1170,7 +1426,9 @@ Public Class FormMain
         End If
     End Sub
 
-    ' ─── 语言变体开关 ──────────────────────────────────────────────────
+#End Region
+
+#Region "── 开关：语言变体 / 回退字体 ──────────────────────────────"
 
     ''' <summary>
     ''' 语言变体编辑开关改变时更新相关控件状态。
@@ -1194,8 +1452,6 @@ Public Class FormMain
         lblSC.Enabled = enabled : lblTC.Enabled = enabled
     End Sub
 
-    ' ─── 回退开关 ──────────────────────────────────────────────────────
-
     ''' <summary>
     ''' 回退字体编辑开关改变时更新相关控件状态。
     ''' </summary>
@@ -1217,7 +1473,9 @@ Public Class FormMain
         btnDown.Enabled = enabled
     End Sub
 
-    ' ─── 跟随英文 / 恢复按钮 ──────────────────────────────────────────
+#End Region
+
+#Region "── 跟随 / 恢复语言字体 ────────────────────────────────────"
 
     ''' <summary>
     ''' 将指定语言变体设置为与默认西文相同的字体。
@@ -1255,7 +1513,7 @@ Public Class FormMain
     End Sub
 
     ''' <summary>
-    ''' 获取组合框当前选中的 FamilyName。
+    ''' 获取组合框当前选中的 FamilyName（多语言 ComboBox 第 0 项为"-"，表示未选择）。
     ''' </summary>
     Private Function GetSelectedFamilyName(cb As ComboBox) As String
         If cb.SelectedIndex < 0 OrElse cb.SelectedItem Is Nothing Then Return ""
@@ -1265,7 +1523,9 @@ Public Class FormMain
         Return If(_gdiToFamily.TryGetValue(gdiName.ToLower(), familyName), familyName, gdiName)
     End Function
 
-    ' ─── 构建 index.json ───────────────────────────────────────────────
+#End Region
+
+#Region "── 配置生成与写入 ────────────────────────────────────────"
 
     ''' <summary>
     ''' 根据当前 UI 状态生成完整的 index.json 内容。
@@ -1274,7 +1534,7 @@ Public Class FormMain
         Dim usedFamilyNames As New HashSet(Of String)
         Dim familyToGdiMap As New Dictionary(Of String, String)
 
-        ' 从组合框收集
+        ' ── 从语言组合框收集 ──
         For Each cb As ComboBox In {cbLA, cbJP, cbKR, cbSC, cbTC}
             Dim famName As String = GetSelectedFamilyName(cb)
             If Not String.IsNullOrEmpty(famName) Then
@@ -1285,7 +1545,7 @@ Public Class FormMain
             End If
         Next
 
-        ' 从回退列表收集
+        ' ── 从回退列表收集 ──
         For Each famName As String In _fallbacks
             usedFamilyNames.Add(famName)
             If Not familyToGdiMap.ContainsKey(famName) Then
@@ -1298,7 +1558,7 @@ Public Class FormMain
             End If
         Next
 
-        ' 收集对应的文件名
+        ' ── 收集对应的文件名（去重） ──
         Dim fileSet As New HashSet(Of String)
         Dim fontFileNames As New List(Of String)
         For Each famName As String In usedFamilyNames
@@ -1315,7 +1575,7 @@ Public Class FormMain
             End If
         Next
 
-        ' 强制包含 Font Awesome
+        ' ── 强制包含 Font Awesome ──
         If Not fileSet.Contains("Font_Awesome_6_Free-Solid-900.otf") Then
             If Directory.Exists(_currentFontDirectory) Then
                 Dim faFiles = Directory.GetFiles(_currentFontDirectory, "*Font*Awesome*.otf", SearchOption.TopDirectoryOnly)
@@ -1332,7 +1592,7 @@ Public Class FormMain
             End If
         End If
 
-        ' 构造 JSON
+        ' ── 构造 JSON ──
         Dim sb As New StringBuilder()
         sb.AppendLine("{")
         sb.AppendLine("    ""font files"": [")
@@ -1372,10 +1632,9 @@ Public Class FormMain
         Return sb.ToString()
     End Function
 
-    ' ─── 写入配置 ──────────────────────────────────────────────────────
-
     ''' <summary>
     ''' 将当前配置写入 index.json。
+    ''' Shift+点击可额外启动 ddnet.exe。
     ''' </summary>
     Private Sub ApplyConfiguration(sender As Object, e As EventArgs) Handles btnApply.Click
         If String.IsNullOrEmpty(_currentFontDirectory) Then
@@ -1390,12 +1649,15 @@ Public Class FormMain
         Try
             Dim content = BuildIndexJsonContent()
             File.WriteAllText(jsonPath, content, Encoding.UTF8)
+
             ' 更新恢复基准值
             _originalDefaultFont = GetSelectedFamilyName(cbLA)
             _originalJapaneseFont = GetSelectedFamilyName(cbJP)
             _originalKoreanFont = GetSelectedFamilyName(cbKR)
             _originalSimplifiedChineseFont = GetSelectedFamilyName(cbSC)
             _originalTraditionalChineseFont = GetSelectedFamilyName(cbTC)
+
+            ' Shift+点击 = 应用并启动
             If (Control.ModifierKeys And Keys.Shift) = Keys.Shift Then
                 Dim parentDir = Directory.GetParent(_currentFontDirectory)?.Parent
                 Dim exePath = Path.Combine(parentDir.FullName, "ddnet.exe")
@@ -1407,8 +1669,6 @@ Public Class FormMain
             MessageBox.Show($"配置写入失败：{ex.Message}", "写入配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
-
-    ' ─── 导出配置 ──────────────────────────────────────────────────────
 
     ''' <summary>
     ''' 将当前配置另存为独立的 index.json 文件。
@@ -1435,10 +1695,12 @@ Public Class FormMain
         End Using
     End Sub
 
-    ' ─── 恢复默认 ──────────────────────────────────────────────────────
+#End Region
+
+#Region "── 恢复默认 ──────────────────────────────────────────────"
 
     ''' <summary>
-    ''' 恢复默认配置和字体文件。
+    ''' 恢复默认配置和字体文件（支持"仅配置"或"配置+字体"两种模式）。
     ''' </summary>
     Private Sub RestoreDefaultFonts(sender As Object, e As EventArgs) Handles btnDefault.Click
         If String.IsNullOrEmpty(_currentFontDirectory) Then
@@ -1446,11 +1708,12 @@ Public Class FormMain
             Return
         End If
 
+        ' ── 用户目录：引导用户手动清空 ──
         If chkDirSelect.Checked Then
-            Dim result = MessageBox.Show($"要恢复用户目录的默认状态，请按以下步骤操作：{vbCrLf}
-                                     * 单击「确定」在资源管理器中打开该文件夹{vbCrLf}
-                                     * 关闭本程序，注意不是关闭资源管理器{vbCrLf}
-                                     * 清空配置和所有字体，或删除整个 fonts 文件夹{vbCrLf}",
+            Dim result = MessageBox.Show($"要恢复用户目录的默认状态，请按以下步骤操作：
+* 单击「确定」在资源管理器中打开该文件夹
+* 关闭本程序，注意不是关闭资源管理器
+* 清空配置和所有字体，或删除整个 fonts 文件夹",
                                      "还原默认字体",
                                      MessageBoxButtons.OKCancel, MessageBoxIcon.Information)
             If result = DialogResult.OK Then
@@ -1477,14 +1740,12 @@ Public Class FormMain
             Return
         End If
 
-        ' ─── 使用 DialogDefault 替代 MessageBox ──────────────────────────
+        ' ── 用户选择还原模式 ──
         Using dlg As New DialogRestore()
-            If dlg.ShowDialog(Me) <> DialogResult.OK Then
-                Return
-            End If
+            If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
 
             If dlg.SelectedMode = DialogRestore.RestoreMode.FontAndConfig Then
-                ' 恢复预装配置和字体
+                ' ── 模式 A：恢复预装配置 + 字体 ──
                 Try
                     File.Copy(sourceJson, destJson, True)
 
@@ -1502,7 +1763,7 @@ Public Class FormMain
                         File.WriteAllLines(PendingDeletionsPath, existing.Distinct)
                     End If
 
-                    ' 直接写入待复制清单，源路径为 Standard 目录，不再缓存
+                    ' 写入待复制清单（源 = Standard 目录）
                     Dim copyLines As New List(Of String)
                     For Each src In stdFiles
                         Dim fileName = Path.GetFileName(src)
@@ -1511,17 +1772,15 @@ Public Class FormMain
                     Next
                     File.WriteAllLines(PendingCopiesPath, copyLines)
 
-                    MessageBox.Show("默认字体恢复成功：" & vbCrLf &
-                                "* 预装配置已恢复默认" & vbCrLf &
-                                "* 预装字体将在下次启动时恢复默认",
-                                "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    MessageBox.Show("默认字体和配置恢复成功，下次启动时生效。",
+                                    "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
                     LoadFontDirectory(If(String.IsNullOrEmpty(_installDirectory), _currentFontDirectory, _installDirectory))
                 Catch ex As Exception
                     MessageBox.Show($"恢复默认字体时发生错误：{ex.Message}", "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End Try
-            Else ' ConfigOnly
-                ' 仅恢复预装配置
+            Else
+                ' ── 模式 B：仅恢复预装配置 ──
                 Try
                     File.Copy(sourceJson, destJson, True)
                     LoadConfigurationFromJson()
@@ -1534,10 +1793,12 @@ Public Class FormMain
         End Using
     End Sub
 
-    ' ─── 打开文件夹 ──────────────────────────────────────────────────
+#End Region
+
+#Region "── 字体目录 / 打开 / 刷新 ──────────────────────────────────"
 
     ''' <summary>
-    ''' 在资源管理器中打开当前字体目录。
+    ''' 在资源管理器中打开当前字体目录（Shift+点击复制路径）。
     ''' </summary>
     Private Sub btnLocate_Click(sender As Object, e As EventArgs) Handles btnLocate.Click
         If (Control.ModifierKeys And Keys.Shift) = Keys.Shift Then
@@ -1546,6 +1807,8 @@ Public Class FormMain
             OpenFontDirectory()
         End If
     End Sub
+
+    ''' <summary>在资源管理器中打开当前字体目录。</summary>
     Private Sub OpenFontDirectory()
         If String.IsNullOrEmpty(_currentFontDirectory) Then
             MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
@@ -1569,8 +1832,6 @@ Public Class FormMain
         End If
     End Sub
 
-    ' ─── 用户目录切换 ─────────────────────────────────────────────────
-
     ''' <summary>
     ''' 用户目录复选框状态改变时重新加载目录。
     ''' </summary>
@@ -1585,7 +1846,9 @@ Public Class FormMain
         End If
     End Sub
 
-    ' ─── 浏览/拖放加载 ────────────────────────────────────────────────
+#End Region
+
+#Region "── 浏览 / 拖放加载字体目录 ────────────────────────────────"
 
     ''' <summary>
     ''' 拖放进入事件：允许拖放文件。
@@ -1639,10 +1902,13 @@ Public Class FormMain
         End Using
     End Sub
 
-    ' ─── 路径解析辅助 ──────────────────────────────────────────────────
+#End Region
+
+#Region "── 路径解析辅助 ──────────────────────────────────────────"
 
     ''' <summary>
     ''' 根据选定文件解析出字体目录路径。
+    ''' 支持 .url / .lnk / .exe / .json。
     ''' </summary>
     Private Function ResolveFileToFontDirectory(selectedFile As String) As String
         Dim ext = Path.GetExtension(selectedFile).ToLower()
@@ -1682,7 +1948,7 @@ Public Class FormMain
     End Function
 
     ''' <summary>
-    ''' 根据可执行文件路径构建字体目录。
+    ''' 根据可执行文件路径构建字体目录（<exe 目录>\data\fonts）。
     ''' </summary>
     Private Function BuildFontDirectoryFromExe(exePath As String) As String
         Dim dir = If(File.Exists(exePath), Path.GetDirectoryName(exePath), exePath)
@@ -1690,7 +1956,7 @@ Public Class FormMain
     End Function
 
     ''' <summary>
-    ''' 解析 .lnk 快捷方式的目标路径。
+    ''' 解析 .lnk 快捷方式的目标路径（通过 WScript.Shell COM 对象）。
     ''' </summary>
     Private Function ResolveLnkTarget(lnkPath As String) As String
         Try
@@ -1703,7 +1969,7 @@ Public Class FormMain
     End Function
 
     ''' <summary>
-    ''' 根据扩展名获取来源标签。
+    ''' 根据扩展名获取来源标签（用于标题显示）。
     ''' </summary>
     Private Function GetSourceLabel(ext As String) As String
         Select Case ext.TrimStart(".").ToUpper()
@@ -1715,7 +1981,9 @@ Public Class FormMain
         End Select
     End Function
 
-    ' ─── 添加字体 ──────────────────────────────────────────────────────
+#End Region
+
+#Region "── 字体导入 ──────────────────────────────────────────────"
 
     ''' <summary>
     ''' 拖放添加字体的进入事件。
@@ -1780,14 +2048,14 @@ Public Class FormMain
             Return
         End If
 
-        ' 全部重复 → 用 DialogPopup 显示所有跳过文件
+        ' 全部重复 → 只列出跳过项
         If toAdd.Count = 0 Then
             Using dlg As New DialogPopUp()
                 dlg.Text = "导入字体"
                 dlg.TitleText = $"所选 {duplicates.Count} 个字体已存在, 跳过导入"
                 dlg.DescriptionText = ""
                 dlg.btnOK.Visible = False
-                dlg.CancelText = "确定"   ' 隐藏取消按钮
+                dlg.CancelText = "确定"
 
                 For Each dup In duplicates
                     dlg.Items.Add($"[跳过] {dup}")
@@ -1803,19 +2071,17 @@ Public Class FormMain
                 File.Copy(src, Path.Combine(_currentFontDirectory, Path.GetFileName(src)), False)
             Next
 
-            ' ─── 展示混合结果（成功 + 跳过）用 DialogPopup ──────────────
+            ' 展示混合结果（成功 + 跳过）
             Using dlg As New DialogPopUp()
                 dlg.Text = "导入字体"
                 dlg.TitleText = $"成功导入 {toAdd.Count} 个字体，跳过 {duplicates.Count} 个已存在的字体"
                 dlg.DescriptionText = ""
                 dlg.btnOK.Visible = False
-                dlg.CancelText = "确定"   ' 隐藏取消按钮
+                dlg.CancelText = "确定"
 
-                ' 新增的文件不加前缀（只显示文件名）
                 For Each f As String In toAdd
                     dlg.Items.Add($"✔ {Path.GetFileName(f)}")
                 Next
-                ' 跳过的文件添加 [跳过] 前缀
                 For Each dup In duplicates
                     dlg.Items.Add($"✖ [跳过] {dup}")
                 Next
@@ -1851,6 +2117,7 @@ Public Class FormMain
                 Dim total = pfc.Families.Length
 
                 If isTtc Then
+                    ' TTC：先建 rawName → FamilyName 映射
                     Dim rawToFamily As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
                     For Each ni As FontInfoTable In nameInfos
                         For Each raw As String In ni.AllRawNames
@@ -1899,12 +2166,17 @@ Public Class FormMain
         UpdateFontStatisticsLabel()
     End Sub
 
-    ' ─── 删除字体（挂起） ─────────────────────────────────────────────
+#End Region
+
+#Region "── 字体删除（挂起） ──────────────────────────────────────"
 
     ''' <summary>
     ''' 删除选中的字体（标记为待删除，下次启动执行）。
     ''' </summary>
     Private Sub DeleteSelectedFonts(sender As Object, e As EventArgs) Handles btnFontUninstall.Click
+        UninstallSelectedFont()
+    End Sub
+    Private Sub UninstallSelectedFont()
         If String.IsNullOrEmpty(_currentFontDirectory) Then
             MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
@@ -1913,6 +2185,7 @@ Public Class FormMain
         Dim filePathSet As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
         Dim blockedNames As New List(Of String)
 
+        ' ── 收集待删除文件（跳过受保护字体） ──
         For Each idx As Integer In lstbDirFonts.SelectedIndices
             Dim itemText = lstbDirFonts.Items(idx).ToString()
             Dim fp As String = ""
@@ -1927,14 +2200,14 @@ Public Class FormMain
 
         ' 提示被拒绝的保护字体
         If blockedNames.Count > 0 Then
-            Dim protectedFontName As String = blockedNames(0)  ' 因为只有一个
+            Dim protectedFontName As String = blockedNames(0)
             MessageBox.Show($"字体「{protectedFontName}」写保护。",
-            "字体写保护", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                            "字体写保护", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
 
         If filePathSet.Count = 0 Then Return
 
-        ' 收集 TTC 影响的子字体名称
+        ' ── 收集 TTC 影响的子字体名称 ──
         Dim affectedNames As New List(Of String)
         For Each fp As String In filePathSet
             If Not Path.GetExtension(fp).Equals(".ttc", StringComparison.OrdinalIgnoreCase) Then Continue For
@@ -1947,13 +2220,14 @@ Public Class FormMain
         Next
         affectedNames = affectedNames.Distinct().ToList()
 
+        ' ── 确认对话框 ──
         Using dlg As New DialogPopUp()
             dlg.Text = "确认删除"
             dlg.TitleText = $"确认要删除以下 {filePathSet.Count} 个字体?"
             dlg.ConfirmText = "删除"
             dlg.CancelText = "取消"
 
-            ' ─── 分离预装字体和非预装字体 ──────────────────────────────
+            ' 分离预装字体和非预装字体
             Dim presetFiles As New List(Of String)
             Dim normalFiles As New List(Of String)
 
@@ -1966,20 +2240,14 @@ Public Class FormMain
                 End If
             Next
 
-            ' 先添加预装字体（标记为 [预装]）
             For Each fp As String In presetFiles
                 dlg.Items.Add($"[预装] {Path.GetFileName(fp)}")
             Next
-
-            ' 再添加非预装字体（不添加前缀）
             For Each fp As String In normalFiles
                 dlg.Items.Add(Path.GetFileName(fp))
             Next
 
-            ' 如果有 TTC 影响的子字体，在说明中显示
             If affectedNames.Count > 0 Then
-                Dim ttcNames = String.Join("、", affectedNames)
-                'dlg.DescriptionText = $"来自 TTC 的子字体也会一并删除：{ttcNames}"
                 dlg.DescriptionText = $"来自 TTC 的子字体也会一并删除{vbCrLf}字体文件将在下次启动时删除"
             Else
                 dlg.DescriptionText = "字体文件将在下次启动时删除"
@@ -1988,11 +2256,12 @@ Public Class FormMain
             If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
         End Using
 
+        ' ── 执行删除（写入挂起清单 + 从内存移除） ──
         Try
             Directory.CreateDirectory(Path.GetDirectoryName(PendingDeletionsPath))
             File.AppendAllLines(PendingDeletionsPath, filePathSet)
 
-            ' 从内存中移除
+            ' 收集需要移除的 GDI 名
             Dim toRemoveGdi As New List(Of String)
             For Each fp As String In filePathSet
                 For Each kvp As KeyValuePair(Of String, String) In _gdiToFilePath
@@ -2002,6 +2271,7 @@ Public Class FormMain
                 Next
             Next
 
+            ' 从列表移除
             For i = lstbDirFonts.Items.Count - 1 To 0 Step -1
                 Dim gdi = lstbDirFonts.Items(i).ToString().ToLower()
                 If toRemoveGdi.Any(Function(g) g = gdi) Then
@@ -2009,6 +2279,7 @@ Public Class FormMain
                 End If
             Next
 
+            ' 收集被删除的 FamilyName（用于清理回退列表）
             Dim deletedFamilyNames As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
             For Each gdi As String In toRemoveGdi
                 Dim fam = ""
@@ -2016,6 +2287,7 @@ Public Class FormMain
                 deletedFamilyNames.Add(gdi)
             Next
 
+            ' 从各映射表移除
             For Each gdi As String In toRemoveGdi
                 _gdiToFilePath.Remove(gdi)
                 _gdiToFamily.Remove(gdi)
@@ -2024,6 +2296,7 @@ Public Class FormMain
                 _ttcPhysicalIndex.Remove(gdi)
             Next
 
+            ' 清理 familyToGdi 中指向已删除项的键
             Dim keysToRemove = _familyToGdi.Where(
                 Function(kvp) toRemoveGdi.Contains(kvp.Value.ToLower())).Select(
                 Function(kvp) kvp.Key).ToList()
@@ -2040,12 +2313,11 @@ Public Class FormMain
             MessageBox.Show($"删除字体失败：{ex.Message}", "删除字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
+#End Region
 
-    ' ─── 字体属性对话框 ──────────────────────────────────────────────
+#Region "── 字体属性对话框（ShellExecuteEx） ───────────────────────"
 
-    ''' <summary>
-    ''' 用于 ShellExecuteEx 的结构体。
-    ''' </summary>
+    ''' <summary>ShellExecuteEx 使用的结构体。</summary>
     <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Auto)>
     Public Structure ShellExecuteInfo
         Public cbSize As Integer
@@ -2073,82 +2345,89 @@ Public Class FormMain
     Private Const SEE_MASK_INVOKEIDLIST As UInteger = &HC
 
     ''' <summary>
-    ''' 显示选中字体的属性对话框。
+    ''' 显示选中字体的属性对话框（"属性"按钮）。
     ''' </summary>
     Private Sub ShowFontProperties(sender As Object, e As EventArgs) Handles btnFontInfo.Click
-        If String.IsNullOrEmpty(_currentFontDirectory) OrElse lstbDirFonts.SelectedItems.Count <> 1 Then Return
-        Dim gdiName = lstbDirFonts.SelectedItem.ToString()
-        Dim filePath = ""
-        If _gdiToFilePath.TryGetValue(gdiName.ToLower(), filePath) AndAlso File.Exists(filePath) Then
-            Dim sei As New ShellExecuteInfo()
-            sei.cbSize = Marshal.SizeOf(sei)
-            sei.lpVerb = "properties"
-            sei.lpFile = filePath
-            sei.nShow = SW_SHOW
-            sei.fMask = SEE_MASK_INVOKEIDLIST
-            ShellExecuteEx(sei)
-        End If
+        ShowFontPropertiesForSelected()
     End Sub
 
-    ' ─── 系统/用户字体文件夹链接 ─────────────────────────────────────
+    ''' <summary>显示当前选中字体文件的属性对话框（内部实现）。</summary>
+    Private Sub ShowFontPropertiesForSelected()
+        If lstbDirFonts.SelectedIndex < 0 Then Return
+        Dim gdiName = lstbDirFonts.SelectedItem.ToString()
+        Dim filePath As String = ""
+        If Not _gdiToFilePath.TryGetValue(gdiName.ToLower(), filePath) Then Return
+        If Not File.Exists(filePath) Then Return
 
-    ''' <summary>
-    ''' 打开系统字体文件夹。
-    ''' </summary>
+        Dim sei As New ShellExecuteInfo()
+        sei.cbSize = Marshal.SizeOf(sei)
+        sei.lpVerb = "properties"
+        sei.lpFile = filePath
+        sei.nShow = SW_SHOW
+        sei.fMask = SEE_MASK_INVOKEIDLIST
+        ShellExecuteEx(sei)
+    End Sub
+
+#End Region
+
+#Region "── 系统/用户字体文件夹链接 ───────────────────────────────"
+
+    ''' <summary>打开系统字体文件夹。</summary>
     Private Sub OpenSystemFonts(sender As Object, e As EventArgs) Handles lblSystemFonts.Click
         Process.Start("explorer.exe", "C:\WINDOWS\FONTS")
     End Sub
 
-    ''' <summary>
-    ''' 打开用户字体文件夹。
-    ''' </summary>
+    ''' <summary>打开用户字体文件夹。</summary>
     Private Sub OpenUserFonts(sender As Object, e As EventArgs) Handles lblLocalFonts.Click
         Process.Start("explorer.exe", Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) & "\AppData\Local\Microsoft\Windows\Fonts")
     End Sub
 
-    ' ─── 双击字体列表打开文件 ─────────────────────────────────────────
+#End Region
+
+#Region "── 双击字体列表 / 复制字体名与族名 ──────────────────────"
 
     ''' <summary>
-    ''' 双击字体列表项，在资源管理器中打开该字体文件。
+    ''' 双击字体列表项，用系统默认程序打开该字体文件。
     ''' </summary>
     Private Sub lstbDirectoryFonts_DoubleClick(sender As Object, e As EventArgs) Handles lstbDirFonts.DoubleClick
-        If lstbDirFonts.SelectedIndex < 0 Then Return
-        Dim gdiName = lstbDirFonts.SelectedItem.ToString()
-        Dim filePath = ""
-        If _gdiToFilePath.TryGetValue(gdiName.ToLower(), filePath) Then
-            Try
-                Process.Start(New ProcessStartInfo(filePath) With {.UseShellExecute = True})
-            Catch ex As Exception
-                MessageBox.Show($"无法打开字体：{ex.Message}", "打开字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            End Try
-        End If
+        OpenSelectedFontFile()
     End Sub
-
-    ' ─── 复制家族名和文件名 ──────────────────────────────────────────
 
     ''' <summary>
     ''' 双击族名标签，复制族名到剪贴板。
     ''' </summary>
     Private Sub CopyFamilyName(sender As Object, e As EventArgs) Handles lblFontFamily.DoubleClick
-        If lblFontFamily.Text <> "-" AndAlso Not String.IsNullOrEmpty(lblFontFamily.Text) Then
-            Clipboard.SetText(lblFontFamily.Text)
-        End If
+        CopySelectedFamilyName()
+    End Sub
+
+    ''' <summary>复制当前选中字体的族名到剪贴板。</summary>
+    Private Sub CopySelectedFamilyName()
+        If lblFontFamily.Text = "-" OrElse String.IsNullOrEmpty(lblFontFamily.Text) Then Return
+        Clipboard.SetText(lblFontFamily.Text)
     End Sub
 
     ''' <summary>
     ''' 双击文件名标签，复制字体名称到剪贴板。
     ''' </summary>
     Private Sub CopyFontName(sender As Object, e As EventArgs) Handles lblFontName.DoubleClick
-        If lstbDirFonts.SelectedIndex >= 0 Then
-            Dim itemText = lstbDirFonts.SelectedItem.ToString()
-            If Not String.IsNullOrEmpty(itemText) Then Clipboard.SetText(itemText)
+        CopySelectedFontName()
+    End Sub
+
+    ''' <summary>复制当前选中字体的 GDI 名到剪贴板。</summary>
+    Private Sub CopySelectedFontName()
+        If lstbDirFonts.SelectedIndex < 0 Then Return
+        Dim itemText = lstbDirFonts.SelectedItem.ToString()
+        If Not String.IsNullOrEmpty(itemText) Then
+            Clipboard.SetText(itemText)
         End If
     End Sub
 
-    ' ─── 预览窗口 ──────────────────────────────────────────────────────
+#End Region
+
+#Region "── 预览窗口 ──────────────────────────────────────────────"
 
     ''' <summary>
-    ''' 打开或激活预览窗体。
+    ''' 打开或激活预览窗体（非模态单例）。
     ''' </summary>
     Private Sub ShowPreviewWindow(sender As Object, e As EventArgs) Handles btnPreview.Click
         If _previewWindow Is Nothing OrElse _previewWindow.IsDisposed Then
@@ -2181,7 +2460,9 @@ Public Class FormMain
         Next
     End Sub
 
-    ' ─── 预装验证 ──────────────────────────────────────────────────────
+#End Region
+
+#Region "── 预装字体验证 ──────────────────────────────────────────"
 
     ''' <summary>
     ''' 点击预装指示灯，验证预装标准字体是否完整。
@@ -2190,6 +2471,10 @@ Public Class FormMain
         VerifyStandardFonts()
     End Sub
 
+    ''' <summary>
+    ''' 校验 4 个预装字体的存在性与家族名匹配情况。
+    ''' 存在问题时提供「修复」按钮，通过挂起机制在下次启动时从 data\standard 恢复字体文件。
+    ''' </summary>
     Private Sub VerifyStandardFonts()
         If String.IsNullOrEmpty(_currentFontDirectory) Then Return
 
@@ -2203,6 +2488,8 @@ Public Class FormMain
         Dim present As New List(Of String)
         Dim missing As New List(Of String)
         Dim mismatch As New List(Of String)
+        ' 需要修复的文件名（缺失 + 家族名不匹配）
+        Dim problemFileNames As New List(Of String)
 
         For Each kvp In required
             Dim fileName = kvp.Key
@@ -2211,6 +2498,7 @@ Public Class FormMain
 
             If Not File.Exists(filePath) Then
                 missing.Add($"✖ {fileName}")
+                problemFileNames.Add(fileName)
                 Continue For
             End If
 
@@ -2220,6 +2508,7 @@ Public Class FormMain
                 If names.Count > 0 Then actualFamily = names(0).FamilyName
             Catch ex As Exception
                 mismatch.Add($"✖ {fileName}")
+                problemFileNames.Add(fileName)
                 Continue For
             End Try
 
@@ -2227,21 +2516,31 @@ Public Class FormMain
                 present.Add($"✔ {fileName}")
             Else
                 mismatch.Add($"✖ {fileName}")
+                problemFileNames.Add(fileName)
             End If
         Next
 
+        Dim hasProblem As Boolean = (missing.Count > 0 OrElse mismatch.Count > 0)
+
+        ' ── 显示对话框 ──
+        Dim dialogResult As DialogResult
         Using dlg As New DialogPopUp()
             dlg.Text = "预装字体验证"
-            dlg.btnOK.Visible = False
 
-            If missing.Count = 0 AndAlso mismatch.Count = 0 Then
+            If hasProblem Then
+                ' 有问题 → 显示「修复」/「关闭」
+                dlg.TitleText = $"存在 {missing.Count + mismatch.Count} 个问题"
+                dlg.DescriptionText = "部分预装字体缺失或引用不匹配"
+                dlg.ConfirmText = "修复"
+                dlg.CancelText = "取消"
+                dlg.btnOK.Visible = True
+            Else
+                ' 全部完整 → 只有一个「确定」按钮
                 dlg.TitleText = "所有预装字体完整"
                 dlg.DescriptionText = "所有字体存在且家族名称匹配"
-                dlg.CancelText = "确定"
-            Else
-                dlg.TitleText = $"存在 {missing.Count + mismatch.Count} 个问题"
-                dlg.DescriptionText = "部分预装字体缺失或家族名称不匹配"
-                dlg.CancelText = "确定"
+                dlg.btnOK.Visible = True
+                dlg.ConfirmText = "修复"
+                dlg.CancelText = "取消"
             End If
 
             For Each item In present
@@ -2254,11 +2553,103 @@ Public Class FormMain
                 dlg.Items.Add(item)
             Next
 
-            dlg.ShowDialog(Me)
+            dialogResult = dlg.ShowDialog(Me)
         End Using
+
+        '' ── 用户点了「修复」──
+        If hasProblem AndAlso dialogResult = DialogResult.OK Then
+            If RepairStandardFonts(problemFileNames) Then
+                MessageBox.Show("预装字体修复成功，下次启动时生效。",
+                "修复预装字体", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            End If
+        End If
     End Sub
 
-    ' ─── 配置指示灯点击打开 index.json ──────────────────────────────
+    ''' <summary>
+    ''' 提交预装字体修复任务（仅涉及字体文件，不动 index.json）。
+    ''' 逻辑与「恢复默认字体」一致：通过 PendingDeletionsPath / PendingCopiesPath 挂起，
+    ''' 在下次程序启动时由 ExecutePendingDeletions / ExecutePendingCopies 统一执行。
+    ''' </summary>
+    ''' <param name="problemFileNames">需要修复的文件名集合（缺失 + 家族名不匹配）。</param>
+    ''' <returns>是否成功提交修复任务。</returns>
+    Private Function RepairStandardFonts(problemFileNames As List(Of String)) As Boolean
+        If problemFileNames Is Nothing OrElse problemFileNames.Count = 0 Then Return False
+
+        ' ── 校验标准字体源目录 ──
+        If Not Directory.Exists(StandardFontsDir) Then
+            MessageBox.Show("预装字体源目录不存在，无法修复。" & vbCrLf &
+                        $"路径：{StandardFontsDir}",
+                        "修复预装字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return False
+        End If
+
+        Dim copyLines As New List(Of String)
+        Dim deleteLines As New List(Of String)
+        Dim missingInSource As New List(Of String)
+
+        For Each fileName As String In problemFileNames
+            Dim srcPath = Path.Combine(StandardFontsDir, fileName)
+            Dim destPath = Path.Combine(_currentFontDirectory, fileName)
+
+            ' 源不存在 → 无法修复，收集提示
+            If Not File.Exists(srcPath) Then
+                missingInSource.Add(fileName)
+                Continue For
+            End If
+
+            ' 目标已存在（家族名不匹配的场景）→ 先标记删除旧文件
+            If File.Exists(destPath) Then
+                deleteLines.Add(destPath)
+            End If
+
+            ' 标记复制新文件
+            copyLines.Add($"{srcPath}|{destPath}")
+        Next
+
+        ' ── 源也缺失的字体提示（例如用户误删了 data\standard 里的文件） ──
+        If missingInSource.Count > 0 Then
+            Dim msg = "以下字体在预装源目录中也不存在，无法修复：" & vbCrLf &
+                  String.Join(vbCrLf, missingInSource.Select(Function(f) "  · " & f))
+            MessageBox.Show(msg, "修复预装字体", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End If
+
+        ' 没有任何可修复项
+        If copyLines.Count = 0 Then Return False
+
+        ' ── 写入挂起清单（追加模式，与其它挂起任务共存） ──
+        Try
+            Directory.CreateDirectory(ManifestDir)
+
+            ' 1. 待删除清单（仅家族名不匹配的情况才有内容）
+            If deleteLines.Count > 0 Then
+                Dim existingDeletions As New List(Of String)
+                If File.Exists(PendingDeletionsPath) Then
+                    existingDeletions.AddRange(
+                    File.ReadAllLines(PendingDeletionsPath).Where(Function(l) Not String.IsNullOrWhiteSpace(l)))
+                End If
+                existingDeletions.AddRange(deleteLines)
+                File.WriteAllLines(PendingDeletionsPath, existingDeletions.Distinct(StringComparer.OrdinalIgnoreCase))
+            End If
+
+            ' 2. 待复制清单
+            Dim existingCopies As New List(Of String)
+            If File.Exists(PendingCopiesPath) Then
+                existingCopies.AddRange(
+                File.ReadAllLines(PendingCopiesPath).Where(Function(l) Not String.IsNullOrWhiteSpace(l)))
+            End If
+            existingCopies.AddRange(copyLines)
+            File.WriteAllLines(PendingCopiesPath, existingCopies.Distinct())
+
+            Return True
+        Catch ex As Exception
+            MessageBox.Show($"写入修复清单失败：{ex.Message}",
+                        "修复预装字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return False
+        End Try
+    End Function
+#End Region
+
+#Region "── 配置指示灯 / 未使用字体检查 ────────────────────────────"
 
     ''' <summary>
     ''' 点击配置指示灯，在关联程序中打开 index.json。
@@ -2267,6 +2658,7 @@ Public Class FormMain
         OpenJsonConfig()
     End Sub
 
+    ''' <summary>在系统关联程序中打开 index.json。</summary>
     Private Sub OpenJsonConfig()
         If String.IsNullOrEmpty(_currentFontDirectory) Then
             MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
@@ -2280,17 +2672,12 @@ Public Class FormMain
         End If
 
         Try
-            ' 优先让 Shell 打开文件（如果没有关联，Windows 会弹出“选择打开方式”）
-            Dim psi As New ProcessStartInfo(filePath) With {
-            .UseShellExecute = True
-        }
+            Dim psi As New ProcessStartInfo(filePath) With {.UseShellExecute = True}
             Process.Start(psi)
         Catch ex As Exception
             MessageBox.Show("无法打开配置文件：" & ex.Message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
-
-    ' ─── 检查未使用字体 ──────────────────────────────────────────────
 
     ''' <summary>
     ''' 点击状态标签，检查并列出未使用的字体文件。
@@ -2300,7 +2687,7 @@ Public Class FormMain
     End Sub
 
     ''' <summary>
-    ''' 检查字体使用情况，并显示冗余列表。
+    ''' 检查字体使用情况，并显示冗余列表与总大小。
     ''' </summary>
     Private Sub CheckFontJsonMatch()
         If String.IsNullOrEmpty(_currentFontDirectory) OrElse Not Directory.Exists(_currentFontDirectory) Then Return
@@ -2317,7 +2704,7 @@ Public Class FormMain
             Return
         End If
 
-        ' ─── 计算未使用字体文件的总大小 ──────────────────────────────────
+        ' 计算未使用字体文件的总大小
         Dim totalSize As Long = 0
         For Each fileName As String In unused
             Dim filePath = Path.Combine(_currentFontDirectory, fileName)
@@ -2345,13 +2732,18 @@ Public Class FormMain
             dlg.Text = "未使用字体"
             dlg.TitleText = $"以下 {unused.Count} 个字体未使用:"
             dlg.DescriptionText = $"未使用字体大小: {sizeText}"
-            dlg.CancelText = "确定"
-            dlg.btnOK.Visible = False
+            dlg.ConfirmText = "全选"          ' ← 确认按钮文本改为「全选」
+            dlg.CancelText = "关闭"           ' ← 取消按钮文本改为「关闭」
+            dlg.btnOK.Visible = True           ' ← 显示确认按钮
+
             For Each fn As String In unused
                 dlg.Items.Add(fn)
             Next
 
-            dlg.ShowDialog(Me)
+            ' 用户点击「全选」→ 在主列表中选中所有未使用字体
+            If dlg.ShowDialog(Me) = DialogResult.OK Then
+                SelectUnusedFontsInList(unused)
+            End If
         End Using
     End Sub
 
@@ -2378,6 +2770,7 @@ Public Class FormMain
             allFiles = allFiles.Where(Function(f) Not markedSet.Contains(f)).ToList()
         End If
 
+        ' 读取配置中已引用的文件
         Dim usedFiles As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
         Try
             Dim jsonText = File.ReadAllText(jsonPath, Encoding.UTF8)
@@ -2399,7 +2792,42 @@ Public Class FormMain
         Return unused
     End Function
 
-    ' ─── 配置和预装完整性检查 ─────────────────────────────────────────
+    ''' <summary>
+    ''' 在主字体列表中选中所有未使用字体。
+    ''' 未使用字体以「文件名」形式给出，需通过 _gdiToFilePath 反查对应的列表项。
+    ''' </summary>
+    ''' <param name="unusedFileNames">未使用字体的文件名集合。</param>
+    Private Sub SelectUnusedFontsInList(unusedFileNames As List(Of String))
+        If unusedFileNames Is Nothing OrElse unusedFileNames.Count = 0 Then Return
+        If lstbDirFonts.Items.Count = 0 Then Return
+
+        ' 构建文件名哈希集合（忽略大小写）
+        Dim unusedSet As New HashSet(Of String)(unusedFileNames, StringComparer.OrdinalIgnoreCase)
+
+        ' 先清空旧选择，再逐项判定
+        lstbDirFonts.ClearSelected()
+        Dim firstSelectedIndex As Integer = -1
+        For i As Integer = 0 To lstbDirFonts.Items.Count - 1
+            Dim gdiName = lstbDirFonts.Items(i).ToString()
+            Dim filePath As String = ""
+            If _gdiToFilePath.TryGetValue(gdiName.ToLower(), filePath) Then
+                If unusedSet.Contains(Path.GetFileName(filePath)) Then
+                    lstbDirFonts.SetSelected(i, True)
+                    If firstSelectedIndex < 0 Then firstSelectedIndex = i
+                End If
+            End If
+        Next
+
+        ' 把焦点交回列表，方便用户直接按 Delete 卸载
+        lstbDirFonts.Focus()
+
+        ' 状态栏提示
+        lblDirFonts.Text = $"字体 {lstbDirFonts.Items.Count} 项, 选中 {lstbDirFonts.SelectedIndices.Count} 项"
+    End Sub
+
+#End Region
+
+#Region "── 配置 / 预装完整性检查 ─────────────────────────────────"
 
     ''' <summary>
     ''' 检查 index.json 的完整性和引用有效性。
@@ -2464,10 +2892,12 @@ Public Class FormMain
         End If
     End Sub
 
-    ' ─── BLADE（字体包管理） ──────────────────────────────────────────
+#End Region
+
+#Region "── BLADE（字体包管理集成） ────────────────────────────────"
 
     ''' <summary>
-    ''' 打开 BLADE 字体包管理器。
+    ''' 打开 BLADE 字体包管理器，传入当前的字体列表与配置内容。
     ''' </summary>
     Private Sub OpenBladeTool(sender As Object, e As EventArgs) Handles btnBlade.Click
         Dim appVersion = If(String.IsNullOrEmpty(Application.ProductVersion), BuildVersion, Application.ProductVersion)
@@ -2479,6 +2909,7 @@ Public Class FormMain
 
         Dim hasValidDir = Not String.IsNullOrEmpty(_currentFontDirectory) AndAlso Directory.Exists(_currentFontDirectory)
         If hasValidDir Then
+            ' 判断目录类型
             Dim appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
             If _currentFontDirectory.ToLower.Contains(Path.Combine(appData, "ddnet", "fonts").ToLower) Then
                 dirType = "Local"
@@ -2488,9 +2919,11 @@ Public Class FormMain
                 dirType = "Install"
             End If
 
+            ' 默认包（当前已使用字体）
             Dim used = GetUsedFontFiles()
             If used IsNot Nothing Then normalFiles.AddRange(used)
 
+            ' 标准包（默认包 + 预装字体）
             standardFiles.AddRange(normalFiles)
             Dim stdFontsDir = Path.Combine(Application.StartupPath, "Data", "Standard")
             If Directory.Exists(stdFontsDir) Then
@@ -2506,17 +2939,20 @@ Public Class FormMain
                 Next
             End If
 
+            ' 完整包（目录内全部字体）
             Dim allExts = {"*.ttf", "*.ttc", "*.otf"}
             For Each ext In allExts
                 fullFiles.AddRange(Directory.GetFiles(_currentFontDirectory, ext))
             Next
 
+            ' JSON 内容
             Dim jsonPath = Path.Combine(_currentFontDirectory, "index.json")
             If File.Exists(jsonPath) Then
                 jsonContent = BuildIndexJsonContent()
             End If
         End If
 
+        ' 打开 BLADE
         Try
             Dim shareForm As New FormBlade
             shareForm.FontDir = _currentFontDirectory
@@ -2533,7 +2969,7 @@ Public Class FormMain
     End Sub
 
     ''' <summary>
-    ''' 获取当前配置中使用的字体文件列表。
+    ''' 获取当前配置中使用的字体文件列表（用于"默认打包"）。
     ''' </summary>
     Private Function GetUsedFontFiles() As List(Of String)
         Dim fontFiles As New List(Of String)
@@ -2547,10 +2983,12 @@ Public Class FormMain
                                                 End If
                                             End Sub
 
+        ' 从 5 个语言 ComboBox 收集
         For Each cb As ComboBox In {cbLA, cbJP, cbKR, cbSC, cbTC}
             If cb.SelectedIndex >= 0 Then addByGdi(cb.SelectedItem.ToString())
         Next
 
+        ' 从回退列表收集
         For Each familyName As String In _fallbacks
             Dim gdi As String = ""
             If _familyToGdi.TryGetValue(familyName.ToLower(), gdi) Then
@@ -2560,6 +2998,7 @@ Public Class FormMain
             End If
         Next
 
+        ' 强制包含 Font Awesome
         If Not fileSet.Contains("Font_Awesome_6_Free-Solid-900.otf") AndAlso Directory.Exists(_currentFontDirectory) Then
             Dim faFiles = Directory.GetFiles(_currentFontDirectory, "*Font*Awesome*.otf", SearchOption.TopDirectoryOnly)
             If faFiles.Length = 0 Then faFiles = Directory.GetFiles(_currentFontDirectory, "*Font*Awesome*.ttf", SearchOption.TopDirectoryOnly)
@@ -2573,30 +3012,28 @@ Public Class FormMain
         Return fontFiles
     End Function
 
-    ' ─── 上下文菜单事件 ───────────────────────────────────────────────
+#End Region
 
-    ''' <summary>
-    ''' 帮助菜单项。
-    ''' </summary>
+#Region "── 上下文菜单遗留事件（未绑定，保留） ────────────────────"
+
+    ''' <summary>帮助菜单项（遗留事件，未绑定）。</summary>
     Private Sub HelpMenu_Click(sender As Object, e As EventArgs)
         FormAbout.Show()
     End Sub
 
-    ''' <summary>
-    ''' 关于菜单项。
-    ''' </summary>
+    ''' <summary>关于菜单项（遗留事件，未绑定）。</summary>
     Private Sub AboutMenu_Click(sender As Object, e As EventArgs)
         FormAbout.ShowDialog(Me)
     End Sub
 
-    ''' <summary>
-    ''' 预览菜单项，触发预览按钮。
-    ''' </summary>
+    ''' <summary>预览菜单项（遗留事件，未绑定）。</summary>
     Private Sub PreviewMenu_Click(sender As Object, e As EventArgs)
         FormPreview.Show()
     End Sub
 
-    ' ─── 启动时清理挂起操作 ──────────────────────────────────────────
+#End Region
+
+#Region "── 启动时清理挂起操作 ────────────────────────────────────"
 
     ''' <summary>
     ''' 执行待删除清单中的文件删除操作（移至回收站）。
@@ -2632,9 +3069,8 @@ Public Class FormMain
 
     ''' <summary>
     ''' 执行待复制清单中的文件复制操作。
-    ''' </summary>
-    ''' <summary>
-    ''' 执行待复制清单中的文件复制操作，并在成功后删除缓存文件。
+    ''' 仅当源文件位于 cache 目录时才在复制成功后删除源（清理临时缓存）；
+    ''' 源位于 data\standard 等永久目录时，一律保留源文件。
     ''' </summary>
     Private Sub ExecutePendingCopies()
         Try
@@ -2650,29 +3086,31 @@ Public Class FormMain
                 Dim src = parts(0).Trim()
                 Dim dest = parts(1).Trim()
 
-                ' 如果源文件不存在，跳过（可能已被删除）
-                If Not File.Exists(src) Then
-                    Continue For
-                End If
+                ' 源文件不存在则跳过（可能已被删除）
+                If Not File.Exists(src) Then Continue For
 
                 Try
-                    ' 确保目标目录存在
                     Directory.CreateDirectory(Path.GetDirectoryName(dest))
-                    ' 复制文件（覆盖目标）
                     File.Copy(src, dest, True)
-                    ' 复制成功后删除缓存文件
-                    File.Delete(src)
+
+                    ' ── 关键修复 ──
+                    ' 仅当源位于 cache 目录（临时缓存）时才删除源；
+                    ' 位于 data\standard 等永久目录的源必须保留。
+                    If IsInCacheDir(src) Then
+                        Try
+                            File.Delete(src)
+                        Catch
+                        End Try
+                    End If
                 Catch ex As Exception
                     ' 复制失败，保留该项以便下次重试
                     remaining.Add(line)
                 End Try
             Next
 
-            ' 更新清单：只保留失败项
             If remaining.Count > 0 Then
                 File.WriteAllLines(PendingCopiesPath, remaining)
             Else
-                ' 所有项都成功，删除清单文件
                 File.Delete(PendingCopiesPath)
             End If
 
@@ -2688,10 +3126,25 @@ Public Class FormMain
         End Try
     End Sub
 
-    ' ─── JSON 解析辅助 ───────────────────────────────────────────────
+    ''' <summary>
+    ''' 判断给定路径是否位于 CacheDir（临时缓存）内。
+    ''' </summary>
+    Private Function IsInCacheDir(filePath As String) As Boolean
+        Try
+            Dim cacheFull = Path.GetFullPath(CacheDir).TrimEnd("\"c) & "\"
+            Dim fileFull = Path.GetFullPath(filePath)
+            Return fileFull.StartsWith(cacheFull, StringComparison.OrdinalIgnoreCase)
+        Catch
+            Return False
+        End Try
+    End Function
+
+#End Region
+
+#Region "── JSON 解析辅助 ─────────────────────────────────────────"
 
     ''' <summary>
-    ''' 解析 JSON 中指定键的对象块。
+    ''' 解析 JSON 中指定键的对象块（花括号配对，支持嵌套）。
     ''' </summary>
     Private Function ParseJsonBlock(jsonText As String, key As String) As String
         Dim pattern = $"""{Regex.Escape(key)}""\s*:\s*\{{"
@@ -2719,23 +3172,173 @@ Public Class FormMain
         Return If(m.Success, m.Groups(1).Value, "")
     End Function
 
-    ' ─── 选项和菜单按钮 ──────────────────────────────────────────────
+#End Region
 
+#Region "── 主菜单按钮 / 悬浮标签 ──────────────────────────────────"
+
+    ''' <summary>
+    ''' 点击 btnMenu，在按钮上方弹出主菜单。
+    ''' </summary>
     Private Sub btnMenu_Click(sender As Object, e As EventArgs) Handles btnMenu.Click
         Dim clicked = _menu.Show(btnMenu, New Point(0, 0), ToolStripDropDownDirection.AboveRight)
     End Sub
 
-    Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
-        _menu.Dispose()
-        MyBase.OnFormClosed(e)
-    End Sub
-
+    ''' <summary>
+    ''' 点击 lblLA 切换西文示例文本。
+    ''' </summary>
     Private Sub lblLA_Click(sender As Object, e As EventArgs) Handles lblLA.Click
         Select Case lblLA.Text
             Case "Font demo text."
-                lblLA.Text = "Thisはい세례示範"
-            Case "Thisはい세례示範"
+                lblLA.Text = "This はい 세례 示範"
+            Case "This はい 세례 示範"
                 lblLA.Text = "Font demo text."
         End Select
     End Sub
+
+#End Region
+
+#Region "── 查找窗口 ──────────────────────────────────────────────"
+
+    ''' <summary>
+    ''' 打开字体搜索对话框。
+    ''' </summary>
+    Private Sub btnSearch_Click(sender As Object, e As EventArgs) Handles btnSearch.Click
+        OpenSearchDialog()
+    End Sub
+
+    ''' <summary>
+    ''' 打开或激活查找窗口（非模态单例，居中于主窗体）。
+    ''' </summary>
+    Private Sub OpenSearchDialog()
+        If lstbDirFonts.Items.Count = 0 Then
+            MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        If _searchWindow Is Nothing OrElse _searchWindow.IsDisposed Then
+            _searchWindow = New FormSearch()
+            _searchWindow.TargetList = lstbDirFonts
+            _searchWindow.Show(Me)
+        Else
+            _searchWindow.TargetList = lstbDirFonts
+            If Not _searchWindow.Visible Then _searchWindow.Show(Me)
+            _searchWindow.BringToFront()
+            _searchWindow.Activate()
+        End If
+    End Sub
+
+#End Region
+
+#Region "── 全局快捷键分发 ────────────────────────────────────────"
+
+    ''' <summary>
+    ''' 全局快捷键处理：由控件焦点链冒泡到此。
+    ''' 分支顺序很重要：
+    '''   1. Ctrl（无 Shift）
+    '''   2. Ctrl+Shift
+    '''   3. 无修饰键
+    '''   4. Alt 组合
+    ''' </summary>
+    Protected Overrides Function ProcessCmdKey(ByRef msg As Message,
+                                                keyData As Keys) As Boolean
+
+        Dim ctrl As Boolean = (keyData And Keys.Control) = Keys.Control
+        Dim shift As Boolean = (keyData And Keys.Shift) = Keys.Shift
+        Dim alt As Boolean = (keyData And Keys.Alt) = Keys.Alt
+        Dim key As Keys = keyData And Keys.KeyCode
+
+        ' ── 1. Ctrl 无 Shift ──
+        If ctrl AndAlso Not shift Then
+            Select Case key
+                Case Keys.O : btnBrowse.PerformClick() : Return True
+                Case Keys.L : btnLocate.PerformClick() : Return True
+                Case Keys.R : btnRefresh.PerformClick() : Return True
+                Case Keys.I : btnFontInstall.PerformClick() : Return True
+                Case Keys.P : btnPreview.PerformClick() : Return True
+                Case Keys.S : btnApply.PerformClick() : Return True
+                Case Keys.J : btnCopy.PerformClick() : Return True
+                Case Keys.F : btnSearch.PerformClick() : Return True
+                Case Keys.B : btnBlade.PerformClick() : Return True
+                Case Keys.U : chkDirSelect.Checked = Not chkDirSelect.Checked : Return True
+                    'Case Keys.M : chkLanguageVariants.Checked = Not chkLanguageVariants.Checked : Return True
+                    'Case Keys.K : chkFallbackFonts.Checked = Not chkFallbackFonts.Checked : Return True
+                      ' ── Ctrl+A：焦点在字体列表时全选；在文本框内保持原生全选 ──
+                Case Keys.A
+                    If lstbDirFonts.Focused Then
+                        SelectAllFonts()
+                        Return True
+                    End If
+                    ' 焦点在其它控件（含文本框）→ 交给系统处理
+            End Select
+        End If
+
+        ' ── 2. Ctrl+Shift（隐形按钮功能） ──
+        If ctrl AndAlso shift Then
+            Select Case key
+                Case Keys.J : OpenJsonConfig() : Return True
+                Case Keys.V : VerifyStandardFonts() : Return True
+                Case Keys.U : CheckFontJsonMatch() : Return True
+                Case Keys.N : CopySelectedFontName() : Return True
+                Case Keys.F : CopySelectedFamilyName() : Return True
+            End Select
+        End If
+
+        ' ── 3. 无修饰键 ──
+        If Not ctrl AndAlso Not alt Then
+            Select Case key
+                Case Keys.F1
+                    Try
+                        Dim psi As New ProcessStartInfo()
+                        psi.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit"
+                        psi.UseShellExecute = True
+                        Process.Start(psi)
+                    Catch ex As Exception
+                        MessageBox.Show($"无法打开链接：{ex.Message}", "打开链接失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    End Try
+                Case Keys.F2
+                    CopyScreenshotToClipboard()
+                Case Keys.F5 : btnRefresh.PerformClick() : Return True
+                    'Case Keys.Delete
+                    '    If lstbDirFonts.Focused Then
+                    '        btnFontUninstall.PerformClick() : Return True
+                    '    ElseIf lstbFallbackFonts.Focused Then
+                    '        btnRemove.PerformClick() : Return True
+                    '    End If
+                    'Case Keys.Insert
+                    '    If lstbFallbackFonts.Focused Then
+                    '        btnInsert.PerformClick() : Return True
+                    '    End If
+                Case Keys.F8
+                    btnDefault.PerformClick() : Return True
+                Case Keys.Apps
+                    btnMenu.PerformClick() : Return True
+                Case Keys.Enter
+                    If lstbDirFonts.Focused Then
+                        OpenSelectedFontFile()
+                        Return True
+                    End If
+                Case Keys.Delete
+                    If lstbDirFonts.Focused Then
+                        UninstallSelectedFont()
+                        Return True
+                    End If
+            End Select
+        End If
+
+        ' ── 4. Alt 组合 ──
+        If alt Then
+            Select Case key
+                'Case Keys.Up
+                '    If lstbFallbackFonts.Focused Then btnUp.PerformClick() : Return True
+                'Case Keys.Down
+                '    If lstbFallbackFonts.Focused Then btnDown.PerformClick() : Return True
+                Case Keys.Enter : btnFontInfo.PerformClick() : Return True
+            End Select
+        End If
+
+        Return MyBase.ProcessCmdKey(msg, keyData)
+    End Function
+
+#End Region
+
 End Class

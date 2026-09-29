@@ -5,7 +5,7 @@ Imports System.Text
 Imports System.Text.RegularExpressions
 
 ''' <summary>
-''' BLADE 字体包管理窗体，负责导出 .dnfp 字体包和导入字体包到当前目录。
+''' BLADE 字体包管理窗体，负责导出 .dnfp 字体包和安装字体包到当前目录。
 ''' </summary>
 Public Class FormBlade
 
@@ -53,13 +53,13 @@ Public Class FormBlade
     ''' <summary>待复制清单文件路径。</summary>
     Private ReadOnly PendingCopiesPath As String = Path.Combine(ManifestDir, "pendingcopies.txt")
 
-    ''' <summary>临时缓存目录（用于导入字体包时缓存）。</summary>
+    ''' <summary>临时缓存目录（用于安装字体包时缓存）。</summary>
     Private ReadOnly CacheDir As String = Path.Combine(AppRoot, "cache")
 
     ''' <summary>当前已加载的 .dnfp 文件路径。</summary>
     Private _loadedDnfpPath As String = ""
 
-    ''' <summary>当前已加载的 .json 配置文件路径（用于简化导入）。</summary>
+    ''' <summary>当前已加载的 .json 配置文件路径（用于简化安装）。</summary>
     Private _loadedJsonPath As String = ""
 
     ''' <summary>当前加载的文件类型（"dnfp" 或 "json"）。</summary>
@@ -301,7 +301,7 @@ Public Class FormBlade
             Dim destPath = Path.Combine(FontDir, "index.json")
             Try
                 File.Copy(_loadedJsonPath, destPath, True)
-                MessageBox.Show($"配置已成功写入：{destPath}", "导入配置", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                MessageBox.Show($"配置写入成功。", "安装配置", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 ' 重置状态（清除加载的 JSON）
                 _loadedJsonPath = ""
                 _loadedFileType = ""
@@ -311,11 +311,10 @@ Public Class FormBlade
                 lblZipDate.Text = "-"
                 lblZipNote.Text = "-"
                 lblZipType.Text = "-"
-                lblZip.Text = "配置已安装"
                 btnInstall.Enabled = False
                 btnOpen.Enabled = False
             Catch ex As Exception
-                MessageBox.Show($"写入配置失败：{ex.Message}", "导入配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show($"写入配置失败：{ex.Message}", "安装配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
             Return
         End If
@@ -326,7 +325,7 @@ Public Class FormBlade
             Return
         End If
         If String.IsNullOrEmpty(FontDir) OrElse Not Directory.Exists(FontDir) Then
-            MessageBox.Show("字体目录无效或不存在，拒绝导入。", "导入字体包", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("字体目录无效或不存在，拒绝安装。", "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
@@ -345,7 +344,7 @@ Public Class FormBlade
             Dim jsonSrc = Path.Combine(srcDir, "index.json")
             If Not File.Exists(jsonSrc) Then jsonSrc = Path.Combine(srcDir, "index.JSON")
             If Not File.Exists(jsonSrc) Then
-                MessageBox.Show("字体包内未找到配置文件。", "导入字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageBox.Show("字体包内未找到配置文件。", "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 Return
             End If
 
@@ -400,7 +399,7 @@ Public Class FormBlade
 
             ' ─── 使用 DialogPopup 确认 ──────────────────────────────────
             Using dlg As New DialogPopUp()
-                dlg.Text = "确认导入"
+                dlg.Text = "确认安装"
                 dlg.TitleText = $"确认要安装「{Path.GetFileName(_loadedDnfpPath)}」吗？"
                 dlg.DescriptionText = "替换字体和删除字体将在下次启动时执行"
                 dlg.ConfirmText = "安装"
@@ -427,7 +426,7 @@ Public Class FormBlade
                 End If
             End Using
 
-            ' ─── 执行导入操作 ──────────────────────────────────────────
+            ' ─── 执行安装操作 ──────────────────────────────────────────
             Directory.CreateDirectory(CacheDir)
 
             ' 清理旧缓存
@@ -466,7 +465,7 @@ Public Class FormBlade
                     MessageBox.Show("缓存字体时出错，已跳过该文件。" & vbCrLf &
                                     $"· {Path.GetFileName(f)}" & vbCrLf &
                                     $"· {ex.Message}",
-                                    "导入字体包", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                                    "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 End Try
             Next
 
@@ -479,16 +478,11 @@ Public Class FormBlade
             Dim jsonDest = Path.Combine(FontDir, "index.json")
             File.WriteAllText(jsonDest, newJson, Encoding.UTF8)
 
-            MessageBox.Show(
-                "字体包导入成功：" & vbCrLf &
-                $"* 配置已覆盖" & vbCrLf &
-                $"* 新增字体已导入" & vbCrLf &
-                If(toReplace.Count > 0, $"* 替换字体将在下次启动时执行" & vbCrLf, "") &
-                If(toDelete.Count > 0, $"* 删除字体将在下次启动时执行" & vbCrLf, ""),
-                "导入字体包", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            MessageBox.Show("字体包安装成功，下次启动时生效。",
+                "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Catch ex As Exception
-            MessageBox.Show("导入字体包时发生错误：" & $"{ex.Message}",
-                            "导入字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("安装字体包时发生错误：" & $"{ex.Message}",
+                            "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
         Finally
             Try
                 If Directory.Exists(tempDir) Then Directory.Delete(tempDir, True)
@@ -618,7 +612,7 @@ Public Class FormBlade
         End Try
     End Sub
 
-    ' ─── 导入 JSON 配置（简化版）─────────────────────────────────────
+    ' ─── 安装 JSON 配置（简化版）─────────────────────────────────────
 
     ''' <summary>
     ''' 加载选中的 index.json 配置文件，在列表中显示一项，并启用“安装”和“打开”按钮。
@@ -638,19 +632,19 @@ Public Class FormBlade
         btnOpen.Enabled = False
 
         If Not File.Exists(filePath) Then
-            MessageBox.Show("文件不存在。", "导入配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("文件不存在。", "安装配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return
         End If
 
         ' 验证扩展名（必须是 .json）
         If Not Path.GetExtension(filePath).Equals(".json", StringComparison.OrdinalIgnoreCase) Then
-            MessageBox.Show("请选择 .json 配置文件。", "导入配置", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("请选择 .json 配置文件。", "安装配置", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
         ' 检查目标目录是否有效
         If String.IsNullOrEmpty(FontDir) OrElse Not Directory.Exists(FontDir) Then
-            MessageBox.Show("字体目录无效，无法导入配置。", "导入配置", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            MessageBox.Show("字体目录无效，无法安装配置。", "安装配置", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
@@ -674,7 +668,7 @@ Public Class FormBlade
             btnInstall.Enabled = True   ' 启用安装按钮
             btnOpen.Enabled = True      ' 启用打开按钮（用于打开 JSON 文件）
         Catch ex As Exception
-            MessageBox.Show("加载配置失败：" & ex.Message, "导入配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("加载配置失败：" & ex.Message, "安装配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 

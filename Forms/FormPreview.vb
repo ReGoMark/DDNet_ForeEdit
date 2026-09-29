@@ -13,7 +13,7 @@ Public Class FormPreview
     Private ReadOnly _defaultTexts As New Dictionary(Of Label, String)
 
     ''' <summary>当前生效的字号（磅值）。</summary>
-    Private _currentSize As Single = 9.0F
+    Private _currentSize As Single = 10.0F
 
     ' ─── 窗体生命周期 ──────────────────────────────────────────────────
 
@@ -24,7 +24,7 @@ Public Class FormPreview
         _sizeMap(rbFont12) = 12.0F
         _sizeMap(rbFont16) = 16.0F
         _sizeMap(rbFont32) = 32.0F
-        rbFont9.Checked = True
+        rbFont10.Checked = True
 
         ' 记录各标签的初始显示文本
         For Each lbl In GetPreviewLabels()

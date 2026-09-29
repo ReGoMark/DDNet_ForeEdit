@@ -72,7 +72,7 @@
     End Sub
 
     Private Sub btnApply_Click(sender As Object, e As EventArgs) Handles btnApply.Click
-        Me.Close()
+        Close
     End Sub
 
     Private Sub FormAbout_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -83,6 +83,17 @@
         Try
             Dim psi As New ProcessStartInfo()
             psi.FileName = "https://github.com/ReGoMark/"
+            psi.UseShellExecute = True
+            Process.Start(psi)
+        Catch ex As Exception
+            MessageBox.Show($"无法打开链接：{ex.Message}", "打开链接失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub btndoNET_Click(sender As Object, e As EventArgs) Handles btndoNET.Click
+        Try
+            Dim psi As New ProcessStartInfo()
+            psi.FileName = "https://dotnet.microsoft.com/zh-cn/"
             psi.UseShellExecute = True
             Process.Start(psi)
         Catch ex As Exception

@@ -94,6 +94,7 @@ Public Class Win32ContextMenu
     Public Class MenuItem
         Public Property Id As Integer
         Public Property Text As String
+        Public Property ShortcutText As String = ""    ' ← 新增：右侧显示的快捷键
         Public Property Icon As Bitmap
         Public Property Enabled As Boolean = True
         Public Property IsSeparator As Boolean = False
@@ -105,7 +106,6 @@ Public Class Win32ContextMenu
                 Return New MenuItem() With {.IsSeparator = True}
             End Get
         End Property
-
     End Class
 
 #End Region
@@ -179,38 +179,38 @@ Public Class Win32ContextMenu
     Private Sub BuildMenuRecursive(hMenu As IntPtr, item As MenuItem, posIndex As UInteger)
         If item.IsSeparator Then
             AppendMenu(hMenu, MF_SEPARATOR, UIntPtr.Zero, Nothing)
-        Else
-            Dim f As UInteger = MF_STRING
-            If Not item.Enabled Then f = f Or MF_GRAYED
+            Return
+        End If
 
-            ' 如果有子项，创建子菜单
-            If item.SubItems IsNot Nothing AndAlso item.SubItems.Count > 0 Then
-                Dim hSubMenu As IntPtr = CreatePopupMenu()
-                If hSubMenu <> IntPtr.Zero Then
-                    _subMenuHandles.Add(hSubMenu)
+        ' ── 新增：拼接显示文本（Text + Tab + ShortcutText）──
+        Dim displayText As String = item.Text
+        If Not String.IsNullOrEmpty(item.ShortcutText) Then
+            displayText = item.Text & vbTab & item.ShortcutText
+        End If
 
-                    Dim subPosIndex As UInteger = 0
-                    For Each subItem In item.SubItems
-                        BuildMenuRecursive(hSubMenu, subItem, subPosIndex)
-                        subPosIndex += 1
-                    Next
+        Dim f As UInteger = MF_STRING
+        If Not item.Enabled Then f = f Or MF_GRAYED
 
-                    ' 添加带子菜单的菜单项
-                    AppendMenu(hMenu, f Or MF_POPUP, New UIntPtr(CUInt(hSubMenu)), item.Text)
+        If item.SubItems IsNot Nothing AndAlso item.SubItems.Count > 0 Then
+            Dim hSubMenu As IntPtr = CreatePopupMenu()
+            If hSubMenu <> IntPtr.Zero Then
+                _subMenuHandles.Add(hSubMenu)
 
-                    ' 如果有图标，附加图标
-                    If item.Icon IsNot Nothing Then
-                        AttachIcon(hMenu, posIndex, item.Id, item.Icon)
-                    End If
-                End If
-            Else
-                ' 添加普通菜单项
-                AppendMenu(hMenu, f, New UIntPtr(CUInt(item.Id)), item.Text)
+                Dim subPosIndex As UInteger = 0
+                For Each subItem In item.SubItems
+                    BuildMenuRecursive(hSubMenu, subItem, subPosIndex)
+                    subPosIndex += 1
+                Next
 
-                ' 如果有图标，附加图标
+                AppendMenu(hMenu, f Or MF_POPUP, New UIntPtr(CUInt(hSubMenu)), displayText)   ' ← 用 displayText
                 If item.Icon IsNot Nothing Then
                     AttachIcon(hMenu, posIndex, item.Id, item.Icon)
                 End If
+            End If
+        Else
+            AppendMenu(hMenu, f, New UIntPtr(CUInt(item.Id)), displayText)                   ' ← 用 displayText
+            If item.Icon IsNot Nothing Then
+                AttachIcon(hMenu, posIndex, item.Id, item.Icon)
             End If
         End If
     End Sub
@@ -241,10 +241,13 @@ Public Class Win32ContextMenu
     Private Shared Function ToPremultipliedHBitmap(src As Bitmap) As IntPtr
         Dim bmp As New Bitmap(src.Width, src.Height, PixelFormat.Format32bppArgb)
         Using g As Graphics = Graphics.FromImage(bmp)
-            g.Clear(Color.Transparent)
+            ' ── 关键 1：不做 SourceOver 合成，避免 GDI+ 私自预乘 ──
+            g.CompositingMode = Drawing2D.CompositingMode.SourceCopy
+            g.CompositingQuality = Drawing2D.CompositingQuality.HighQuality
             g.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
             g.PixelOffsetMode = Drawing2D.PixelOffsetMode.HighQuality
             g.SmoothingMode = Drawing2D.SmoothingMode.HighQuality
+            g.Clear(Color.Transparent)
             g.DrawImage(src, 0, 0, src.Width, src.Height)
         End Using
 
@@ -254,21 +257,22 @@ Public Class Win32ContextMenu
         Marshal.Copy(bd.Scan0, bytes, 0, bytes.Length)
         bmp.UnlockBits(bd)
 
+        ' ── 关键 2：此处是"唯一一次"预乘 ──
         For i As Integer = 0 To bytes.Length - 1 Step 4
-            Dim a As Byte = bytes(i + 3)
-            Dim r As Byte = CByte(CInt(bytes(i + 2)) * a \ 255)
-            Dim gC As Byte = CByte(CInt(bytes(i + 1)) * a \ 255)
-            Dim b As Byte = CByte(CInt(bytes(i)) * a \ 255)
-            bytes(i) = b
-            bytes(i + 1) = gC
-            bytes(i + 2) = r
-            bytes(i + 3) = a
+            Dim a As Integer = bytes(i + 3)
+            If a = 0 OrElse a = 255 Then Continue For            ' 全透明/全不透明跳过多余运算
+            bytes(i) = CByte(bytes(i) * a \ 255)          ' B
+            bytes(i + 1) = CByte(bytes(i + 1) * a \ 255)          ' G
+            bytes(i + 2) = CByte(bytes(i + 2) * a \ 255)          ' R
+            ' A 保持不变
         Next
+
+        bmp.Dispose()
 
         Dim bmi As New BITMAPINFO()
         bmi.bmiHeader.biSize = CUInt(Marshal.SizeOf(bmi.bmiHeader))
-        bmi.bmiHeader.biWidth = bmp.Width
-        bmi.bmiHeader.biHeight = -bmp.Height
+        bmi.bmiHeader.biWidth = src.Width
+        bmi.bmiHeader.biHeight = -src.Height                 ' 负值 = top-down
         bmi.bmiHeader.biPlanes = 1
         bmi.bmiHeader.biBitCount = 32
         bmi.bmiHeader.biCompression = BI_RGB
