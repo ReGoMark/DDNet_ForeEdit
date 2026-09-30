@@ -38,7 +38,6 @@ Partial Class FormAbout
         lblThanks = New Label()
         btnApply = New Button()
         Label1 = New Label()
-        btndoNET = New Button()
         SuspendLayout()
         ' 
         ' lblName
@@ -90,7 +89,7 @@ Partial Class FormAbout
         Label6.Location = New Point(12, 39)
         Label6.Margin = New Padding(3, 6, 3, 6)
         Label6.Name = "Label6"
-        Label6.Size = New Size(358, 18)
+        Label6.Size = New Size(212, 18)
         Label6.TabIndex = 8
         Label6.Text = "不可见分割线  ───────────────────────────────────────────────────────────"
         Label6.TextAlign = ContentAlignment.MiddleLeft
@@ -216,25 +215,12 @@ Partial Class FormAbout
         Label1.TabIndex = 40
         Label1.Text = "Github"
         ' 
-        ' btndoNET
-        ' 
-        btndoNET.AutoSize = True
-        btndoNET.Image = CType(resources.GetObject("btndoNET.Image"), Image)
-        btndoNET.Location = New Point(230, 249)
-        btndoNET.Margin = New Padding(3, 6, 3, 3)
-        btndoNET.Name = "btndoNET"
-        btndoNET.Padding = New Padding(6, 0, 6, 0)
-        btndoNET.Size = New Size(82, 30)
-        btndoNET.TabIndex = 41
-        btndoNET.UseVisualStyleBackColor = True
-        ' 
         ' FormAbout
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(382, 291)
-        Controls.Add(btndoNET)
         Controls.Add(Label1)
         Controls.Add(btnApply)
         Controls.Add(lblThanks)
@@ -279,5 +265,4 @@ Partial Class FormAbout
     Friend WithEvents lblThanks As Label
     Friend WithEvents btnApply As Button
     Friend WithEvents Label1 As Label
-    Friend WithEvents btndoNET As Button
 End Class

@@ -39,7 +39,7 @@
 
     Private Sub Label9_Click(sender As Object, e As EventArgs) Handles Label9.Click
         Try
-            Dim psi As New ProcessStartInfo()
+            Dim psi As New ProcessStartInfo
             psi.FileName = "https://github.com/teeworlds"
             psi.UseShellExecute = True
             Process.Start(psi)
@@ -83,17 +83,6 @@
         Try
             Dim psi As New ProcessStartInfo()
             psi.FileName = "https://github.com/ReGoMark/"
-            psi.UseShellExecute = True
-            Process.Start(psi)
-        Catch ex As Exception
-            MessageBox.Show($"无法打开链接：{ex.Message}", "打开链接失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Try
-    End Sub
-
-    Private Sub btndoNET_Click(sender As Object, e As EventArgs) Handles btndoNET.Click
-        Try
-            Dim psi As New ProcessStartInfo()
-            psi.FileName = "https://dotnet.microsoft.com/zh-cn/"
             psi.UseShellExecute = True
             Process.Start(psi)
         Catch ex As Exception

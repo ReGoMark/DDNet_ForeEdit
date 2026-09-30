@@ -44,18 +44,22 @@ Partial Class FormBlade
         lblZip = New Label()
         splitInstall = New Label()
         tblExportMode = New TableLayoutPanel()
-        tbNote = New TextBox()
         chkNote = New CheckBox()
         rbStandard = New RadioButton()
         rbFull = New RadioButton()
         lblNorm = New Label()
+        tbNote = New TextBox()
         lblStandard = New Label()
         lblFull = New Label()
-        rbNorm = New RadioButton()
+        rbNormal = New RadioButton()
         tblExport = New TableLayoutPanel()
         btnExport = New Button()
         ProgressBar1 = New ProgressBar()
         splitExport = New Label()
+        lblUsername = New Label()
+        lblTime = New Label()
+        lblDate = New Label()
+        Label3 = New Label()
         tblInstall.SuspendLayout()
         Panel1.SuspendLayout()
         tblPackInfo.SuspendLayout()
@@ -103,7 +107,7 @@ Partial Class FormBlade
         btnOpen.Name = "btnOpen"
         btnOpen.Size = New Size(52, 30)
         btnOpen.TabIndex = 28
-        btnOpen.Text = "打开"
+        btnOpen.Text = "查看"
         btnOpen.UseVisualStyleBackColor = False
         ' 
         ' Panel1
@@ -348,14 +352,14 @@ Partial Class FormBlade
         tblExportMode.ColumnCount = 2
         tblExportMode.ColumnStyles.Add(New ColumnStyle())
         tblExportMode.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
-        tblExportMode.Controls.Add(tbNote, 0, 4)
         tblExportMode.Controls.Add(chkNote, 0, 3)
         tblExportMode.Controls.Add(rbStandard, 0, 1)
         tblExportMode.Controls.Add(rbFull, 0, 2)
         tblExportMode.Controls.Add(lblNorm, 1, 0)
+        tblExportMode.Controls.Add(tbNote, 0, 4)
         tblExportMode.Controls.Add(lblStandard, 1, 1)
         tblExportMode.Controls.Add(lblFull, 1, 2)
-        tblExportMode.Controls.Add(rbNorm, 0, 0)
+        tblExportMode.Controls.Add(rbNormal, 0, 0)
         tblExportMode.Location = New Point(12, 40)
         tblExportMode.Margin = New Padding(3, 3, 3, 6)
         tblExportMode.Name = "tblExportMode"
@@ -365,21 +369,8 @@ Partial Class FormBlade
         tblExportMode.RowStyles.Add(New RowStyle())
         tblExportMode.RowStyles.Add(New RowStyle())
         tblExportMode.RowStyles.Add(New RowStyle())
-        tblExportMode.Size = New Size(280, 281)
+        tblExportMode.Size = New Size(280, 266)
         tblExportMode.TabIndex = 38
-        ' 
-        ' tbNote
-        ' 
-        tblExportMode.SetColumnSpan(tbNote, 2)
-        tbNote.Dock = DockStyle.Top
-        tbNote.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        tbNote.Location = New Point(0, 184)
-        tbNote.Margin = New Padding(0, 3, 0, 0)
-        tbNote.Multiline = True
-        tbNote.Name = "tbNote"
-        tbNote.PlaceholderText = "最多 20 个中文字符"
-        tbNote.Size = New Size(280, 78)
-        tbNote.TabIndex = 10
         ' 
         ' chkNote
         ' 
@@ -447,6 +438,18 @@ Partial Class FormBlade
         lblNorm.Text = "- MB"
         lblNorm.TextAlign = ContentAlignment.MiddleLeft
         ' 
+        ' tbNote
+        ' 
+        tblExportMode.SetColumnSpan(tbNote, 2)
+        tbNote.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        tbNote.Location = New Point(0, 184)
+        tbNote.Margin = New Padding(0, 3, 0, 0)
+        tbNote.Multiline = True
+        tbNote.Name = "tbNote"
+        tbNote.PlaceholderText = "最多 20 个中文字符"
+        tbNote.Size = New Size(280, 73)
+        tbNote.TabIndex = 10
+        ' 
         ' lblStandard
         ' 
         lblStandard.AutoEllipsis = True
@@ -475,23 +478,23 @@ Partial Class FormBlade
         lblFull.Text = "- MB"
         lblFull.TextAlign = ContentAlignment.MiddleLeft
         ' 
-        ' rbNorm
+        ' rbNormal
         ' 
-        rbNorm.Appearance = Appearance.Button
-        rbNorm.AutoSize = True
-        rbNorm.BackColor = Color.Transparent
-        rbNorm.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        rbNorm.Image = CType(resources.GetObject("rbNorm.Image"), Image)
-        rbNorm.Location = New Point(0, 0)
-        rbNorm.Margin = New Padding(0, 0, 3, 3)
-        rbNorm.Name = "rbNorm"
-        rbNorm.Padding = New Padding(3, 0, 3, 0)
-        rbNorm.Size = New Size(170, 46)
-        rbNorm.TabIndex = 4
-        rbNorm.TabStop = True
-        rbNorm.Text = "默认" & vbCrLf & "(当前已使用字体)"
-        rbNorm.TextImageRelation = TextImageRelation.ImageBeforeText
-        rbNorm.UseVisualStyleBackColor = False
+        rbNormal.Appearance = Appearance.Button
+        rbNormal.AutoSize = True
+        rbNormal.BackColor = Color.Transparent
+        rbNormal.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        rbNormal.Image = CType(resources.GetObject("rbNormal.Image"), Image)
+        rbNormal.Location = New Point(0, 0)
+        rbNormal.Margin = New Padding(0, 0, 3, 3)
+        rbNormal.Name = "rbNormal"
+        rbNormal.Padding = New Padding(3, 0, 3, 0)
+        rbNormal.Size = New Size(170, 46)
+        rbNormal.TabIndex = 4
+        rbNormal.TabStop = True
+        rbNormal.Text = "默认" & vbCrLf & "(当前已使用字体)"
+        rbNormal.TextImageRelation = TextImageRelation.ImageBeforeText
+        rbNormal.UseVisualStyleBackColor = False
         ' 
         ' tblExport
         ' 
@@ -511,14 +514,13 @@ Partial Class FormBlade
         ' 
         ' btnExport
         ' 
-        btnExport.AutoSize = True
         btnExport.BackColor = Color.Transparent
         btnExport.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        btnExport.Location = New Point(180, 0)
+        btnExport.Location = New Point(186, 0)
         btnExport.Margin = New Padding(3, 0, 0, 0)
         btnExport.Name = "btnExport"
         btnExport.Padding = New Padding(3, 0, 3, 0)
-        btnExport.Size = New Size(100, 30)
+        btnExport.Size = New Size(94, 30)
         btnExport.TabIndex = 2
         btnExport.Text = "导出字体包"
         btnExport.UseVisualStyleBackColor = False
@@ -529,7 +531,7 @@ Partial Class FormBlade
         ProgressBar1.Dock = DockStyle.Fill
         ProgressBar1.Location = New Point(3, 3)
         ProgressBar1.Name = "ProgressBar1"
-        ProgressBar1.Size = New Size(171, 24)
+        ProgressBar1.Size = New Size(177, 24)
         ProgressBar1.TabIndex = 7
         ProgressBar1.Visible = False
         ' 
@@ -543,6 +545,57 @@ Partial Class FormBlade
         splitExport.TabIndex = 35
         splitExport.Text = "导出  ─────────────────────────────────"
         ' 
+        ' lblUsername
+        ' 
+        lblUsername.AutoSize = True
+        lblUsername.Cursor = Cursors.Hand
+        lblUsername.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        lblUsername.Location = New Point(86, 303)
+        lblUsername.Margin = New Padding(3)
+        lblUsername.Name = "lblUsername"
+        lblUsername.Size = New Size(58, 18)
+        lblUsername.TabIndex = 42
+        lblUsername.Text = "用户名;"
+        lblUsername.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' lblTime
+        ' 
+        lblTime.AutoSize = True
+        lblTime.Cursor = Cursors.Hand
+        lblTime.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        lblTime.Location = New Point(150, 303)
+        lblTime.Margin = New Padding(3)
+        lblTime.Name = "lblTime"
+        lblTime.Size = New Size(72, 18)
+        lblTime.TabIndex = 43
+        lblTime.Text = "当前时间;"
+        lblTime.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' lblDate
+        ' 
+        lblDate.AutoSize = True
+        lblDate.Cursor = Cursors.Hand
+        lblDate.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        lblDate.Location = New Point(228, 303)
+        lblDate.Margin = New Padding(3)
+        lblDate.Name = "lblDate"
+        lblDate.Size = New Size(64, 18)
+        lblDate.TabIndex = 44
+        lblDate.Text = "当前日期"
+        lblDate.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' Label3
+        ' 
+        Label3.AutoSize = True
+        Label3.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        Label3.Location = New Point(12, 303)
+        Label3.Margin = New Padding(3)
+        Label3.Name = "Label3"
+        Label3.Size = New Size(72, 18)
+        Label3.TabIndex = 45
+        Label3.Text = "快速插入:"
+        Label3.TextAlign = ContentAlignment.MiddleLeft
+        ' 
         ' FormBlade
         ' 
         AllowDrop = True
@@ -550,6 +603,10 @@ Partial Class FormBlade
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(596, 403)
+        Controls.Add(Label3)
+        Controls.Add(lblDate)
+        Controls.Add(lblTime)
+        Controls.Add(lblUsername)
         Controls.Add(tblInstall)
         Controls.Add(Panel1)
         Controls.Add(tblPackList)
@@ -575,7 +632,6 @@ Partial Class FormBlade
         tblExportMode.ResumeLayout(False)
         tblExportMode.PerformLayout()
         tblExport.ResumeLayout(False)
-        tblExport.PerformLayout()
         ResumeLayout(False)
         PerformLayout()
     End Sub
@@ -602,7 +658,7 @@ Partial Class FormBlade
     Friend WithEvents splitInstall As Label
     Friend WithEvents tblExportMode As TableLayoutPanel
     Friend WithEvents tbNote As TextBox
-    Friend WithEvents rbNorm As RadioButton
+    Friend WithEvents rbNormal As RadioButton
     Friend WithEvents chkNote As CheckBox
     Friend WithEvents rbStandard As RadioButton
     Friend WithEvents rbFull As RadioButton
@@ -613,4 +669,8 @@ Partial Class FormBlade
     Friend WithEvents btnExport As Button
     Friend WithEvents ProgressBar1 As ProgressBar
     Friend WithEvents splitExport As Label
+    Friend WithEvents lblUsername As Label
+    Friend WithEvents lblTime As Label
+    Friend WithEvents lblDate As Label
+    Friend WithEvents Label3 As Label
 End Class

@@ -120,7 +120,7 @@ Partial Class FormMain
         ' 
         ' tblTopBar
         ' 
-        tblTopBar.ColumnCount = 7
+        tblTopBar.ColumnCount = 8
         tblTopBar.ColumnStyles.Add(New ColumnStyle())
         tblTopBar.ColumnStyles.Add(New ColumnStyle())
         tblTopBar.ColumnStyles.Add(New ColumnStyle())
@@ -128,13 +128,15 @@ Partial Class FormMain
         tblTopBar.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         tblTopBar.ColumnStyles.Add(New ColumnStyle())
         tblTopBar.ColumnStyles.Add(New ColumnStyle())
+        tblTopBar.ColumnStyles.Add(New ColumnStyle())
+        tblTopBar.Controls.Add(btnSearch, 6, 0)
         tblTopBar.Controls.Add(lblConfig, 3, 0)
-        tblTopBar.Controls.Add(btnLocate, 6, 0)
+        tblTopBar.Controls.Add(btnLocate, 7, 0)
         tblTopBar.Controls.Add(chkDirSelect, 1, 0)
         tblTopBar.Controls.Add(lblPreset, 2, 0)
-        tblTopBar.Controls.Add(btnRefresh, 5, 0)
         tblTopBar.Controls.Add(tbPath, 4, 0)
         tblTopBar.Controls.Add(btnBrowse, 0, 0)
+        tblTopBar.Controls.Add(btnRefresh, 5, 0)
         tblTopBar.Location = New Point(12, 12)
         tblTopBar.Name = "tblTopBar"
         tblTopBar.RowCount = 1
@@ -197,7 +199,7 @@ Partial Class FormMain
         ' btnRefresh
         ' 
         btnRefresh.Image = CType(resources.GetObject("btnRefresh.Image"), Image)
-        btnRefresh.Location = New Point(372, 0)
+        btnRefresh.Location = New Point(336, 0)
         btnRefresh.Margin = New Padding(3, 0, 3, 0)
         btnRefresh.Name = "btnRefresh"
         btnRefresh.Size = New Size(30, 30)
@@ -211,7 +213,7 @@ Partial Class FormMain
         tbPath.Margin = New Padding(3, 0, 3, 0)
         tbPath.Multiline = True
         tbPath.Name = "tbPath"
-        tbPath.Size = New Size(68, 30)
+        tbPath.Size = New Size(32, 30)
         tbPath.TabIndex = 7
         tbPath.Visible = False
         ' 
@@ -1036,7 +1038,7 @@ Partial Class FormMain
         ' btnSearch
         ' 
         btnSearch.Image = CType(resources.GetObject("btnSearch.Image"), Image)
-        btnSearch.Location = New Point(72, 0)
+        btnSearch.Location = New Point(372, 0)
         btnSearch.Margin = New Padding(3, 0, 3, 0)
         btnSearch.Name = "btnSearch"
         btnSearch.Size = New Size(30, 30)
@@ -1055,7 +1057,6 @@ Partial Class FormMain
         tblBottonBar.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         tblBottonBar.ColumnStyles.Add(New ColumnStyle())
         tblBottonBar.ColumnStyles.Add(New ColumnStyle())
-        tblBottonBar.Controls.Add(btnSearch, 2, 0)
         tblBottonBar.Controls.Add(btnMenu, 0, 0)
         tblBottonBar.Controls.Add(btnApply, 7, 0)
         tblBottonBar.Controls.Add(btnCopy, 6, 0)
@@ -1108,7 +1109,7 @@ Partial Class FormMain
         ' btnDefault
         ' 
         btnDefault.Image = CType(resources.GetObject("btnDefault.Image"), Image)
-        btnDefault.Location = New Point(108, 0)
+        btnDefault.Location = New Point(72, 0)
         btnDefault.Margin = New Padding(3, 0, 3, 0)
         btnDefault.Name = "btnDefault"
         btnDefault.Size = New Size(30, 30)
@@ -1121,7 +1122,7 @@ Partial Class FormMain
         ' 
         btnBlade.AllowDrop = True
         btnBlade.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Italic, GraphicsUnit.Point, CByte(134))
-        btnBlade.Location = New Point(144, 0)
+        btnBlade.Location = New Point(108, 0)
         btnBlade.Margin = New Padding(3, 0, 3, 0)
         btnBlade.Name = "btnBlade"
         btnBlade.Padding = New Padding(3, 0, 3, 0)
@@ -1133,9 +1134,9 @@ Partial Class FormMain
         ' 
         ' ProgressBar1
         ' 
-        ProgressBar1.Location = New Point(214, 3)
+        ProgressBar1.Location = New Point(178, 3)
         ProgressBar1.Name = "ProgressBar1"
-        ProgressBar1.Size = New Size(130, 24)
+        ProgressBar1.Size = New Size(166, 24)
         ProgressBar1.TabIndex = 9
         ProgressBar1.Visible = False
         ' 

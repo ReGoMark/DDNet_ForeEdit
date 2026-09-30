@@ -79,7 +79,7 @@ Public Class FormBlade
         If String.IsNullOrEmpty(JsonContent) Then JsonContent = ""
 
         tbNote.MaxLength = 60
-        rbNorm.Checked = True
+        rbNormal.Checked = True
         chkNote.Checked = False
         tbNote.Enabled = False
         tbNote.Text = ""
@@ -93,6 +93,10 @@ Public Class FormBlade
             btnExport.Enabled = False
             tblExportMode.Enabled = False
             btnOpen.Enabled = False
+            lblDate.Enabled = False
+            lblUsername.Enabled = False
+            lblTime.Enabled = False
+            Label3.Enabled = False
         ElseIf Not hasAnyFonts OrElse Not hasJson Then
             btnExport.Enabled = False
             tblExportMode.Enabled = False
@@ -115,6 +119,26 @@ Public Class FormBlade
                 End Try
             End If
         Next
+    End Sub
+
+    ''' <summary>
+    ''' 批量追加挂起清单：读取现有内容 → 追加新行 → 去重 → 写回。
+    ''' 保证多个操作的挂起项互不覆盖。
+    ''' </summary>
+    Private Sub AppendPendingLines(path As String, lines As IEnumerable(Of String))
+        If lines Is Nothing Then Return
+        Dim arr = lines.Where(Function(l) Not String.IsNullOrWhiteSpace(l)).ToList()
+        If arr.Count = 0 Then Return
+        Try
+            Dim existing As New List(Of String)
+            If File.Exists(path) Then
+                existing.AddRange(
+                    File.ReadAllLines(path).Where(Function(l) Not String.IsNullOrWhiteSpace(l)))
+            End If
+            existing.AddRange(arr)
+            File.WriteAllLines(path, existing.Distinct(StringComparer.OrdinalIgnoreCase))
+        Catch
+        End Try
     End Sub
 
     ' ─── 估算包体积 ──────────────────────────────────────────────────
@@ -168,6 +192,10 @@ Public Class FormBlade
     ''' <summary>备注复选框状态改变时启用/禁用备注文本框。</summary>
     Private Sub chkNote_CheckedChanged(sender As Object, e As EventArgs) Handles chkNote.CheckedChanged
         tbNote.Enabled = chkNote.Checked
+        Label3.Enabled = chkNote.Checked
+        lblDate.Enabled = chkNote.Checked
+        lblTime.Enabled = chkNote.Checked
+        lblUsername.Enabled = chkNote.Checked
     End Sub
 
     ' ─── 导出字体包 ──────────────────────────────────────────────────
@@ -177,7 +205,7 @@ Public Class FormBlade
         Dim filesToPack As List(Of String)
         Dim defaultFileName As String = "无标题"
 
-        If rbNorm.Checked Then
+        If rbNormal.Checked Then
             filesToPack = NormFontFiles
         ElseIf rbStandard.Checked Then
             filesToPack = StdFontFiles
@@ -237,7 +265,7 @@ Public Class FormBlade
                     ' 最后一步：写入验证文件
                     Dim verEntry As ZipArchiveEntry = zipArchive.CreateEntry("verification.txt")
                     Dim modeStr As String
-                    If rbNorm.Checked Then
+                    If rbNormal.Checked Then
                         modeStr = "Normal"
                     ElseIf rbStandard.Checked Then
                         modeStr = "Standard"
@@ -438,7 +466,8 @@ Public Class FormBlade
 
             Directory.CreateDirectory(ManifestDir)
 
-            ' toAdd：直接复制；失败则缓存后标记
+            ' ── toAdd：直接复制；失败则缓存后挂起 ──
+            Dim addCopyLines As New List(Of String)
             For Each f In toAdd
                 Dim destPath = Path.Combine(FontDir, Path.GetFileName(f))
                 Try
@@ -447,20 +476,23 @@ Public Class FormBlade
                     Dim cached = Path.Combine(CacheDir, Path.GetFileName(f))
                     Try
                         File.Copy(f, cached, True)
-                        File.AppendAllText(PendingCopiesPath, $"{cached}|{destPath}" & Environment.NewLine)
+                        addCopyLines.Add($"{cached}|{destPath}")
                     Catch
                     End Try
                 End Try
             Next
+            AppendPendingLines(PendingCopiesPath, addCopyLines)
 
-            ' toReplace：缓存新文件，标记旧文件删除，标记新文件待复制
+            ' ── toReplace：缓存新文件，标记旧文件删除，标记新文件待复制 ──
+            Dim replaceDeleteLines As New List(Of String)
+            Dim replaceCopyLines As New List(Of String)
             For Each f In toReplace
                 Dim destPath = Path.Combine(FontDir, Path.GetFileName(f))
                 Dim cached = Path.Combine(CacheDir, Path.GetFileName(f))
                 Try
                     File.Copy(f, cached, True)
-                    File.AppendAllText(PendingDeletionsPath, destPath & Environment.NewLine)
-                    File.AppendAllText(PendingCopiesPath, $"{cached}|{destPath}" & Environment.NewLine)
+                    replaceDeleteLines.Add(destPath)
+                    replaceCopyLines.Add($"{cached}|{destPath}")
                 Catch ex As Exception
                     MessageBox.Show("缓存字体时出错，已跳过该文件。" & vbCrLf &
                                     $"· {Path.GetFileName(f)}" & vbCrLf &
@@ -468,18 +500,29 @@ Public Class FormBlade
                                     "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 End Try
             Next
+            AppendPendingLines(PendingDeletionsPath, replaceDeleteLines)
+            AppendPendingLines(PendingCopiesPath, replaceCopyLines)
 
-            ' toDelete：标记多余字体删除
-            For Each f In toDelete
-                File.AppendAllText(PendingDeletionsPath, f & Environment.NewLine)
-            Next
+            ' ── toDelete：标记多余字体删除 ──
+            AppendPendingLines(PendingDeletionsPath, toDelete)
 
             ' 写入 index.json
             Dim jsonDest = Path.Combine(FontDir, "index.json")
             File.WriteAllText(jsonDest, newJson, Encoding.UTF8)
 
-            MessageBox.Show("字体包安装成功，下次启动时生效。",
-                "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            ' ── 智能提示：是否有延迟项 ──
+            Dim hasPending As Boolean = (addCopyLines.Count > 0) OrElse
+                            (replaceDeleteLines.Count > 0) OrElse
+                            (toDelete.Count > 0)
+
+            If hasPending Then
+                MessageBox.Show("字体包安装成功，下次启动时生效。",
+                    "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Else
+                MessageBox.Show("字体包安装成功。",
+                    "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            End If
+
         Catch ex As Exception
             MessageBox.Show("安装字体包时发生错误：" & $"{ex.Message}",
                             "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -778,7 +821,7 @@ Public Class FormBlade
     ' ─── 打包模式切换 ─────────────────────────────────────────────────
 
     ''' <summary>默认打包模式选中时更新标签颜色。</summary>
-    Private Sub rbNorm_CheckedChanged(sender As Object, e As EventArgs) Handles rbNorm.CheckedChanged
+    Private Sub rbNorm_CheckedChanged(sender As Object, e As EventArgs) Handles rbNormal.CheckedChanged
         UpdateRadioButtonLabels()
     End Sub
 
@@ -794,7 +837,7 @@ Public Class FormBlade
 
     ''' <summary>更新打包模式 RadioButton 的标签颜色。</summary>
     Private Sub UpdateRadioButtonLabels()
-        If rbNorm.Checked Then
+        If rbNormal.Checked Then
             lblFull.ForeColor = Color.DarkGray
             lblStandard.ForeColor = Color.DarkGray
             lblNorm.ForeColor = Color.FromArgb(64, 64, 64)
@@ -808,5 +851,45 @@ Public Class FormBlade
             lblFull.ForeColor = Color.FromArgb(64, 64, 64)
         End If
     End Sub
+    ' ─── 插入助手：用户名 / 日期 / 时间 ──────────────────────────────
 
+    ''' <summary>
+    ''' 点击「用户名」标签：在备注框光标处插入当前 Windows 用户名。
+    ''' </summary>
+    Private Sub lblUsername_Click(sender As Object, e As EventArgs) Handles lblUsername.Click
+        InsertTextIntoNote(Environment.UserName)
+    End Sub
+
+    ''' <summary>
+    ''' 点击「日期」标签：在备注框光标处插入当前日期（yyyy/MM/dd）。
+    ''' </summary>
+    Private Sub lblDate_Click(sender As Object, e As EventArgs) Handles lblDate.Click
+        InsertTextIntoNote(DateTime.Now.ToString("yyyy/MM/dd"))
+    End Sub
+
+    ''' <summary>
+    ''' 点击「时间」标签：在备注框光标处插入当前时间（HH:mm:ss）。
+    ''' </summary>
+    Private Sub lblTime_Click(sender As Object, e As EventArgs) Handles lblTime.Click
+        InsertTextIntoNote(DateTime.Now.ToString("HH:mm:ss"))
+    End Sub
+
+    ''' <summary>
+    ''' 在 tbNote 的光标位置插入文本。
+    ''' 自动勾选「添加备注」并聚焦到 tbNote，插入后光标落在新文本之后。
+    ''' </summary>
+    Private Sub InsertTextIntoNote(text As String)
+        If String.IsNullOrEmpty(text) Then Return
+
+        ' 未启用「添加备注」时自动勾选
+        If Not chkNote.Checked Then
+            chkNote.Checked = True   ' 触发 chkNote_CheckedChanged → tbNote.Enabled = True
+        End If
+
+        ' 在光标处插入（SelectedText 赋值等于"用新文本替换当前选中内容"）
+        tbNote.SelectedText = text
+
+        ' 焦点交回文本框，方便用户继续输入
+        tbNote.Focus()
+    End Sub
 End Class
