@@ -12,6 +12,37 @@ Public Class FontInfoTable
     ''' <summary>index.json 使用的字体族名称（Name ID=16 优先，回退 Name ID=1）。</summary>
     Public Property FamilyName As String = ""
 
+    ''' <summary>
+    ''' 样式名称（Name ID=17 优先，回退 Name ID=2），如 "Regular"、"Bold Italic"。
+    ''' 与 FreeType 的 style_name 取值规则一致；未读到则为空。
+    ''' </summary>
+    Public Property StyleName As String = ""
+
+    ''' <summary>该子字体在文件中的物理序号（0-based；TTF/OTF 恒为 0，TTC 为子字体序号）。</summary>
+    Public Property FaceIndex As Integer = 0
+
+    ''' <summary>
+    ''' DDNet（FreeType）视角下的样式名；没有样式名时 FreeType 回退为 "Regular"。
+    ''' </summary>
+    Public ReadOnly Property DdnetStyleName As String
+        Get
+            Return If(String.IsNullOrEmpty(StyleName), "Regular", StyleName)
+        End Get
+    End Property
+
+    ''' <summary>
+    ''' DDNet index.json 中引用该字体面时使用的完整名称："family_name style_name"。
+    ''' DDNet 的 GetFaceByName 先按此完整名称精确匹配，匹配不到才退而求其次只按族名匹配
+    ''' （且只取第一个），因此 index.json 里应始终写这个值，而不是只写族名。
+    ''' 族名读取失败时返回空字符串。
+    ''' </summary>
+    Public ReadOnly Property DdnetName As String
+        Get
+            If String.IsNullOrEmpty(FamilyName) Then Return ""
+            Return FamilyName & " " & DdnetStyleName
+        End Get
+    End Property
+
     ''' <summary>字重值（OS/2.usWeightClass，100-900）；0 表示读取失败。</summary>
     Public Property WeightClass As Integer = 0
 

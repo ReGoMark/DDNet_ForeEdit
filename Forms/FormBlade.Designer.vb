@@ -553,9 +553,9 @@ Partial Class FormBlade
         lblUsername.Location = New Point(86, 303)
         lblUsername.Margin = New Padding(3)
         lblUsername.Name = "lblUsername"
-        lblUsername.Size = New Size(58, 18)
+        lblUsername.Size = New Size(66, 18)
         lblUsername.TabIndex = 42
-        lblUsername.Text = "用户名;"
+        lblUsername.Text = "用户名 /"
         lblUsername.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' lblTime
@@ -566,9 +566,9 @@ Partial Class FormBlade
         lblTime.Location = New Point(150, 303)
         lblTime.Margin = New Padding(3)
         lblTime.Name = "lblTime"
-        lblTime.Size = New Size(72, 18)
+        lblTime.Size = New Size(80, 18)
         lblTime.TabIndex = 43
-        lblTime.Text = "当前时间;"
+        lblTime.Text = "当前时间 /"
         lblTime.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' lblDate

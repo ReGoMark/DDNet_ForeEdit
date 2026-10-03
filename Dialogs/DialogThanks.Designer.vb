@@ -50,6 +50,7 @@ Partial Class DialogThanks
         ' 
         Label2.AutoEllipsis = True
         Label2.AutoSize = True
+        Label2.ForeColor = Color.Silver
         Label2.Location = New Point(12, 210)
         Label2.Margin = New Padding(3)
         Label2.Name = "Label2"
@@ -61,7 +62,7 @@ Partial Class DialogThanks
         ' 
         Label3.AutoEllipsis = True
         Label3.AutoSize = True
-        Label3.ForeColor = Color.Black
+        Label3.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         Label3.Location = New Point(12, 36)
         Label3.Margin = New Padding(3)
         Label3.Name = "Label3"
@@ -73,7 +74,7 @@ Partial Class DialogThanks
         ' 
         Label4.AutoEllipsis = True
         Label4.AutoSize = True
-        Label4.ForeColor = Color.Black
+        Label4.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         Label4.Location = New Point(12, 60)
         Label4.Margin = New Padding(3)
         Label4.Name = "Label4"
@@ -85,7 +86,7 @@ Partial Class DialogThanks
         ' 
         Label5.AutoEllipsis = True
         Label5.AutoSize = True
-        Label5.ForeColor = Color.Black
+        Label5.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         Label5.Location = New Point(12, 84)
         Label5.Margin = New Padding(3)
         Label5.Name = "Label5"
@@ -97,7 +98,7 @@ Partial Class DialogThanks
         ' 
         Label8.AutoEllipsis = True
         Label8.AutoSize = True
-        Label8.ForeColor = Color.Black
+        Label8.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         Label8.Location = New Point(12, 132)
         Label8.Margin = New Padding(3)
         Label8.Name = "Label8"
@@ -109,7 +110,7 @@ Partial Class DialogThanks
         ' 
         Label1.AutoEllipsis = True
         Label1.AutoSize = True
-        Label1.ForeColor = Color.Black
+        Label1.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         Label1.Location = New Point(12, 156)
         Label1.Margin = New Padding(3)
         Label1.Name = "Label1"
@@ -121,7 +122,7 @@ Partial Class DialogThanks
         ' 
         Label6.AutoEllipsis = True
         Label6.AutoSize = True
-        Label6.ForeColor = Color.Black
+        Label6.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         Label6.Location = New Point(12, 108)
         Label6.Margin = New Padding(3)
         Label6.Name = "Label6"

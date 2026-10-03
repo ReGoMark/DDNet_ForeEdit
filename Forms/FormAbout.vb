@@ -89,4 +89,14 @@
             MessageBox.Show($"无法打开链接：{ex.Message}", "打开链接失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
+
+    Private Sub Button1_Click(sender As Object, e As EventArgs)
+        MessageBox.Show($"多个字重的家族名完全相同，程序无法区分。
+粗体、斜体是独立文件，家族名与常规体相同，程序只保留一个路径，预览不生效。
+TTC 内部多个字体共用家族名，程序无法拆分。
+可变字体只能读到默认字重。
+写入 index.json 时多个字重文件被覆盖，只写入一个。
+──────
+总之，简单的切换字体使用并不会产生影响。")
+    End Sub
 End Class

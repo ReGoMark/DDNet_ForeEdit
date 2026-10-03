@@ -25,13 +25,14 @@ Partial Class FormMain
         components = New ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormMain))
         tblTopBar = New TableLayoutPanel()
+        btnSearch = New Button()
         lblConfig = New Label()
         btnLocate = New Button()
         chkDirSelect = New CheckBox()
         lblPreset = New Label()
-        btnRefresh = New Button()
         tbPath = New TextBox()
         btnBrowse = New Button()
+        btnRefresh = New Button()
         pnlFontInfo = New Panel()
         tblFontInfo = New TableLayoutPanel()
         tagFontFamily = New Label()
@@ -94,7 +95,6 @@ Partial Class FormMain
         btnRecoveryTC = New Button()
         tagLA = New Label()
         tagJP = New Label()
-        btnSearch = New Button()
         tblBottonBar = New TableLayoutPanel()
         btnMenu = New Button()
         btnApply = New Button()
@@ -143,6 +143,17 @@ Partial Class FormMain
         tblTopBar.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
         tblTopBar.Size = New Size(488, 30)
         tblTopBar.TabIndex = 0
+        ' 
+        ' btnSearch
+        ' 
+        btnSearch.Image = CType(resources.GetObject("btnSearch.Image"), Image)
+        btnSearch.Location = New Point(372, 0)
+        btnSearch.Margin = New Padding(3, 0, 3, 0)
+        btnSearch.Name = "btnSearch"
+        btnSearch.Size = New Size(30, 30)
+        btnSearch.TabIndex = 29
+        ToolTip1.SetToolTip(btnSearch, "查找(Ctrl+F)")
+        btnSearch.UseVisualStyleBackColor = True
         ' 
         ' lblConfig
         ' 
@@ -196,17 +207,6 @@ Partial Class FormMain
         lblPreset.TextAlign = ContentAlignment.MiddleLeft
         ToolTip1.SetToolTip(lblPreset, "预装字体验证(Ctrl+Shift+S)")
         ' 
-        ' btnRefresh
-        ' 
-        btnRefresh.Image = CType(resources.GetObject("btnRefresh.Image"), Image)
-        btnRefresh.Location = New Point(336, 0)
-        btnRefresh.Margin = New Padding(3, 0, 3, 0)
-        btnRefresh.Name = "btnRefresh"
-        btnRefresh.Size = New Size(30, 30)
-        btnRefresh.TabIndex = 2
-        ToolTip1.SetToolTip(btnRefresh, "刷新(F5)")
-        btnRefresh.UseVisualStyleBackColor = True
-        ' 
         ' tbPath
         ' 
         tbPath.Location = New Point(298, 0)
@@ -232,8 +232,20 @@ Partial Class FormMain
         ToolTip1.SetToolTip(btnBrowse, "浏览/拖放快捷方式(Ctrl+O)")
         btnBrowse.UseVisualStyleBackColor = True
         ' 
+        ' btnRefresh
+        ' 
+        btnRefresh.Image = CType(resources.GetObject("btnRefresh.Image"), Image)
+        btnRefresh.Location = New Point(336, 0)
+        btnRefresh.Margin = New Padding(3, 0, 3, 0)
+        btnRefresh.Name = "btnRefresh"
+        btnRefresh.Size = New Size(30, 30)
+        btnRefresh.TabIndex = 2
+        ToolTip1.SetToolTip(btnRefresh, "刷新(F5)")
+        btnRefresh.UseVisualStyleBackColor = True
+        ' 
         ' pnlFontInfo
         ' 
+        pnlFontInfo.Anchor = AnchorStyles.Top Or AnchorStyles.Right
         pnlFontInfo.BackColor = Color.White
         pnlFontInfo.BorderStyle = BorderStyle.FixedSingle
         pnlFontInfo.Controls.Add(tblFontInfo)
@@ -534,7 +546,7 @@ Partial Class FormMain
         splitFont.Name = "splitFont"
         splitFont.Size = New Size(16, 18)
         splitFont.TabIndex = 2
-        splitFont.Text = "|"
+        splitFont.Text = "/"
         splitFont.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' lblSystemFonts
@@ -1034,17 +1046,6 @@ Partial Class FormMain
         tagJP.TabIndex = 1
         tagJP.Text = "日文"
         tagJP.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' btnSearch
-        ' 
-        btnSearch.Image = CType(resources.GetObject("btnSearch.Image"), Image)
-        btnSearch.Location = New Point(372, 0)
-        btnSearch.Margin = New Padding(3, 0, 3, 0)
-        btnSearch.Name = "btnSearch"
-        btnSearch.Size = New Size(30, 30)
-        btnSearch.TabIndex = 29
-        ToolTip1.SetToolTip(btnSearch, "查找(Ctrl+F)")
-        btnSearch.UseVisualStyleBackColor = True
         ' 
         ' tblBottonBar
         ' 

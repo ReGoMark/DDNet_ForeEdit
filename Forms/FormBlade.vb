@@ -241,7 +241,7 @@ Public Class FormBlade
             btnExport.Enabled = False
 
             Try
-                File.WriteAllText(tempJsonPath, JsonContent, Encoding.Default)
+                File.WriteAllText(tempJsonPath, JsonContent, Encoding.UTF8)
                 If File.Exists(sfd.FileName) Then File.Delete(sfd.FileName)
 
                 Using zipArchive As ZipArchive = ZipFile.Open(sfd.FileName, ZipArchiveMode.Create)

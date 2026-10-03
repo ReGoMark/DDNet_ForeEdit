@@ -33,12 +33,16 @@ Module FontInfoReader
                         For i = 0 To fontCount - 1
                             offsets(i) = ReadUInt32BE(br)
                         Next
-                        For Each off In offsets
-                            result.Add(ReadNameInfoAt(br, CLng(off)))
+                        For faceIdx As Integer = 0 To offsets.Length - 1
+                            Dim faceInfo As FontInfoTable = ReadNameInfoAt(br, CLng(offsets(faceIdx)))
+                            faceInfo.FaceIndex = faceIdx
+                            result.Add(faceInfo)
                         Next
                     Else
                         ' TTF / OTF
-                        result.Add(ReadNameInfoAt(br, 0))
+                        Dim singleInfo As FontInfoTable = ReadNameInfoAt(br, 0)
+                        singleInfo.FaceIndex = 0
+                        result.Add(singleInfo)
                     End If
                 End Using
             End Using
@@ -142,7 +146,12 @@ Module FontInfoReader
         Return info
     End Function
 
-    ''' <summary>解析 name 表，填充 FamilyName、AllRawNames 及 Version。</summary>
+    ''' <summary>
+    ''' 解析 name 表，填充 FamilyName、StyleName、AllRawNames 及 Version。
+    ''' FamilyName / StyleName 的取值规则与 FreeType 一致：
+    ''' 族名优先 Name ID=16、回退 ID=1；样式名优先 Name ID=17、回退 ID=2。
+    ''' 同一 Name ID 的多条记录优先级：Windows 英文 > Windows 其他语言 > Mac。
+    ''' </summary>
     Private Sub ReadNameTable(br As BinaryReader, nameTableOffset As UInteger, info As FontInfoTable)
         br.BaseStream.Seek(nameTableOffset, SeekOrigin.Begin)
         ReadUInt16BE(br) ' format
@@ -151,12 +160,10 @@ Module FontInfoReader
         Dim storageBase As Long = nameTableOffset + stringOffset
 
         Dim rawNames As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
-        Dim typoWinEn As String = ""    ' Name ID=16, 英文
-        Dim typoWinOther As String = "" ' Name ID=16, 其他语言
-        Dim famWinEn As String = ""     ' Name ID=1, 英文
-        Dim famWinOther As String = ""  ' Name ID=1, 其他语言
-        Dim typoMac As String = ""      ' Mac 平台兜底
-        Dim famMac As String = ""
+
+        ' 每个 Name ID 的最佳候选（文本 + 优先级：3 = Win 英文，2 = Win 其他，1 = Mac 英文，0 = Mac 其他）
+        Dim bestText As New Dictionary(Of Integer, String)
+        Dim bestRank As New Dictionary(Of Integer, Integer)
 
         For i = 0 To count - 1
             Dim platformID As UShort = ReadUInt16BE(br)
@@ -166,51 +173,48 @@ Module FontInfoReader
             Dim length As UShort = ReadUInt16BE(br)
             Dim strOff As UShort = ReadUInt16BE(br)
 
-            ' 读取 ID=1（族名）、ID=5（版本）、ID=16（排版族名）
-            If nameID <> 1 AndAlso nameID <> 5 AndAlso nameID <> 16 Then Continue For
+            ' 读取 ID=1（族名）、ID=2（样式名）、ID=5（版本）、ID=16（排版族名）、ID=17（排版样式名）
+            Dim nid As Integer = CInt(nameID)
+            If nid <> 1 AndAlso nid <> 2 AndAlso nid <> 5 AndAlso nid <> 16 AndAlso nid <> 17 Then Continue For
+            If platformID <> 3 AndAlso platformID <> 1 Then Continue For
 
             Dim savedPos = br.BaseStream.Position
             br.BaseStream.Seek(storageBase + strOff, SeekOrigin.Begin)
             Dim bytes = br.ReadBytes(length)
             br.BaseStream.Seek(savedPos, SeekOrigin.Begin)
 
+            Dim decoded As String
+            Dim rank As Integer
             If platformID = 3 Then
                 ' Windows Unicode (UTF-16 BE)
-                Dim decoded = Encoding.BigEndianUnicode.GetString(bytes).Trim(Chr(0))
-                If String.IsNullOrEmpty(decoded) Then Continue For
-
+                decoded = Encoding.BigEndianUnicode.GetString(bytes).Trim(Chr(0))
                 Dim isEnglish = (languageID = &H409 OrElse languageID = &H0)
-
-                If nameID = 1 Then
-                    rawNames.Add(decoded)
-                    If isEnglish AndAlso String.IsNullOrEmpty(famWinEn) Then famWinEn = decoded
-                    If Not isEnglish AndAlso String.IsNullOrEmpty(famWinOther) Then famWinOther = decoded
-                ElseIf nameID = 16 Then
-                    If isEnglish AndAlso String.IsNullOrEmpty(typoWinEn) Then typoWinEn = decoded
-                    If Not isEnglish AndAlso String.IsNullOrEmpty(typoWinOther) Then typoWinOther = decoded
-                ElseIf nameID = 5 Then
-                    ' 版本号：优先取英文，已有则不覆盖
-                    If isEnglish AndAlso String.IsNullOrEmpty(info.Version) Then
-                        info.Version = decoded
-                    End If
-                End If
-
-            ElseIf platformID = 1 Then
+                rank = If(isEnglish, 3, 2)
+                ' 版本号只接受 Windows 英文或 Mac（与原行为一致）
+                If nid = 5 AndAlso Not isEnglish Then Continue For
+                ' Name ID=1 的全部 Windows 语言版本，用于和 GDI+ FontFamily.Name 匹配
+                If nid = 1 AndAlso Not String.IsNullOrEmpty(decoded) Then rawNames.Add(decoded)
+            Else
                 ' Mac Latin-1（兜底）
-                Dim decoded = Encoding.Latin1.GetString(bytes).Trim(Chr(0))
-                If nameID = 1 AndAlso String.IsNullOrEmpty(famMac) Then famMac = decoded
-                If nameID = 16 AndAlso String.IsNullOrEmpty(typoMac) Then typoMac = decoded
-                ' Mac 版本只在 Windows 平台未读到时作为兜底
-                If nameID = 5 AndAlso String.IsNullOrEmpty(info.Version) Then
-                    info.Version = decoded
-                End If
+                decoded = Encoding.Latin1.GetString(bytes).Trim(Chr(0))
+                rank = If(languageID = 0, 1, 0)
+            End If
+            If String.IsNullOrEmpty(decoded) Then Continue For
+
+            If Not bestRank.ContainsKey(nid) OrElse rank > bestRank(nid) Then
+                bestRank(nid) = rank
+                bestText(nid) = decoded
             End If
         Next
 
+        Dim getBest As Func(Of Integer, String) =
+            Function(id As Integer) If(bestText.ContainsKey(id), bestText(id), "")
+
         info.AllRawNames.AddRange(rawNames)
-        ' FamilyName 优先级：Name ID=16 英文 > 其他 > Mac，再回退 Name ID=1
-        info.FamilyName = FirstNonEmpty(typoWinEn, typoWinOther, typoMac,
-                                        famWinEn, famWinOther, famMac)
+        ' 族名：Name ID=16 > Name ID=1；样式名：Name ID=17 > Name ID=2（与 FreeType 一致）
+        info.FamilyName = FirstNonEmpty(getBest(16), getBest(1))
+        info.StyleName = FirstNonEmpty(getBest(17), getBest(2))
+        info.Version = getBest(5)
     End Sub
 
     ''' <summary>解析 OS/2 表，读取字重、字宽和斜体标志。</summary>
