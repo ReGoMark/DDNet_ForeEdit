@@ -1,7 +1,7 @@
 ﻿Imports System.ComponentModel
 Imports System.Drawing.Text
 
-Public Class DialogPopUp
+Public Class DialogMessage
 
     ' ── 公开属性（由调用方设置）────────────────────────────────────
 

@@ -82,7 +82,7 @@
     Private Sub Label1_Click(sender As Object, e As EventArgs) Handles Label1.Click
         Try
             Dim psi As New ProcessStartInfo()
-            psi.FileName = "https://github.com/ReGoMark/"
+            psi.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit"
             psi.UseShellExecute = True
             Process.Start(psi)
         Catch ex As Exception
@@ -98,5 +98,16 @@ TTC 内部多个字体共用家族名，程序无法拆分。
 写入 index.json 时多个字重文件被覆盖，只写入一个。
 ──────
 总之，简单的切换字体使用并不会产生影响。")
+    End Sub
+
+    Private Sub Label2_Click(sender As Object, e As EventArgs) Handles Label2.Click
+        Try
+            Dim psi As New ProcessStartInfo()
+            psi.FileName = "https://dotnet.microsoft.com/"
+            psi.UseShellExecute = True
+            Process.Start(psi)
+        Catch ex As Exception
+            MessageBox.Show($"无法打开链接：{ex.Message}", "打开链接失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 End Class

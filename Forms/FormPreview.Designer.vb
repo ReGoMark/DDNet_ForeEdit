@@ -42,8 +42,8 @@ Partial Class FormPreview
         TableLayoutPanel4 = New TableLayoutPanel()
         TableLayoutPanel1 = New TableLayoutPanel()
         rbFont32 = New RadioButton()
-        rbFont9 = New RadioButton()
         TableLayoutPanel2 = New TableLayoutPanel()
+        rbFont9 = New RadioButton()
         TableLayoutPanel4.SuspendLayout()
         TableLayoutPanel1.SuspendLayout()
         TableLayoutPanel2.SuspendLayout()
@@ -55,7 +55,7 @@ Partial Class FormPreview
         lblTC.BackColor = Color.Transparent
         lblTC.Dock = DockStyle.Fill
         lblTC.Font = New Font("等距更纱黑体 Slab SC", 9F)
-        lblTC.ForeColor = Color.Black
+        lblTC.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lblTC.Location = New Point(0, 576)
         lblTC.Margin = New Padding(0, 3, 0, 3)
         lblTC.Name = "lblTC"
@@ -138,12 +138,12 @@ Partial Class FormPreview
         ' 
         TableLayoutPanel1.SetColumnSpan(tbCustom, 5)
         tbCustom.Dock = DockStyle.Fill
-        tbCustom.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        tbCustom.ForeColor = Color.Black
         tbCustom.Location = New Point(0, 36)
         tbCustom.Margin = New Padding(0, 3, 0, 3)
         tbCustom.Multiline = True
         tbCustom.Name = "tbCustom"
-        tbCustom.PlaceholderText = "在此处输入要预览的文本"
+        tbCustom.PlaceholderText = "输入要预览的文本"
         tbCustom.ScrollBars = ScrollBars.Vertical
         tbCustom.Size = New Size(263, 66)
         tbCustom.TabIndex = 3
@@ -153,7 +153,7 @@ Partial Class FormPreview
         lblSC.AutoSize = True
         lblSC.Dock = DockStyle.Fill
         lblSC.Font = New Font("等距更纱黑体 Slab SC", 9F)
-        lblSC.ForeColor = Color.Black
+        lblSC.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lblSC.Location = New Point(0, 456)
         lblSC.Margin = New Padding(0, 3, 0, 3)
         lblSC.Name = "lblSC"
@@ -168,7 +168,7 @@ Partial Class FormPreview
         lblKR.BackColor = Color.Transparent
         lblKR.Dock = DockStyle.Fill
         lblKR.Font = New Font("等距更纱黑体 Slab SC", 9F)
-        lblKR.ForeColor = Color.Black
+        lblKR.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lblKR.Location = New Point(0, 354)
         lblKR.Margin = New Padding(0, 3, 0, 3)
         lblKR.Name = "lblKR"
@@ -182,7 +182,7 @@ Partial Class FormPreview
         lblJP.AutoSize = True
         lblJP.Dock = DockStyle.Fill
         lblJP.Font = New Font("等距更纱黑体 Slab SC", 9F)
-        lblJP.ForeColor = Color.Black
+        lblJP.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lblJP.Location = New Point(0, 234)
         lblJP.Margin = New Padding(0, 3, 0, 3)
         lblJP.Name = "lblJP"
@@ -197,7 +197,7 @@ Partial Class FormPreview
         lblLA.BackColor = Color.Transparent
         lblLA.Dock = DockStyle.Fill
         lblLA.Font = New Font("等距更纱黑体 Slab SC", 9F)
-        lblLA.ForeColor = Color.Black
+        lblLA.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lblLA.Location = New Point(0, 132)
         lblLA.Margin = New Padding(0, 3, 0, 3)
         lblLA.Name = "lblLA"
@@ -319,13 +319,13 @@ Partial Class FormPreview
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
-        TableLayoutPanel1.Controls.Add(rbFont32, 4, 0)
         TableLayoutPanel1.Controls.Add(tbCustom, 0, 1)
         TableLayoutPanel1.Controls.Add(TableLayoutPanel2, 5, 1)
         TableLayoutPanel1.Controls.Add(rbFont16, 3, 0)
         TableLayoutPanel1.Controls.Add(rbFont12, 2, 0)
         TableLayoutPanel1.Controls.Add(rbFont10, 1, 0)
         TableLayoutPanel1.Controls.Add(rbFont9, 5, 0)
+        TableLayoutPanel1.Controls.Add(rbFont32, 4, 0)
         TableLayoutPanel1.Dock = DockStyle.Top
         TableLayoutPanel1.Location = New Point(0, 0)
         TableLayoutPanel1.Margin = New Padding(0)
@@ -352,23 +352,6 @@ Partial Class FormPreview
         rbFont32.TextAlign = ContentAlignment.MiddleCenter
         rbFont32.UseVisualStyleBackColor = True
         ' 
-        ' rbFont9
-        ' 
-        rbFont9.Appearance = Appearance.Button
-        rbFont9.FlatAppearance.BorderSize = 0
-        rbFont9.FlatAppearance.CheckedBackColor = Color.Silver
-        rbFont9.Location = New Point(263, 0)
-        rbFont9.Margin = New Padding(0, 0, 3, 3)
-        rbFont9.Name = "rbFont9"
-        rbFont9.Padding = New Padding(3, 0, 3, 0)
-        rbFont9.Size = New Size(62, 30)
-        rbFont9.TabIndex = 7
-        rbFont9.TabStop = True
-        rbFont9.Text = "9 点"
-        rbFont9.TextAlign = ContentAlignment.MiddleCenter
-        rbFont9.UseVisualStyleBackColor = True
-        rbFont9.Visible = False
-        ' 
         ' TableLayoutPanel2
         ' 
         TableLayoutPanel2.AutoSize = True
@@ -387,6 +370,23 @@ Partial Class FormPreview
         TableLayoutPanel2.RowStyles.Add(New RowStyle())
         TableLayoutPanel2.Size = New Size(58, 72)
         TableLayoutPanel2.TabIndex = 6
+        ' 
+        ' rbFont9
+        ' 
+        rbFont9.Appearance = Appearance.Button
+        rbFont9.FlatAppearance.BorderSize = 0
+        rbFont9.FlatAppearance.CheckedBackColor = Color.Silver
+        rbFont9.Location = New Point(263, 0)
+        rbFont9.Margin = New Padding(0, 0, 3, 3)
+        rbFont9.Name = "rbFont9"
+        rbFont9.Padding = New Padding(3, 0, 3, 0)
+        rbFont9.Size = New Size(62, 30)
+        rbFont9.TabIndex = 7
+        rbFont9.TabStop = True
+        rbFont9.Text = "9 点"
+        rbFont9.TextAlign = ContentAlignment.MiddleCenter
+        rbFont9.UseVisualStyleBackColor = True
+        rbFont9.Visible = False
         ' 
         ' FormPreview
         ' 

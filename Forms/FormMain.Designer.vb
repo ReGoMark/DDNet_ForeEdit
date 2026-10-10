@@ -98,11 +98,11 @@ Partial Class FormMain
         tblBottonBar = New TableLayoutPanel()
         btnMenu = New Button()
         btnApply = New Button()
-        btnCopy = New Button()
         btnDefault = New Button()
-        btnBlade = New Button()
-        ProgressBar1 = New ProgressBar()
         btnPreview = New Button()
+        ProgressBar1 = New ProgressBar()
+        btnBlade = New Button()
+        btnCopy = New Button()
         ToolTip1 = New ToolTip(components)
         pnlDirFonts = New Panel()
         ImageList1 = New ImageList(components)
@@ -160,7 +160,7 @@ Partial Class FormMain
         lblConfig.AutoSize = True
         lblConfig.Cursor = Cursors.Hand
         lblConfig.Dock = DockStyle.Left
-        lblConfig.Location = New Point(237, 3)
+        lblConfig.Location = New Point(240, 3)
         lblConfig.Margin = New Padding(0, 3, 0, 3)
         lblConfig.Name = "lblConfig"
         lblConfig.Size = New Size(58, 24)
@@ -174,6 +174,7 @@ Partial Class FormMain
         btnLocate.Location = New Point(408, 0)
         btnLocate.Margin = New Padding(3, 0, 0, 0)
         btnLocate.Name = "btnLocate"
+        btnLocate.Padding = New Padding(3, 0, 3, 0)
         btnLocate.Size = New Size(80, 30)
         btnLocate.TabIndex = 3
         btnLocate.Text = "字体目录"
@@ -183,7 +184,7 @@ Partial Class FormMain
         ' chkDirSelect
         ' 
         chkDirSelect.Appearance = Appearance.Button
-        chkDirSelect.Location = New Point(71, 0)
+        chkDirSelect.Location = New Point(74, 0)
         chkDirSelect.Margin = New Padding(3, 0, 3, 0)
         chkDirSelect.Name = "chkDirSelect"
         chkDirSelect.Size = New Size(102, 30)
@@ -198,7 +199,7 @@ Partial Class FormMain
         lblPreset.AutoSize = True
         lblPreset.Cursor = Cursors.Hand
         lblPreset.Dock = DockStyle.Left
-        lblPreset.Location = New Point(179, 3)
+        lblPreset.Location = New Point(182, 3)
         lblPreset.Margin = New Padding(3, 3, 0, 3)
         lblPreset.Name = "lblPreset"
         lblPreset.Size = New Size(58, 24)
@@ -209,11 +210,11 @@ Partial Class FormMain
         ' 
         ' tbPath
         ' 
-        tbPath.Location = New Point(298, 0)
+        tbPath.Location = New Point(301, 0)
         tbPath.Margin = New Padding(3, 0, 3, 0)
         tbPath.Multiline = True
         tbPath.Name = "tbPath"
-        tbPath.Size = New Size(32, 30)
+        tbPath.Size = New Size(29, 30)
         tbPath.TabIndex = 7
         tbPath.Visible = False
         ' 
@@ -224,7 +225,7 @@ Partial Class FormMain
         btnBrowse.Location = New Point(0, 0)
         btnBrowse.Margin = New Padding(0, 0, 3, 0)
         btnBrowse.Name = "btnBrowse"
-        btnBrowse.Size = New Size(65, 30)
+        btnBrowse.Size = New Size(68, 30)
         btnBrowse.TabIndex = 1
         btnBrowse.Text = "浏览"
         btnBrowse.TextAlign = ContentAlignment.MiddleRight
@@ -457,7 +458,7 @@ Partial Class FormMain
         btnFontInstall.Location = New Point(0, 0)
         btnFontInstall.Margin = New Padding(0, 0, 3, 0)
         btnFontInstall.Name = "btnFontInstall"
-        btnFontInstall.Size = New Size(65, 30)
+        btnFontInstall.Size = New Size(68, 30)
         btnFontInstall.TabIndex = 2
         btnFontInstall.Text = "浏览"
         btnFontInstall.TextAlign = ContentAlignment.MiddleRight
@@ -478,7 +479,7 @@ Partial Class FormMain
         ' 
         ' btnFontUninstall
         ' 
-        btnFontUninstall.Location = New Point(71, 0)
+        btnFontUninstall.Location = New Point(74, 0)
         btnFontUninstall.Margin = New Padding(3, 0, 3, 0)
         btnFontUninstall.Name = "btnFontUninstall"
         btnFontUninstall.Size = New Size(52, 30)
@@ -490,7 +491,7 @@ Partial Class FormMain
         ' lstbDirFonts
         ' 
         lstbDirFonts.DrawMode = DrawMode.OwnerDrawFixed
-        lstbDirFonts.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        lstbDirFonts.ForeColor = Color.Black
         lstbDirFonts.FormattingEnabled = True
         lstbDirFonts.IntegralHeight = False
         lstbDirFonts.ItemHeight = 25
@@ -502,7 +503,7 @@ Partial Class FormMain
         ' 
         ' splitDirectory
         ' 
-        splitDirectory.ForeColor = Color.Silver
+        splitDirectory.ForeColor = Color.DarkGray
         splitDirectory.Location = New Point(12, 48)
         splitDirectory.Margin = New Padding(3)
         splitDirectory.Name = "splitDirectory"
@@ -583,7 +584,7 @@ Partial Class FormMain
         ' 
         ' splitConfig
         ' 
-        splitConfig.ForeColor = Color.Silver
+        splitConfig.ForeColor = Color.DarkGray
         splitConfig.Location = New Point(12, 296)
         splitConfig.Margin = New Padding(3, 6, 3, 3)
         splitConfig.Name = "splitConfig"
@@ -680,7 +681,7 @@ Partial Class FormMain
         ' lstbFallbackFonts
         ' 
         lstbFallbackFonts.DrawMode = DrawMode.OwnerDrawFixed
-        lstbFallbackFonts.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        lstbFallbackFonts.ForeColor = Color.Black
         lstbFallbackFonts.FormattingEnabled = True
         lstbFallbackFonts.IntegralHeight = False
         lstbFallbackFonts.ItemHeight = 25
@@ -1054,17 +1055,17 @@ Partial Class FormMain
         tblBottonBar.ColumnStyles.Add(New ColumnStyle())
         tblBottonBar.ColumnStyles.Add(New ColumnStyle())
         tblBottonBar.ColumnStyles.Add(New ColumnStyle())
-        tblBottonBar.ColumnStyles.Add(New ColumnStyle())
         tblBottonBar.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
+        tblBottonBar.ColumnStyles.Add(New ColumnStyle())
         tblBottonBar.ColumnStyles.Add(New ColumnStyle())
         tblBottonBar.ColumnStyles.Add(New ColumnStyle())
         tblBottonBar.Controls.Add(btnMenu, 0, 0)
         tblBottonBar.Controls.Add(btnApply, 7, 0)
-        tblBottonBar.Controls.Add(btnCopy, 6, 0)
         tblBottonBar.Controls.Add(btnDefault, 3, 0)
-        tblBottonBar.Controls.Add(btnBlade, 4, 0)
-        tblBottonBar.Controls.Add(ProgressBar1, 5, 0)
         tblBottonBar.Controls.Add(btnPreview, 1, 0)
+        tblBottonBar.Controls.Add(ProgressBar1, 4, 0)
+        tblBottonBar.Controls.Add(btnBlade, 5, 0)
+        tblBottonBar.Controls.Add(btnCopy, 6, 0)
         tblBottonBar.Location = New Point(12, 661)
         tblBottonBar.Name = "tblBottonBar"
         tblBottonBar.RowCount = 1
@@ -1095,18 +1096,6 @@ Partial Class FormMain
         ToolTip1.SetToolTip(btnApply, "应用修改(Ctrl+S)" & vbCrLf & "应用修改并启动(Shift+点击)")
         btnApply.UseVisualStyleBackColor = True
         ' 
-        ' btnCopy
-        ' 
-        btnCopy.Location = New Point(350, 0)
-        btnCopy.Margin = New Padding(3, 0, 3, 0)
-        btnCopy.Name = "btnCopy"
-        btnCopy.Padding = New Padding(3, 0, 3, 0)
-        btnCopy.Size = New Size(80, 30)
-        btnCopy.TabIndex = 6
-        btnCopy.Text = "导出配置"
-        ToolTip1.SetToolTip(btnCopy, "导出配置文件(Ctrl+J)")
-        btnCopy.UseVisualStyleBackColor = True
-        ' 
         ' btnDefault
         ' 
         btnDefault.Image = CType(resources.GetObject("btnDefault.Image"), Image)
@@ -1119,28 +1108,6 @@ Partial Class FormMain
         ToolTip1.SetToolTip(btnDefault, "恢复默认(F8)")
         btnDefault.UseVisualStyleBackColor = True
         ' 
-        ' btnBlade
-        ' 
-        btnBlade.AllowDrop = True
-        btnBlade.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Italic, GraphicsUnit.Point, CByte(134))
-        btnBlade.Location = New Point(108, 0)
-        btnBlade.Margin = New Padding(3, 0, 3, 0)
-        btnBlade.Name = "btnBlade"
-        btnBlade.Padding = New Padding(3, 0, 3, 0)
-        btnBlade.Size = New Size(64, 30)
-        btnBlade.TabIndex = 8
-        btnBlade.Text = "Blade"
-        ToolTip1.SetToolTip(btnBlade, "字体管理器(Ctrl+B)")
-        btnBlade.UseVisualStyleBackColor = True
-        ' 
-        ' ProgressBar1
-        ' 
-        ProgressBar1.Location = New Point(178, 3)
-        ProgressBar1.Name = "ProgressBar1"
-        ProgressBar1.Size = New Size(166, 24)
-        ProgressBar1.TabIndex = 9
-        ProgressBar1.Visible = False
-        ' 
         ' btnPreview
         ' 
         btnPreview.Image = CType(resources.GetObject("btnPreview.Image"), Image)
@@ -1151,6 +1118,42 @@ Partial Class FormMain
         btnPreview.TabIndex = 2
         ToolTip1.SetToolTip(btnPreview, "预览(Ctrl+P)")
         btnPreview.UseVisualStyleBackColor = True
+        ' 
+        ' ProgressBar1
+        ' 
+        ProgressBar1.Dock = DockStyle.Fill
+        ProgressBar1.Location = New Point(108, 3)
+        ProgressBar1.Name = "ProgressBar1"
+        ProgressBar1.Size = New Size(203, 24)
+        ProgressBar1.TabIndex = 9
+        ProgressBar1.Visible = False
+        ' 
+        ' btnBlade
+        ' 
+        btnBlade.AllowDrop = True
+        btnBlade.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
+        btnBlade.Location = New Point(317, 0)
+        btnBlade.Margin = New Padding(3, 0, 3, 0)
+        btnBlade.Name = "btnBlade"
+        btnBlade.Padding = New Padding(3, 0, 3, 0)
+        btnBlade.Size = New Size(52, 30)
+        btnBlade.TabIndex = 8
+        btnBlade.Text = "安装"
+        ToolTip1.SetToolTip(btnBlade, "安装字体包或配置(Ctrl+B)")
+        btnBlade.UseVisualStyleBackColor = True
+        ' 
+        ' btnCopy
+        ' 
+        btnCopy.AutoSize = True
+        btnCopy.Location = New Point(375, 0)
+        btnCopy.Margin = New Padding(3, 0, 3, 0)
+        btnCopy.Name = "btnCopy"
+        btnCopy.Padding = New Padding(3, 0, 3, 0)
+        btnCopy.Size = New Size(55, 30)
+        btnCopy.TabIndex = 6
+        btnCopy.Text = "导出"
+        ToolTip1.SetToolTip(btnCopy, "保存字体包或配置(Ctrl+J)")
+        btnCopy.UseVisualStyleBackColor = True
         ' 
         ' pnlDirFonts
         ' 
@@ -1171,8 +1174,10 @@ Partial Class FormMain
         ImageList1.Images.SetKeyName(0, "preview_16.ico")
         ImageList1.Images.SetKeyName(1, "blade_16.ico")
         ImageList1.Images.SetKeyName(2, "options_16.ico")
-        ImageList1.Images.SetKeyName(3, "help_c.ico")
-        ImageList1.Images.SetKeyName(4, "search_c.ico")
+        ImageList1.Images.SetKeyName(3, "help_context.ico")
+        ImageList1.Images.SetKeyName(4, "search_context.ico")
+        ImageList1.Images.SetKeyName(5, "output_context.ico")
+        ImageList1.Images.SetKeyName(6, "backup.ico")
         ' 
         ' FormMain
         ' 
@@ -1196,7 +1201,7 @@ Partial Class FormMain
         MaximizeBox = False
         Name = "FormMain"
         StartPosition = FormStartPosition.CenterScreen
-        Text = "DDNet ForeEdit"
+        Text = " "
         tblTopBar.ResumeLayout(False)
         tblTopBar.PerformLayout()
         pnlFontInfo.ResumeLayout(False)
@@ -1211,6 +1216,7 @@ Partial Class FormMain
         pnlFallbackFonts.ResumeLayout(False)
         pnlFallback.ResumeLayout(False)
         tblBottonBar.ResumeLayout(False)
+        tblBottonBar.PerformLayout()
         pnlDirFonts.ResumeLayout(False)
         pnlDirFonts.PerformLayout()
         ResumeLayout(False)

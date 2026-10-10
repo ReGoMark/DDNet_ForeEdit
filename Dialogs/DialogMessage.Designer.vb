@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class DialogPopUp
+Partial Class DialogMessage
     Inherits System.Windows.Forms.Form
 
     'Form 重写 Dispose，以清理组件列表。
@@ -22,7 +22,7 @@ Partial Class DialogPopUp
     '不要使用代码编辑器修改它。
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(DialogPopUp))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(DialogMessage))
         lblTitle = New Label()
         lstbPopup = New ListBox()
         btnOK = New Button()
@@ -35,22 +35,21 @@ Partial Class DialogPopUp
         ' 
         ' lblTitle
         ' 
-        TableLayoutPanel1.SetColumnSpan(lblTitle, 3)
+        lblTitle.Dock = DockStyle.Fill
         lblTitle.ForeColor = SystemColors.Highlight
         lblTitle.Location = New Point(0, 0)
         lblTitle.Margin = New Padding(0, 0, 0, 3)
         lblTitle.Name = "lblTitle"
-        lblTitle.Size = New Size(260, 18)
+        lblTitle.Size = New Size(358, 18)
         lblTitle.TabIndex = 0
         lblTitle.Text = "大标题"
         ' 
         ' lstbPopup
         ' 
         lstbPopup.BorderStyle = BorderStyle.None
-        TableLayoutPanel1.SetColumnSpan(lstbPopup, 3)
         lstbPopup.Dock = DockStyle.Top
         lstbPopup.DrawMode = DrawMode.OwnerDrawFixed
-        lstbPopup.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        lstbPopup.ForeColor = Color.Black
         lstbPopup.FormattingEnabled = True
         lstbPopup.IntegralHeight = False
         lstbPopup.ItemHeight = 25
@@ -62,7 +61,7 @@ Partial Class DialogPopUp
         ' 
         ' btnOK
         ' 
-        btnOK.Location = New Point(248, 256)
+        btnOK.Location = New Point(263, 271)
         btnOK.Margin = New Padding(3, 3, 3, 0)
         btnOK.Name = "btnOK"
         btnOK.Size = New Size(52, 30)
@@ -72,7 +71,7 @@ Partial Class DialogPopUp
         ' 
         ' btnCancel
         ' 
-        btnCancel.Location = New Point(306, 256)
+        btnCancel.Location = New Point(321, 271)
         btnCancel.Margin = New Padding(3, 3, 0, 0)
         btnCancel.Name = "btnCancel"
         btnCancel.Size = New Size(52, 30)
@@ -82,9 +81,8 @@ Partial Class DialogPopUp
         ' 
         ' splitNote
         ' 
-        TableLayoutPanel1.SetColumnSpan(splitNote, 3)
         splitNote.Dock = DockStyle.Fill
-        splitNote.ForeColor = Color.Silver
+        splitNote.ForeColor = Color.DarkGray
         splitNote.Location = New Point(3, 190)
         splitNote.Margin = New Padding(3)
         splitNote.Name = "splitNote"
@@ -96,50 +94,46 @@ Partial Class DialogPopUp
         ' TableLayoutPanel1
         ' 
         TableLayoutPanel1.AutoSize = True
-        TableLayoutPanel1.ColumnCount = 3
+        TableLayoutPanel1.ColumnCount = 1
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
-        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
-        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
-        TableLayoutPanel1.Controls.Add(btnOK, 1, 5)
+        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 20F))
+        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 20F))
         TableLayoutPanel1.Controls.Add(lblTitle, 0, 0)
         TableLayoutPanel1.Controls.Add(lstbPopup, 0, 1)
         TableLayoutPanel1.Controls.Add(splitNote, 0, 2)
         TableLayoutPanel1.Controls.Add(lblNote, 0, 3)
-        TableLayoutPanel1.Controls.Add(btnCancel, 2, 5)
         TableLayoutPanel1.Location = New Point(12, 12)
-        TableLayoutPanel1.Margin = New Padding(3, 3, 3, 6)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
-        TableLayoutPanel1.RowCount = 6
+        TableLayoutPanel1.RowCount = 4
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
-        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
-        TableLayoutPanel1.RowStyles.Add(New RowStyle())
-        TableLayoutPanel1.Size = New Size(358, 286)
+        TableLayoutPanel1.Size = New Size(358, 235)
         TableLayoutPanel1.TabIndex = 7
         ' 
         ' lblNote
         ' 
         lblNote.AutoEllipsis = True
-        TableLayoutPanel1.SetColumnSpan(lblNote, 3)
+        lblNote.AutoSize = True
         lblNote.Dock = DockStyle.Fill
-        lblNote.ForeColor = Color.Silver
+        lblNote.ForeColor = Color.DarkGray
         lblNote.Location = New Point(0, 214)
         lblNote.Margin = New Padding(0, 3, 0, 3)
         lblNote.Name = "lblNote"
-        TableLayoutPanel1.SetRowSpan(lblNote, 2)
-        lblNote.Size = New Size(358, 36)
+        lblNote.Size = New Size(358, 18)
         lblNote.TabIndex = 7
-        lblNote.Text = "Label1" & vbCrLf & "123"
+        lblNote.Text = "Line 1"
         ' 
         ' DialogPopUp
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 311)
+        ClientSize = New Size(382, 310)
+        Controls.Add(btnOK)
         Controls.Add(TableLayoutPanel1)
+        Controls.Add(btnCancel)
         DoubleBuffered = True
         Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
         ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
@@ -153,6 +147,7 @@ Partial Class DialogPopUp
         StartPosition = FormStartPosition.CenterParent
         Text = "提示"
         TableLayoutPanel1.ResumeLayout(False)
+        TableLayoutPanel1.PerformLayout()
         ResumeLayout(False)
         PerformLayout()
     End Sub

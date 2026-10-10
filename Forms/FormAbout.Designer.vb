@@ -22,6 +22,7 @@ Partial Class FormAbout
     '不要使用代码编辑器修改它。
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        components = New ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormAbout))
         lblName = New Label()
         lblVersion = New Label()
@@ -38,13 +39,15 @@ Partial Class FormAbout
         lblThanks = New Label()
         btnApply = New Button()
         Label1 = New Label()
+        Label2 = New Label()
+        ToolTip1 = New ToolTip(components)
         SuspendLayout()
         ' 
         ' lblName
         ' 
         lblName.AutoSize = True
         lblName.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
-        lblName.ForeColor = Color.Black
+        lblName.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lblName.Location = New Point(12, 12)
         lblName.Margin = New Padding(3)
         lblName.Name = "lblName"
@@ -74,7 +77,7 @@ Partial Class FormAbout
         ' 
         ' splitDirectory
         ' 
-        splitDirectory.ForeColor = Color.Silver
+        splitDirectory.ForeColor = Color.DarkGray
         splitDirectory.Location = New Point(12, 117)
         splitDirectory.Margin = New Padding(3, 6, 3, 6)
         splitDirectory.Name = "splitDirectory"
@@ -85,11 +88,11 @@ Partial Class FormAbout
         ' 
         ' Label6
         ' 
-        Label6.ForeColor = Color.Silver
+        Label6.ForeColor = Color.DarkGray
         Label6.Location = New Point(12, 39)
         Label6.Margin = New Padding(3, 6, 3, 6)
         Label6.Name = "Label6"
-        Label6.Size = New Size(212, 18)
+        Label6.Size = New Size(358, 18)
         Label6.TabIndex = 8
         Label6.Text = "不可见分割线  ───────────────────────────────────────────────────────────"
         Label6.TextAlign = ContentAlignment.MiddleLeft
@@ -107,10 +110,11 @@ Partial Class FormAbout
         Label9.Size = New Size(116, 18)
         Label9.TabIndex = 11
         Label9.Text = "Teeworlds-图标"
+        ToolTip1.SetToolTip(Label9, "访问「Teeworlds」官方仓库")
         ' 
         ' Label10
         ' 
-        Label10.ForeColor = Color.Silver
+        Label10.ForeColor = Color.DarkGray
         Label10.Location = New Point(12, 195)
         Label10.Margin = New Padding(3, 6, 3, 6)
         Label10.Name = "Label10"
@@ -130,6 +134,7 @@ Partial Class FormAbout
         lblMail.Size = New Size(64, 18)
         lblMail.TabIndex = 14
         lblMail.Text = "联系作者"
+        ToolTip1.SetToolTip(lblMail, "通过邮件联系作者")
         ' 
         ' lblSponsor
         ' 
@@ -154,6 +159,7 @@ Partial Class FormAbout
         lblLicense.Size = New Size(64, 18)
         lblLicense.TabIndex = 17
         lblLicense.Text = "许可协议"
+        ToolTip1.SetToolTip(lblLicense, "查看用户许可协议")
         ' 
         ' Label14
         ' 
@@ -167,6 +173,7 @@ Partial Class FormAbout
         Label14.Size = New Size(176, 18)
         Label14.TabIndex = 36
         Label14.Text = "Sarasa Gothic-更纱黑体"
+        ToolTip1.SetToolTip(Label14, "访问「更纱黑体」官方仓库")
         ' 
         ' Label16
         ' 
@@ -180,6 +187,7 @@ Partial Class FormAbout
         Label16.Size = New Size(148, 18)
         Label16.TabIndex = 37
         Label16.Text = "DDRaceNetwork-图标"
+        ToolTip1.SetToolTip(Label16, "访问「DDNet」官方仓库")
         ' 
         ' lblThanks
         ' 
@@ -192,11 +200,11 @@ Partial Class FormAbout
         lblThanks.Size = New Size(36, 18)
         lblThanks.TabIndex = 38
         lblThanks.Text = "鸣谢"
+        ToolTip1.SetToolTip(lblThanks, "查看致谢名单")
         ' 
         ' btnApply
         ' 
-        btnApply.Location = New Point(318, 249)
-        btnApply.Margin = New Padding(3, 6, 3, 3)
+        btnApply.Location = New Point(318, 264)
         btnApply.Name = "btnApply"
         btnApply.Size = New Size(52, 30)
         btnApply.TabIndex = 39
@@ -214,13 +222,29 @@ Partial Class FormAbout
         Label1.Size = New Size(56, 18)
         Label1.TabIndex = 40
         Label1.Text = "Github"
+        ToolTip1.SetToolTip(Label1, "访问本项目仓库主页")
+        ' 
+        ' Label2
+        ' 
+        Label2.AutoSize = True
+        Label2.Cursor = Cursors.Hand
+        Label2.ForeColor = Color.DarkGray
+        Label2.ImageAlign = ContentAlignment.MiddleRight
+        Label2.Location = New Point(148, 270)
+        Label2.Name = "Label2"
+        Label2.Size = New Size(164, 18)
+        Label2.TabIndex = 41
+        Label2.Text = "基于 .NET 10 技术呈现"
+        Label2.TextAlign = ContentAlignment.MiddleRight
+        ToolTip1.SetToolTip(Label2, "了解有关「.NET 10」的最新资讯动态")
         ' 
         ' FormAbout
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 291)
+        ClientSize = New Size(382, 306)
+        Controls.Add(Label2)
         Controls.Add(Label1)
         Controls.Add(btnApply)
         Controls.Add(lblThanks)
@@ -265,4 +289,6 @@ Partial Class FormAbout
     Friend WithEvents lblThanks As Label
     Friend WithEvents btnApply As Button
     Friend WithEvents Label1 As Label
+    Friend WithEvents Label2 As Label
+    Friend WithEvents ToolTip1 As ToolTip
 End Class

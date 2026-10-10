@@ -131,7 +131,7 @@ Public Class FormMain
 
 #Region "── 常量：版本与标题 ──────────────────────────────────────"
 
-    Public ReadOnly BuildVersion As String = "Build 2601003.12"
+    Public ReadOnly BuildVersion As String = "Build 1009.73"
     Private ReadOnly TitleText As String = "DDNet ForeEdit"
 
 #End Region
@@ -233,7 +233,9 @@ Public Class FormMain
         _menu.AddRange({
     New Win32ContextMenu.MenuItem() With {.Id = 1, .Text = "预览(&P)", .ShortcutText = "Ctrl+P", .Icon = ImageList1.Images(0), .OnClick = Sub() btnPreview.PerformClick()},
     New Win32ContextMenu.MenuItem() With {.Id = 2, .Text = "查找(&F)", .ShortcutText = "Ctrl+F", .Icon = ImageList1.Images(4), .OnClick = Sub() btnSearch.PerformClick()},
-    New Win32ContextMenu.MenuItem() With {.Id = 3, .Text = "Blade(&B)", .ShortcutText = "Ctrl+B", .Icon = ImageList1.Images(1), .OnClick = Sub() btnBlade.PerformClick()},
+    New Win32ContextMenu.MenuItem() With {.Id = 3, .Text = "安装(&B)", .ShortcutText = "Ctrl+B", .Icon = ImageList1.Images(1), .OnClick = Sub() btnBlade.PerformClick()},
+    New Win32ContextMenu.MenuItem() With {.Id = 4, .Text = "导出(&R)", .ShortcutText = "Ctrl+R", .Icon = ImageList1.Images(5), .OnClick = Sub() btnCopy.PerformClick()},
+    New Win32ContextMenu.MenuItem() With {.Id = 5, .Text = "备份(&K)", .ShortcutText = "Ctrl+K", .Icon = ImageList1.Images(6), .OnClick = Sub() DialogBackup.ShowDialog(Me)},
     Win32ContextMenu.MenuItem.Separator,
     New Win32ContextMenu.MenuItem() With {.Id = 4, .Text = "管理(&M)",
     .SubItems = New List(Of Win32ContextMenu.MenuItem) From {
@@ -258,7 +260,7 @@ Public Class FormMain
             New Win32ContextMenu.MenuItem() With {.Id = 73, .Text = "快捷键参考(&K)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\hotkeys.pdf")},
             Win32ContextMenu.MenuItem.Separator,
             New Win32ContextMenu.MenuItem() With {.Id = 77, .Text = "更新日志(&L)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\updates.txt")},
-            New Win32ContextMenu.MenuItem() With {.Id = 78, .Text = "获取更新(&U)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit/Release", .UseShellExecute = True})}
+            New Win32ContextMenu.MenuItem() With {.Id = 78, .Text = "获取更新(&U)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit/releases", .UseShellExecute = True})}
         }},
     New Win32ContextMenu.MenuItem() With {.Id = 8, .Text = "关于(&A)", .OnClick = Sub() FormAbout.ShowDialog(Me)}})
 
@@ -495,12 +497,16 @@ Public Class FormMain
 
                 loadedCount += 1
                 ProgressBar1.Value = loadedCount
-                Me.Text = $"{TitleText} - 读取: {fileName} ({loadedCount}/{fontFiles.Count})"
+                Me.Text = $"{TitleText} - 读取: {fileName}"
+                '({loadedCount}/{fontFiles.Count})"
             Next
             ProgressBar1.Visible = False
 
             If Not String.IsNullOrEmpty(sourceLabel) Then
-                Me.Text = $"{TitleText} - {sourceLabel}"
+                Dim dirSizeBytes As Long = GetDirectorySize(fdirectory)
+                Dim sizeText As String = FormatBytes(dirSizeBytes)
+                Dim sourceText As String = If(String.IsNullOrEmpty(sourceLabel), "", sourceLabel & " ")
+                Me.Text = $"{TitleText} - {sourceText} ({sizeText})"
             Else
                 Me.Text = TitleText
             End If
@@ -759,10 +765,12 @@ Public Class FormMain
         Dim unusedList As List(Of String) = GetUnusedFontFiles()
         Dim unusedCount As Integer = If(unusedList IsNot Nothing, unusedList.Count, 0)
 
+        'Dim baseText As String = If(ttcCount > 0,
+        '                            $"字体 {totalItems} 项, 实际 {actualFiles} 项",
+        '                            $"字体 {totalItems} 项")
         Dim baseText As String = If(ttcCount > 0,
-                                    $"字体 {totalItems} 项, 实际 {actualFiles} 项",
-                                    $"字体 {totalItems} 项")
-        lblDirFonts.Text = If(unusedCount > 0, $"{baseText}, 未使用 {unusedCount} 项", baseText)
+                                    $"字体 {totalItems} 项", $"字体 {totalItems} 项")
+        lblDirFonts.Text = If(unusedCount > 0, $"{baseText} (未使用 {unusedCount} 项)", baseText)
     End Sub
 
     Private Sub PopulateComboBoxes()
@@ -919,7 +927,6 @@ Public Class FormMain
 #End Region
 
 #Region "── 字体列表自绘与选中 ────────────────────────────────────"
-
     Private Sub lstbDirectoryFonts_DrawItem(sender As Object, e As DrawItemEventArgs) Handles lstbDirFonts.DrawItem
         If e.Index < 0 OrElse e.Index >= lstbDirFonts.Items.Count Then Return
         e.DrawBackground()
@@ -932,30 +939,59 @@ Public Class FormMain
         End If
         Dim drawFont As Font = _drawFontCache(key)
 
-        Dim textColor As Color = If((e.State And DrawItemState.Selected) <> 0,
-                                SystemColors.HighlightText, Color.Black)
-        Dim textRect As New Rectangle(e.Bounds.X + 2, e.Bounds.Y, e.Bounds.Width - 8, e.Bounds.Height)
+        Dim isSelected As Boolean = (e.State And DrawItemState.Selected) <> 0
+        Dim textColor As Color = If(isSelected, SystemColors.HighlightText, Color.Black)
+        Dim tagBrush As SolidBrush = If(isSelected, _tagBrushSelected, _tagBrushNormal)
+
+        ' ── 序号尺寸（缓存，键加 #seq 前缀避免与 TTC 标签键冲突）──
+        Dim seqText As String = (e.Index + 1).ToString()
+        Dim seqCacheKey As String = "#seq:" & seqText
+        If Not _tagSizeCache.ContainsKey(seqCacheKey) Then
+            _tagSizeCache(seqCacheKey) = e.Graphics.MeasureString(seqText, _tagFont)
+        End If
+        Dim seqSize As SizeF = _tagSizeCache(seqCacheKey)
+
+        ' ── TTC 标签尺寸（已注释停用）──
+        'Dim ttcText As String = ""
+        'Dim hasTtc As Boolean = _ttcTag.TryGetValue(key, ttcText)
+        'Dim ttcSize As SizeF = SizeF.Empty
+        'If hasTtc Then
+        '    Dim ttcCacheKey As String = "#ttc:" & ttcText
+        '    If Not _tagSizeCache.ContainsKey(ttcCacheKey) Then
+        '        _tagSizeCache(ttcCacheKey) = e.Graphics.MeasureString(ttcText, _tagFont)
+        '    End If
+        '    ttcSize = _tagSizeCache(ttcCacheKey)
+        'End If
+
+        ' ── 计算右侧保留宽度（仅序号）──
+        Const rightPad As Single = 4
+        Dim reservedRight As Single = seqSize.Width + rightPad
+        'If hasTtc Then reservedRight += gap + ttcSize.Width
+
+        ' ── 主文本（避开右侧标签区）──
+        Dim textRect As New Rectangle(e.Bounds.X + 2, e.Bounds.Y,
+                                      CInt(e.Bounds.Width - reservedRight - 4), e.Bounds.Height)
         TextRenderer.DrawText(e.Graphics, itemText, drawFont, textRect, textColor,
                           TextFormatFlags.Left Or TextFormatFlags.VerticalCenter Or TextFormatFlags.NoPrefix)
 
-        Dim tag As String = ""
-        If _ttcTag.TryGetValue(key, tag) Then
-            If Not _tagSizeCache.ContainsKey(tag) Then
-                _tagSizeCache(tag) = e.Graphics.MeasureString(tag, _tagFont)
-            End If
-            Dim tagSize = _tagSizeCache(tag)
-            Dim tagBrush = If((e.State And DrawItemState.Selected) <> 0, _tagBrushSelected, _tagBrushNormal)
-            e.Graphics.DrawString(tag, _tagFont, tagBrush,
-            New PointF(e.Bounds.Right - tagSize.Width - 4,
-                       e.Bounds.Y + (e.Bounds.Height - tagSize.Height) / 2 + 1))
-        End If
+        ' ── TTC 标签（已注释停用）──
+        'If hasTtc Then
+        '    Dim ttcX As Single = e.Bounds.Right - seqSize.Width - rightPad - gap - ttcSize.Width
+        '    e.Graphics.DrawString(ttcText, _tagFont, tagBrush,
+        '        New PointF(ttcX, e.Bounds.Y + (e.Bounds.Height - ttcSize.Height) / 2 + 1))
+        'End If
+
+        ' ── 序号（最右侧）──
+        Dim seqX As Single = e.Bounds.Right - seqSize.Width - rightPad
+        e.Graphics.DrawString(seqText, _tagFont, tagBrush,
+            New PointF(seqX, e.Bounds.Y + (e.Bounds.Height - seqSize.Height) / 2 + 1))
 
         e.DrawFocusRectangle()
     End Sub
 
     Private Sub lstbDirectoryFonts_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstbDirFonts.SelectedIndexChanged
         If lstbDirFonts.SelectedItems.Count > 1 Then
-            lblDirFonts.Text = $"字体 {lstbDirFonts.Items.Count} 项, 选中 {lstbDirFonts.SelectedItems.Count} 项"
+            lblDirFonts.Text = $"选中 {lstbDirFonts.SelectedItems.Count} 项 (字体 {lstbDirFonts.Items.Count} 项)"
             Return
         End If
         If lstbDirFonts.SelectedItems.Count = 1 Then UpdateFontStatisticsLabel()
@@ -1061,7 +1097,7 @@ Public Class FormMain
             If sfd.ShowDialog(Me) <> DialogResult.OK Then Return
             Try
                 File.Copy(filePath, sfd.FileName, True)
-                MessageBox.Show("字体文件已保存。")
+                MessageBox.Show("字体文件已保存。", "另存为", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Catch ex As Exception
                 MessageBox.Show($"另存为失败：{ex.Message}", "另存为", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
@@ -1504,25 +1540,78 @@ Public Class FormMain
         End Try
     End Sub
 
+    ''' <summary>
+    ''' 打开导出窗体（FormOutput），传入选中的字体数据和配置内容。
+    ''' </summary>
     Private Sub ExportConfiguration(sender As Object, e As EventArgs) Handles btnCopy.Click
         If String.IsNullOrEmpty(_currentFontDirectory) Then
             MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
-        Using sfd As New SaveFileDialog
-            sfd.Title = "另存为「index.json」"
-            sfd.FileName = "index.json"
-            sfd.Filter = "JSON|index.json|所有文件|*.*"
-            If sfd.ShowDialog(Me) <> DialogResult.OK Then Return
-            Try
-                Dim content = BuildIndexJsonContent()
-                If File.Exists(sfd.FileName) Then File.Delete(sfd.FileName)
-                File.WriteAllText(sfd.FileName, content, Encoding.UTF8)
-                MessageBox.Show("配置文件已导出。", "导出配置", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            Catch ex As Exception
-                MessageBox.Show($"配置文件导出失败：{ex.Message}", "导出配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            End Try
+        Dim appVersion = If(String.IsNullOrEmpty(Application.ProductVersion), BuildVersion, Application.ProductVersion)
+
+        ' ── 组装三种模式的字体列表 ──
+        Dim normalFiles As New List(Of String)
+        Dim used = GetUsedFontFiles()
+        If used IsNot Nothing Then normalFiles.AddRange(used)
+
+        Dim standardFiles As New List(Of String)
+        standardFiles.AddRange(normalFiles)
+        Dim stdFontsDir = Path.Combine(Application.StartupPath, "Data", "Standard")
+        If Directory.Exists(stdFontsDir) Then
+            Dim stdExts = {"*.ttf", "*.ttc", "*.otf"}
+            Dim stdFileNames = New HashSet(Of String)(standardFiles.Select(Function(f) Path.GetFileName(f)), StringComparer.OrdinalIgnoreCase)
+            For Each ext In stdExts
+                For Each f In Directory.GetFiles(stdFontsDir, ext)
+                    If Not stdFileNames.Contains(Path.GetFileName(f)) Then
+                        standardFiles.Add(f)
+                        stdFileNames.Add(Path.GetFileName(f))
+                    End If
+                Next
+            Next
+        End If
+
+        Dim fullFiles As New List(Of String)
+        Dim allExts = {"*.ttf", "*.ttc", "*.otf"}
+        For Each ext In allExts
+            fullFiles.AddRange(Directory.GetFiles(_currentFontDirectory, ext))
+        Next
+
+        ' ── 排除已标记待删除的字体 ──
+        Dim pendingSet As HashSet(Of String) = GetPendingDeletionFileNames()
+        If pendingSet.Count > 0 Then
+            normalFiles = normalFiles.Where(Function(f) Not pendingSet.Contains(Path.GetFileName(f))).ToList()
+            standardFiles = standardFiles.Where(Function(f) Not pendingSet.Contains(Path.GetFileName(f))).ToList()
+            fullFiles = fullFiles.Where(Function(f) Not pendingSet.Contains(Path.GetFileName(f))).ToList()
+        End If
+
+        ' ── 判断目录类型 ──
+        Dim dirType = "未知"
+        Dim appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+        If _currentFontDirectory.ToLower.Contains(Path.Combine(appData, "ddnet", "fonts").ToLower) Then
+            dirType = "Local"
+        ElseIf _currentFontDirectory.ToLower.Contains(Path.Combine(appData, "teeworlds", "fonts").ToLower) Then
+            dirType = "Compatible"
+        Else
+            dirType = "Install"
+        End If
+
+        ' ── 配置内容 ──
+        Dim jsonContent = ""
+        Dim jsonPath = Path.Combine(_currentFontDirectory, "index.json")
+        If File.Exists(jsonPath) Then jsonContent = BuildIndexJsonContent()
+
+        ' ── 打开导出窗体 ──
+        Using dlg As New FormOutput
+            dlg.FontDir = _currentFontDirectory
+            dlg.NormFontFiles = normalFiles
+            dlg.StdFontFiles = standardFiles
+            dlg.FullFontFiles = fullFiles
+            dlg.JsonContent = jsonContent
+            dlg.AppVersion = appVersion
+            dlg.DirectoryType = dirType
+            dlg.ShowDialog(Me)
         End Using
     End Sub
 
@@ -1694,7 +1783,7 @@ Public Class FormMain
 
     Private Sub btnBrowse_Click(sender As Object, e As EventArgs) Handles btnBrowse.Click
         Using dlg As New OpenFileDialog()
-            dlg.Title = "选择「DDNet 快捷方式」「DDNet.exe」或「index.json」"
+            dlg.Title = "选择「DDNet 快捷方式、DDNet.exe 或 index.json」"
             dlg.Filter = "通用筛选|*.lnk;*.url;*.exe;*.json|快捷方式 (*.lnk;*.url)|*.lnk;*.url|可执行程序 (*.exe)|*.exe|JSON 文档 (*.json)|*.json"
             dlg.CheckFileExists = True
             If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
@@ -1832,7 +1921,7 @@ Public Class FormMain
                 Catch
                 End Try
             Next
-            Using dlg As New DialogPopUp()
+            Using dlg As New DialogMessage()
                 dlg.Text = "安装字体"
                 dlg.TitleText = $"所选 {duplicates.Count} 个字体已存在, 跳过安装"
                 dlg.DescriptionText = $"新增字体大小: {FormatBytes(dupSize)}"
@@ -1859,7 +1948,7 @@ Public Class FormMain
                 End Try
             Next
 
-            Using dlg As New DialogPopUp()
+            Using dlg As New DialogMessage()
                 dlg.Text = "安装字体"
                 dlg.TitleText = $"成功安装 {toAdd.Count} 个字体，跳过 {duplicates.Count} 个已存在的字体"
                 dlg.DescriptionText = $"新增字体大小: {FormatBytes(addSize)}"
@@ -1943,7 +2032,7 @@ Public Class FormMain
 
         If filePathSet.Count = 0 Then Return
 
-        Using dlg As New DialogPopUp()
+        Using dlg As New DialogMessage()
             dlg.Text = "确认卸载"
             dlg.TitleText = $"确认要卸载以下 {filePathSet.Count} 个字体?"
             dlg.ConfirmText = "卸载"
@@ -1965,7 +2054,15 @@ Public Class FormMain
             For Each fp As String In normalFiles
                 dlg.Items.Add(Path.GetFileName(fp))
             Next
-            dlg.DescriptionText = "字体文件将在下次启动时卸载"
+            ' 计算总大小（filePathSet 已去重，按实际文件累加）
+            Dim totalSize As Long = 0
+            For Each fp As String In filePathSet
+                Try
+                    If File.Exists(fp) Then totalSize += New FileInfo(fp).Length
+                Catch
+                End Try
+            Next
+            dlg.DescriptionText = $"卸载字体大小: {FormatBytes(totalSize)}"
             If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
         End Using
 
@@ -2200,7 +2297,7 @@ Public Class FormMain
         Dim hasProblem As Boolean = (missing.Count > 0 OrElse mismatch.Count > 0)
 
         Dim dialogResult As DialogResult
-        Using dlg As New DialogPopUp()
+        Using dlg As New DialogMessage()
             dlg.Text = "预装字体验证"
             If hasProblem Then
                 dlg.TitleText = $"存在 {missing.Count + mismatch.Count} 个问题"
@@ -2343,7 +2440,7 @@ Public Class FormMain
             End If
         Next
 
-        Using dlg As New DialogPopUp()
+        Using dlg As New DialogMessage()
             dlg.Text = "未使用字体"
             dlg.TitleText = $"以下 {unused.Count} 个字体未使用:"
             dlg.DescriptionText = $"未使用字体大小: {FormatBytes(totalSize)}"
@@ -2410,7 +2507,7 @@ Public Class FormMain
             End If
         Next
         lstbDirFonts.Focus()
-        lblDirFonts.Text = $"字体 {lstbDirFonts.Items.Count} 项, 选中 {lstbDirFonts.SelectedIndices.Count} 项"
+        lblDirFonts.Text = $"选中 {lstbDirFonts.SelectedIndices.Count} 项 (字体 {lstbDirFonts.Items.Count} 项)"
     End Sub
 
 #End Region
@@ -2476,67 +2573,13 @@ Public Class FormMain
 
 #Region "── BLADE（字体包管理集成） ────────────────────────────────"
 
+    ''' <summary>
+    ''' 打开 Blade 字体包管理窗体（仅安装功能）。
+    ''' </summary>
     Private Sub OpenBladeTool(sender As Object, e As EventArgs) Handles btnBlade.Click
-        Dim appVersion = If(String.IsNullOrEmpty(Application.ProductVersion), BuildVersion, Application.ProductVersion)
-        Dim normalFiles As New List(Of String)
-        Dim standardFiles As New List(Of String)
-        Dim fullFiles As New List(Of String)
-        Dim jsonContent = ""
-        Dim dirType = "未知"
-
-        Dim hasValidDir = Not String.IsNullOrEmpty(_currentFontDirectory) AndAlso Directory.Exists(_currentFontDirectory)
-        If hasValidDir Then
-            Dim appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-            If _currentFontDirectory.ToLower.Contains(Path.Combine(appData, "ddnet", "fonts").ToLower) Then
-                dirType = "Local"
-            ElseIf _currentFontDirectory.ToLower.Contains(Path.Combine(appData, "teeworlds", "fonts").ToLower) Then
-                dirType = "Compatible"
-            Else
-                dirType = "Install"
-            End If
-
-            Dim used = GetUsedFontFiles()
-            If used IsNot Nothing Then normalFiles.AddRange(used)
-
-            standardFiles.AddRange(normalFiles)
-            Dim stdFontsDir = Path.Combine(Application.StartupPath, "Data", "Standard")
-            If Directory.Exists(stdFontsDir) Then
-                Dim stdExts = {"*.ttf", "*.ttc", "*.otf"}
-                Dim stdFileNames = New HashSet(Of String)(standardFiles.Select(Function(f) Path.GetFileName(f)), StringComparer.OrdinalIgnoreCase)
-                For Each ext In stdExts
-                    For Each f In Directory.GetFiles(stdFontsDir, ext)
-                        If Not stdFileNames.Contains(Path.GetFileName(f)) Then
-                            standardFiles.Add(f)
-                            stdFileNames.Add(Path.GetFileName(f))
-                        End If
-                    Next
-                Next
-            End If
-
-            Dim allExts = {"*.ttf", "*.ttc", "*.otf"}
-            For Each ext In allExts
-                fullFiles.AddRange(Directory.GetFiles(_currentFontDirectory, ext))
-            Next
-
-            Dim jsonPath = Path.Combine(_currentFontDirectory, "index.json")
-            If File.Exists(jsonPath) Then jsonContent = BuildIndexJsonContent()
-        End If
-        ' ── 排除已标记待删除的字体文件（下次启动才真正删除）──
-        Dim pendingSet As HashSet(Of String) = GetPendingDeletionFileNames()
-        If pendingSet.Count > 0 Then
-            normalFiles = normalFiles.Where(Function(f) Not pendingSet.Contains(Path.GetFileName(f))).ToList()
-            standardFiles = standardFiles.Where(Function(f) Not pendingSet.Contains(Path.GetFileName(f))).ToList()
-            fullFiles = fullFiles.Where(Function(f) Not pendingSet.Contains(Path.GetFileName(f))).ToList()
-        End If
         Try
             Dim shareForm As New FormBlade
             shareForm.FontDir = _currentFontDirectory
-            shareForm.NormFontFiles = normalFiles
-            shareForm.StdFontFiles = standardFiles
-            shareForm.FullFontFiles = fullFiles
-            shareForm.JsonContent = jsonContent
-            shareForm.AppVersion = appVersion
-            shareForm.DirectoryType = dirType
             shareForm.ShowDialog(Me)
         Catch ex As Exception
             MessageBox.Show($"启动 BLADE 时出错：{ex.Message}", "启动 BLADE", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -2730,6 +2773,24 @@ Public Class FormMain
         End Try
     End Sub
 
+    ''' <summary>
+    ''' 计算指定目录内所有文件（不递归）的总字节数。
+    ''' </summary>
+    Private Function GetDirectorySize(dirPath As String) As Long
+        If String.IsNullOrEmpty(dirPath) OrElse Not Directory.Exists(dirPath) Then Return 0
+        Dim total As Long = 0
+        Try
+            For Each f As String In Directory.EnumerateFiles(dirPath)
+                Try
+                    total += New FileInfo(f).Length
+                Catch
+                End Try
+            Next
+        Catch
+        End Try
+        Return total
+    End Function
+
 #End Region
 
 #Region "── JSON 解析辅助 ─────────────────────────────────────────"
@@ -2813,6 +2874,7 @@ Public Class FormMain
 
         If ctrl AndAlso Not shift Then
             Select Case key
+                Case Keys.I : btnCopy.PerformClick() : Return True
                 Case Keys.O : btnBrowse.PerformClick() : Return True
                 Case Keys.L : btnLocate.PerformClick() : Return True
                 Case Keys.R : btnRefresh.PerformClick() : Return True
@@ -2823,6 +2885,7 @@ Public Class FormMain
                 Case Keys.F : btnSearch.PerformClick() : Return True
                 Case Keys.B : btnBlade.PerformClick() : Return True
                 Case Keys.U : chkDirSelect.Checked = Not chkDirSelect.Checked : Return True
+                Case Keys.K : DialogBackup.ShowDialog(Me)
                 Case Keys.A
                     If lstbDirFonts.Focused Then
                         SelectAllFonts()

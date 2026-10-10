@@ -36,17 +36,17 @@ Partial Class DialogRestore
         ' 
         ' btnOK
         ' 
-        btnOK.Location = New Point(260, 228)
+        btnOK.Location = New Point(260, 243)
         btnOK.Name = "btnOK"
         btnOK.Padding = New Padding(3, 0, 3, 0)
         btnOK.Size = New Size(52, 30)
         btnOK.TabIndex = 13
-        btnOK.Text = "确定"
+        btnOK.Text = "恢复"
         btnOK.UseVisualStyleBackColor = True
         ' 
         ' btnCancel
         ' 
-        btnCancel.Location = New Point(318, 228)
+        btnCancel.Location = New Point(318, 243)
         btnCancel.Name = "btnCancel"
         btnCancel.Padding = New Padding(3, 0, 3, 0)
         btnCancel.Size = New Size(52, 30)
@@ -56,16 +56,15 @@ Partial Class DialogRestore
         ' 
         ' TableLayoutPanel1
         ' 
-        TableLayoutPanel1.ColumnCount = 2
+        TableLayoutPanel1.ColumnCount = 1
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
-        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
+        TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 20F))
         TableLayoutPanel1.Controls.Add(lblTitle, 0, 0)
         TableLayoutPanel1.Controls.Add(rbFontConfig, 0, 1)
         TableLayoutPanel1.Controls.Add(rbConfig, 0, 2)
         TableLayoutPanel1.Controls.Add(splitExport, 0, 3)
         TableLayoutPanel1.Controls.Add(Label2, 0, 4)
         TableLayoutPanel1.Location = New Point(12, 12)
-        TableLayoutPanel1.Margin = New Padding(3, 3, 3, 6)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
         TableLayoutPanel1.RowCount = 5
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
@@ -78,7 +77,6 @@ Partial Class DialogRestore
         ' 
         ' lblTitle
         ' 
-        TableLayoutPanel1.SetColumnSpan(lblTitle, 2)
         lblTitle.Dock = DockStyle.Fill
         lblTitle.ForeColor = SystemColors.Highlight
         lblTitle.Location = New Point(0, 0)
@@ -86,12 +84,11 @@ Partial Class DialogRestore
         lblTitle.Name = "lblTitle"
         lblTitle.Size = New Size(358, 18)
         lblTitle.TabIndex = 0
-        lblTitle.Text = "选择恢复模式: "
+        lblTitle.Text = "选择恢复默认的模式: "
         ' 
         ' rbFontConfig
         ' 
         rbFontConfig.Appearance = Appearance.Button
-        TableLayoutPanel1.SetColumnSpan(rbFontConfig, 2)
         rbFontConfig.Dock = DockStyle.Fill
         rbFontConfig.Image = CType(resources.GetObject("rbFontConfig.Image"), Image)
         rbFontConfig.ImageAlign = ContentAlignment.MiddleLeft
@@ -109,7 +106,6 @@ Partial Class DialogRestore
         ' rbConfig
         ' 
         rbConfig.Appearance = Appearance.Button
-        TableLayoutPanel1.SetColumnSpan(rbConfig, 2)
         rbConfig.Dock = DockStyle.Fill
         rbConfig.Image = CType(resources.GetObject("rbConfig.Image"), Image)
         rbConfig.ImageAlign = ContentAlignment.MiddleLeft
@@ -126,7 +122,6 @@ Partial Class DialogRestore
         ' 
         ' splitExport
         ' 
-        TableLayoutPanel1.SetColumnSpan(splitExport, 2)
         splitExport.Dock = DockStyle.Fill
         splitExport.ForeColor = Color.DarkGray
         splitExport.Location = New Point(3, 128)
@@ -139,7 +134,6 @@ Partial Class DialogRestore
         ' Label2
         ' 
         Label2.AutoSize = True
-        TableLayoutPanel1.SetColumnSpan(Label2, 2)
         Label2.Dock = DockStyle.Top
         Label2.ForeColor = Color.DarkGray
         Label2.Location = New Point(0, 150)
@@ -154,7 +148,7 @@ Partial Class DialogRestore
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 270)
+        ClientSize = New Size(382, 285)
         Controls.Add(btnOK)
         Controls.Add(btnCancel)
         Controls.Add(TableLayoutPanel1)

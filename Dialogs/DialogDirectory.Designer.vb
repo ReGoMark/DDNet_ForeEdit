@@ -36,6 +36,7 @@ Partial Class DialogDirectory
         ' 
         ' TableLayoutPanel1
         ' 
+        TableLayoutPanel1.AutoSize = True
         TableLayoutPanel1.ColumnCount = 2
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
@@ -53,7 +54,7 @@ Partial Class DialogDirectory
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
-        TableLayoutPanel1.Size = New Size(358, 225)
+        TableLayoutPanel1.Size = New Size(358, 207)
         TableLayoutPanel1.TabIndex = 8
         ' 
         ' lblTitle
@@ -83,7 +84,7 @@ Partial Class DialogDirectory
         rbDDNet.Size = New Size(358, 46)
         rbDDNet.TabIndex = 1
         rbDDNet.TabStop = True
-        rbDDNet.Text = "DDNet 目录" & vbCrLf & "...\Appdata\Roaming\DDNet\fonts\"
+        rbDDNet.Text = "DDNet 目录" & vbCrLf & "(...\Appdata\Roaming\DDNet\fonts\)"
         rbDDNet.TextImageRelation = TextImageRelation.ImageBeforeText
         rbDDNet.UseVisualStyleBackColor = True
         ' 
@@ -102,7 +103,7 @@ Partial Class DialogDirectory
         rbTeeworlds.Size = New Size(358, 46)
         rbTeeworlds.TabIndex = 2
         rbTeeworlds.TabStop = True
-        rbTeeworlds.Text = "Teeworlds 目录" & vbCrLf & "...\Appdata\Roaming\Teeworlds\fonts\"
+        rbTeeworlds.Text = "Teeworlds 目录" & vbCrLf & "(...\Appdata\Roaming\Teeworlds\fonts\)"
         rbTeeworlds.TextImageRelation = TextImageRelation.ImageBeforeText
         rbTeeworlds.UseVisualStyleBackColor = True
         ' 
@@ -127,9 +128,9 @@ Partial Class DialogDirectory
         Label2.Location = New Point(0, 150)
         Label2.Margin = New Padding(0, 3, 0, 3)
         Label2.Name = "Label2"
-        Label2.Size = New Size(358, 72)
+        Label2.Size = New Size(328, 54)
         Label2.TabIndex = 37
-        Label2.Text = "* DDNet 目录的字体显示优先于 Teeworlds 目录, 用户目录的字体显示优先于安装目录" & vbCrLf & "* 旧版客户端可能会使用 Teeworlds 目录" & vbCrLf & "* 该功能将在后续版本中下线"
+        Label2.Text = "* DDNet 目录的字体显示优先于 Teeworlds 目录" & vbCrLf & "* 用户目录的字体显示优先于安装目录" & vbCrLf & "* 旧版客户端可能会使用 Teeworlds 目录"
         ' 
         ' btnCancel
         ' 
@@ -148,7 +149,7 @@ Partial Class DialogDirectory
         btnOK.Padding = New Padding(3, 0, 3, 0)
         btnOK.Size = New Size(52, 30)
         btnOK.TabIndex = 10
-        btnOK.Text = "确定"
+        btnOK.Text = "切换"
         btnOK.UseVisualStyleBackColor = True
         ' 
         ' DialogDirectory
@@ -174,6 +175,7 @@ Partial Class DialogDirectory
         TableLayoutPanel1.ResumeLayout(False)
         TableLayoutPanel1.PerformLayout()
         ResumeLayout(False)
+        PerformLayout()
     End Sub
 
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel

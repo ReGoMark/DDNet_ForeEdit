@@ -6,7 +6,7 @@
     <StartupObject>Sub Main</StartupObject>
     <UseWindowsForms>true</UseWindowsForms>
     <MyType>WindowsForms</MyType>
-    <ApplicationIcon>Resources\DNFE_modern.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\titles\DNFE_modern.ico</ApplicationIcon>
     <AssemblyName>DDNet ForeEdit</AssemblyName>
     <AssemblyTitle>DDNet ForeEdit</AssemblyTitle>
     <RootNamespace>FontEditor</RootNamespace>
@@ -31,7 +31,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\DNFE_modern.ico" />
+    <Content Include="Resources\titles\DNFE_modern.ico" />
   </ItemGroup>
 
   <ItemGroup>

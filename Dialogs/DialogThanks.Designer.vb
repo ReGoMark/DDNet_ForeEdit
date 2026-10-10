@@ -50,13 +50,13 @@ Partial Class DialogThanks
         ' 
         Label2.AutoEllipsis = True
         Label2.AutoSize = True
-        Label2.ForeColor = Color.Silver
+        Label2.ForeColor = Color.DarkGray
         Label2.Location = New Point(12, 210)
         Label2.Margin = New Padding(3)
         Label2.Name = "Label2"
-        Label2.Size = New Size(310, 18)
+        Label2.Size = New Size(296, 18)
         Label2.TabIndex = 13
-        Label2.Text = "DDNet ForeEdit 的诞生也感谢开源社区的支持"
+        Label2.Text = "DDNet ForeEdit 的诞生感谢开源社区的支持"
         ' 
         ' Label3
         ' 
@@ -133,7 +133,7 @@ Partial Class DialogThanks
         ' splitDirectory
         ' 
         splitDirectory.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        splitDirectory.ForeColor = Color.Silver
+        splitDirectory.ForeColor = Color.DarkGray
         splitDirectory.Location = New Point(12, 183)
         splitDirectory.Margin = New Padding(3, 6, 3, 6)
         splitDirectory.Name = "splitDirectory"
@@ -147,7 +147,7 @@ Partial Class DialogThanks
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 240)
+        ClientSize = New Size(382, 243)
         Controls.Add(splitDirectory)
         Controls.Add(Label6)
         Controls.Add(Label1)

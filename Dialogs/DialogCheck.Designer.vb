@@ -49,7 +49,7 @@ Partial Class DialogCheck
         ' splitDirectory
         ' 
         splitDirectory.Font = New Font("Segoe UI", 9F)
-        splitDirectory.ForeColor = Color.Silver
+        splitDirectory.ForeColor = Color.DarkGray
         splitDirectory.Location = New Point(12, 41)
         splitDirectory.Margin = New Padding(3, 6, 3, 6)
         splitDirectory.Name = "splitDirectory"
@@ -61,7 +61,7 @@ Partial Class DialogCheck
         ' btnFolder
         ' 
         btnFolder.Font = New Font("Segoe UI", 9F)
-        btnFolder.Location = New Point(12, 195)
+        btnFolder.Location = New Point(12, 215)
         btnFolder.Name = "btnFolder"
         btnFolder.Padding = New Padding(3, 0, 3, 0)
         btnFolder.Size = New Size(89, 30)
@@ -96,7 +96,7 @@ Partial Class DialogCheck
         ' btnIgnore
         ' 
         btnIgnore.Font = New Font("Segoe UI", 9F)
-        btnIgnore.Location = New Point(170, 195)
+        btnIgnore.Location = New Point(170, 215)
         btnIgnore.Name = "btnIgnore"
         btnIgnore.Padding = New Padding(3, 0, 3, 0)
         btnIgnore.Size = New Size(105, 30)
@@ -129,7 +129,7 @@ Partial Class DialogCheck
         ' Button1
         ' 
         Button1.Font = New Font("Segoe UI", 9F)
-        Button1.Location = New Point(281, 195)
+        Button1.Location = New Point(281, 215)
         Button1.Name = "Button1"
         Button1.Padding = New Padding(3, 0, 3, 0)
         Button1.Size = New Size(89, 30)
@@ -142,7 +142,7 @@ Partial Class DialogCheck
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 237)
+        ClientSize = New Size(382, 257)
         Controls.Add(Button1)
         Controls.Add(Label5)
         Controls.Add(Label4)
@@ -159,7 +159,6 @@ Partial Class DialogCheck
         MaximizeBox = False
         MinimizeBox = False
         Name = "DialogCheck"
-        ShowIcon = False
         StartPosition = FormStartPosition.CenterScreen
         Text = "自检程序"
         ResumeLayout(False)
