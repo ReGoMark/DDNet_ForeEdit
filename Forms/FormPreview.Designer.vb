@@ -24,10 +24,10 @@ Partial Class FormPreview
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormPreview))
         lblTC = New Label()
-        rbFont10 = New RadioButton()
-        rbFont16 = New RadioButton()
-        rbFont12 = New RadioButton()
-        btnApply = New Button()
+        rdoFont10 = New RadioButton()
+        rdoFont16 = New RadioButton()
+        rdoFont12 = New RadioButton()
+        btnConfirm = New Button()
         btnRecovery = New Button()
         tbCustom = New TextBox()
         lblSC = New Label()
@@ -41,9 +41,8 @@ Partial Class FormPreview
         tagLA = New Label()
         TableLayoutPanel4 = New TableLayoutPanel()
         TableLayoutPanel1 = New TableLayoutPanel()
-        rbFont32 = New RadioButton()
         TableLayoutPanel2 = New TableLayoutPanel()
-        rbFont9 = New RadioButton()
+        rdoFont32 = New RadioButton()
         TableLayoutPanel4.SuspendLayout()
         TableLayoutPanel1.SuspendLayout()
         TableLayoutPanel2.SuspendLayout()
@@ -64,64 +63,64 @@ Partial Class FormPreview
         lblTC.Text = "幾次相忘於世，總在山窮水盡相見。" & vbCrLf & "0123456789 ~！@#￥%……&*（）—+「」" & vbCrLf & "：『』《》？·-=【】；‘，。、" & vbCrLf & "😀😁😂" & ChrW(55358) & ChrW(56611) & "😊😎😍🤔😴" & ChrW(55358) & ChrW(56623) & ChrW(55358) & ChrW(56691) & "😭" & vbCrLf & "╭ ─ │╰ ─ ᴄᴜʀʀᴇɴᴛ ᴍᴀᴘ ★★★✰✰"
         lblTC.TextAlign = ContentAlignment.MiddleLeft
         ' 
-        ' rbFont10
+        ' rdoFont10
         ' 
-        rbFont10.Appearance = Appearance.Button
-        rbFont10.FlatAppearance.BorderSize = 0
-        rbFont10.FlatAppearance.CheckedBackColor = Color.Silver
-        rbFont10.Location = New Point(0, 0)
-        rbFont10.Margin = New Padding(0, 0, 3, 3)
-        rbFont10.Name = "rbFont10"
-        rbFont10.Padding = New Padding(3, 0, 3, 0)
-        rbFont10.Size = New Size(62, 30)
-        rbFont10.TabIndex = 0
-        rbFont10.TabStop = True
-        rbFont10.Text = "10 点"
-        rbFont10.TextAlign = ContentAlignment.MiddleCenter
-        rbFont10.UseVisualStyleBackColor = True
+        rdoFont10.Appearance = Appearance.Button
+        rdoFont10.FlatAppearance.BorderSize = 0
+        rdoFont10.FlatAppearance.CheckedBackColor = Color.Silver
+        rdoFont10.Location = New Point(0, 0)
+        rdoFont10.Margin = New Padding(0, 0, 3, 3)
+        rdoFont10.Name = "rdoFont10"
+        rdoFont10.Padding = New Padding(3, 0, 3, 0)
+        rdoFont10.Size = New Size(62, 30)
+        rdoFont10.TabIndex = 0
+        rdoFont10.TabStop = True
+        rdoFont10.Text = "10 点"
+        rdoFont10.TextAlign = ContentAlignment.MiddleCenter
+        rdoFont10.UseVisualStyleBackColor = True
         ' 
-        ' rbFont16
+        ' rdoFont16
         ' 
-        rbFont16.Appearance = Appearance.Button
-        rbFont16.FlatAppearance.BorderSize = 0
-        rbFont16.FlatAppearance.CheckedBackColor = Color.Silver
-        rbFont16.Location = New Point(136, 0)
-        rbFont16.Margin = New Padding(3, 0, 0, 3)
-        rbFont16.Name = "rbFont16"
-        rbFont16.Padding = New Padding(3, 0, 3, 0)
-        rbFont16.Size = New Size(62, 30)
-        rbFont16.TabIndex = 2
-        rbFont16.TabStop = True
-        rbFont16.Text = "16 点"
-        rbFont16.TextAlign = ContentAlignment.MiddleCenter
-        rbFont16.UseVisualStyleBackColor = True
+        rdoFont16.Appearance = Appearance.Button
+        rdoFont16.FlatAppearance.BorderSize = 0
+        rdoFont16.FlatAppearance.CheckedBackColor = Color.Silver
+        rdoFont16.Location = New Point(136, 0)
+        rdoFont16.Margin = New Padding(3, 0, 0, 3)
+        rdoFont16.Name = "rdoFont16"
+        rdoFont16.Padding = New Padding(3, 0, 3, 0)
+        rdoFont16.Size = New Size(62, 30)
+        rdoFont16.TabIndex = 2
+        rdoFont16.TabStop = True
+        rdoFont16.Text = "16 点"
+        rdoFont16.TextAlign = ContentAlignment.MiddleCenter
+        rdoFont16.UseVisualStyleBackColor = True
         ' 
-        ' rbFont12
+        ' rdoFont12
         ' 
-        rbFont12.Appearance = Appearance.Button
-        rbFont12.FlatAppearance.BorderSize = 0
-        rbFont12.FlatAppearance.CheckedBackColor = Color.Silver
-        rbFont12.Location = New Point(68, 0)
-        rbFont12.Margin = New Padding(3, 0, 3, 3)
-        rbFont12.Name = "rbFont12"
-        rbFont12.Padding = New Padding(3, 0, 3, 0)
-        rbFont12.Size = New Size(62, 30)
-        rbFont12.TabIndex = 1
-        rbFont12.TabStop = True
-        rbFont12.Text = "12 点"
-        rbFont12.TextAlign = ContentAlignment.MiddleCenter
-        rbFont12.UseVisualStyleBackColor = True
+        rdoFont12.Appearance = Appearance.Button
+        rdoFont12.FlatAppearance.BorderSize = 0
+        rdoFont12.FlatAppearance.CheckedBackColor = Color.Silver
+        rdoFont12.Location = New Point(68, 0)
+        rdoFont12.Margin = New Padding(3, 0, 3, 3)
+        rdoFont12.Name = "rdoFont12"
+        rdoFont12.Padding = New Padding(3, 0, 3, 0)
+        rdoFont12.Size = New Size(62, 30)
+        rdoFont12.TabIndex = 1
+        rdoFont12.TabStop = True
+        rdoFont12.Text = "12 点"
+        rdoFont12.TextAlign = ContentAlignment.MiddleCenter
+        rdoFont12.UseVisualStyleBackColor = True
         ' 
-        ' btnApply
+        ' btnConfirm
         ' 
-        btnApply.Location = New Point(6, 3)
-        btnApply.Margin = New Padding(6, 3, 0, 3)
-        btnApply.Name = "btnApply"
-        btnApply.Padding = New Padding(3, 0, 3, 0)
-        btnApply.Size = New Size(52, 30)
-        btnApply.TabIndex = 4
-        btnApply.Text = "确认"
-        btnApply.UseVisualStyleBackColor = True
+        btnConfirm.Location = New Point(6, 3)
+        btnConfirm.Margin = New Padding(6, 3, 0, 3)
+        btnConfirm.Name = "btnConfirm"
+        btnConfirm.Padding = New Padding(3, 0, 3, 0)
+        btnConfirm.Size = New Size(52, 30)
+        btnConfirm.TabIndex = 4
+        btnConfirm.Text = "确认"
+        btnConfirm.UseVisualStyleBackColor = True
         ' 
         ' btnRecovery
         ' 
@@ -321,11 +320,10 @@ Partial Class FormPreview
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         TableLayoutPanel1.Controls.Add(tbCustom, 0, 1)
         TableLayoutPanel1.Controls.Add(TableLayoutPanel2, 5, 1)
-        TableLayoutPanel1.Controls.Add(rbFont16, 3, 0)
-        TableLayoutPanel1.Controls.Add(rbFont12, 2, 0)
-        TableLayoutPanel1.Controls.Add(rbFont10, 1, 0)
-        TableLayoutPanel1.Controls.Add(rbFont9, 5, 0)
-        TableLayoutPanel1.Controls.Add(rbFont32, 4, 0)
+        TableLayoutPanel1.Controls.Add(rdoFont16, 3, 0)
+        TableLayoutPanel1.Controls.Add(rdoFont12, 2, 0)
+        TableLayoutPanel1.Controls.Add(rdoFont10, 1, 0)
+        TableLayoutPanel1.Controls.Add(rdoFont32, 4, 0)
         TableLayoutPanel1.Dock = DockStyle.Top
         TableLayoutPanel1.Location = New Point(0, 0)
         TableLayoutPanel1.Margin = New Padding(0)
@@ -336,22 +334,6 @@ Partial Class FormPreview
         TableLayoutPanel1.Size = New Size(386, 105)
         TableLayoutPanel1.TabIndex = 6
         ' 
-        ' rbFont32
-        ' 
-        rbFont32.Appearance = Appearance.Button
-        rbFont32.FlatAppearance.BorderSize = 0
-        rbFont32.FlatAppearance.CheckedBackColor = Color.Silver
-        rbFont32.Location = New Point(201, 0)
-        rbFont32.Margin = New Padding(3, 0, 0, 3)
-        rbFont32.Name = "rbFont32"
-        rbFont32.Padding = New Padding(3, 0, 3, 0)
-        rbFont32.Size = New Size(62, 30)
-        rbFont32.TabIndex = 8
-        rbFont32.TabStop = True
-        rbFont32.Text = "32 点"
-        rbFont32.TextAlign = ContentAlignment.MiddleCenter
-        rbFont32.UseVisualStyleBackColor = True
-        ' 
         ' TableLayoutPanel2
         ' 
         TableLayoutPanel2.AutoSize = True
@@ -360,7 +342,7 @@ Partial Class FormPreview
         TableLayoutPanel2.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 20F))
         TableLayoutPanel2.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 20F))
         TableLayoutPanel2.Controls.Add(btnRecovery, 0, 1)
-        TableLayoutPanel2.Controls.Add(btnApply, 0, 0)
+        TableLayoutPanel2.Controls.Add(btnConfirm, 0, 0)
         TableLayoutPanel2.Dock = DockStyle.Left
         TableLayoutPanel2.Location = New Point(263, 33)
         TableLayoutPanel2.Margin = New Padding(0)
@@ -371,22 +353,21 @@ Partial Class FormPreview
         TableLayoutPanel2.Size = New Size(58, 72)
         TableLayoutPanel2.TabIndex = 6
         ' 
-        ' rbFont9
+        ' rdoFont32
         ' 
-        rbFont9.Appearance = Appearance.Button
-        rbFont9.FlatAppearance.BorderSize = 0
-        rbFont9.FlatAppearance.CheckedBackColor = Color.Silver
-        rbFont9.Location = New Point(263, 0)
-        rbFont9.Margin = New Padding(0, 0, 3, 3)
-        rbFont9.Name = "rbFont9"
-        rbFont9.Padding = New Padding(3, 0, 3, 0)
-        rbFont9.Size = New Size(62, 30)
-        rbFont9.TabIndex = 7
-        rbFont9.TabStop = True
-        rbFont9.Text = "9 点"
-        rbFont9.TextAlign = ContentAlignment.MiddleCenter
-        rbFont9.UseVisualStyleBackColor = True
-        rbFont9.Visible = False
+        rdoFont32.Appearance = Appearance.Button
+        rdoFont32.FlatAppearance.BorderSize = 0
+        rdoFont32.FlatAppearance.CheckedBackColor = Color.Silver
+        rdoFont32.Location = New Point(201, 0)
+        rdoFont32.Margin = New Padding(3, 0, 0, 3)
+        rdoFont32.Name = "rdoFont32"
+        rdoFont32.Padding = New Padding(3, 0, 3, 0)
+        rdoFont32.Size = New Size(62, 30)
+        rdoFont32.TabIndex = 8
+        rdoFont32.TabStop = True
+        rdoFont32.Text = "32 点"
+        rdoFont32.TextAlign = ContentAlignment.MiddleCenter
+        rdoFont32.UseVisualStyleBackColor = True
         ' 
         ' FormPreview
         ' 
@@ -416,10 +397,10 @@ Partial Class FormPreview
         PerformLayout()
     End Sub
     Friend WithEvents lblTC As Label
-    Friend WithEvents rbFont10 As RadioButton
-    Friend WithEvents rbFont16 As RadioButton
-    Friend WithEvents rbFont12 As RadioButton
-    Friend WithEvents btnApply As Button
+    Friend WithEvents rdoFont10 As RadioButton
+    Friend WithEvents rdoFont16 As RadioButton
+    Friend WithEvents rdoFont12 As RadioButton
+    Friend WithEvents btnConfirm As Button
     Friend WithEvents btnRecovery As Button
     Friend WithEvents tbCustom As TextBox
     Friend WithEvents lblSC As Label
@@ -434,6 +415,5 @@ Partial Class FormPreview
     Friend WithEvents TableLayoutPanel4 As TableLayoutPanel
     Friend WithEvents TableLayoutPanel2 As TableLayoutPanel
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
-    Friend WithEvents rbFont32 As RadioButton
-    Friend WithEvents rbFont9 As RadioButton
+    Friend WithEvents rdoFont32 As RadioButton
 End Class

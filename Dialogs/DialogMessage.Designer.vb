@@ -24,10 +24,10 @@ Partial Class DialogMessage
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(DialogMessage))
         lblTitle = New Label()
-        lstbPopup = New ListBox()
+        lstContent = New ListBox()
         btnOK = New Button()
         btnCancel = New Button()
-        splitNote = New Label()
+        split1 = New Label()
         TableLayoutPanel1 = New TableLayoutPanel()
         lblNote = New Label()
         TableLayoutPanel1.SuspendLayout()
@@ -44,20 +44,20 @@ Partial Class DialogMessage
         lblTitle.TabIndex = 0
         lblTitle.Text = "大标题"
         ' 
-        ' lstbPopup
+        ' lstContent
         ' 
-        lstbPopup.BorderStyle = BorderStyle.None
-        lstbPopup.Dock = DockStyle.Top
-        lstbPopup.DrawMode = DrawMode.OwnerDrawFixed
-        lstbPopup.ForeColor = Color.Black
-        lstbPopup.FormattingEnabled = True
-        lstbPopup.IntegralHeight = False
-        lstbPopup.ItemHeight = 25
-        lstbPopup.Location = New Point(0, 24)
-        lstbPopup.Margin = New Padding(0, 3, 0, 3)
-        lstbPopup.Name = "lstbPopup"
-        lstbPopup.Size = New Size(358, 160)
-        lstbPopup.TabIndex = 1
+        lstContent.BorderStyle = BorderStyle.None
+        lstContent.Dock = DockStyle.Top
+        lstContent.DrawMode = DrawMode.OwnerDrawFixed
+        lstContent.ForeColor = Color.Black
+        lstContent.FormattingEnabled = True
+        lstContent.IntegralHeight = False
+        lstContent.ItemHeight = 25
+        lstContent.Location = New Point(0, 24)
+        lstContent.Margin = New Padding(0, 3, 0, 3)
+        lstContent.Name = "lstContent"
+        lstContent.Size = New Size(358, 160)
+        lstContent.TabIndex = 1
         ' 
         ' btnOK
         ' 
@@ -79,17 +79,17 @@ Partial Class DialogMessage
         btnCancel.Text = "取消"
         btnCancel.UseVisualStyleBackColor = True
         ' 
-        ' splitNote
+        ' split1
         ' 
-        splitNote.Dock = DockStyle.Fill
-        splitNote.ForeColor = Color.DarkGray
-        splitNote.Location = New Point(3, 190)
-        splitNote.Margin = New Padding(3)
-        splitNote.Name = "splitNote"
-        splitNote.Size = New Size(352, 18)
-        splitNote.TabIndex = 6
-        splitNote.Text = "───────────────────────────────────────────────────────────"
-        splitNote.TextAlign = ContentAlignment.MiddleLeft
+        split1.Dock = DockStyle.Fill
+        split1.ForeColor = Color.DarkGray
+        split1.Location = New Point(3, 190)
+        split1.Margin = New Padding(3)
+        split1.Name = "split1"
+        split1.Size = New Size(352, 18)
+        split1.TabIndex = 6
+        split1.Text = "───────────────────────────────────────────────────────────"
+        split1.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' TableLayoutPanel1
         ' 
@@ -99,8 +99,8 @@ Partial Class DialogMessage
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 20F))
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 20F))
         TableLayoutPanel1.Controls.Add(lblTitle, 0, 0)
-        TableLayoutPanel1.Controls.Add(lstbPopup, 0, 1)
-        TableLayoutPanel1.Controls.Add(splitNote, 0, 2)
+        TableLayoutPanel1.Controls.Add(lstContent, 0, 1)
+        TableLayoutPanel1.Controls.Add(split1, 0, 2)
         TableLayoutPanel1.Controls.Add(lblNote, 0, 3)
         TableLayoutPanel1.Location = New Point(12, 12)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
@@ -125,7 +125,7 @@ Partial Class DialogMessage
         lblNote.TabIndex = 7
         lblNote.Text = "Line 1"
         ' 
-        ' DialogPopUp
+        ' DialogMessage
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
@@ -141,7 +141,7 @@ Partial Class DialogMessage
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
         MaximizeBox = False
         MinimizeBox = False
-        Name = "DialogPopUp"
+        Name = "DialogMessage"
         ShowIcon = False
         ShowInTaskbar = False
         StartPosition = FormStartPosition.CenterParent
@@ -153,10 +153,10 @@ Partial Class DialogMessage
     End Sub
 
     Friend WithEvents lblTitle As Label
-    Friend WithEvents lstbPopup As ListBox
+    Friend WithEvents lstContent As ListBox
     Friend WithEvents btnOK As Button
     Friend WithEvents btnCancel As Button
-    Friend WithEvents splitNote As Label
+    Friend WithEvents split1 As Label
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
     Friend WithEvents lblNote As Label
 End Class

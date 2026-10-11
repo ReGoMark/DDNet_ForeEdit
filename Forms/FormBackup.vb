@@ -1,14 +1,17 @@
 ﻿Imports System.IO
 Imports System.IO.Compression
 Imports System.Text
+Imports System.Threading
+Imports System.Threading.Tasks
 
 ''' <summary>
 ''' 备份对话框：选择要备份的 DDNet 用户数据范围，打包为 zip。
 ''' 备份源：%AppData%\Roaming\DDNet\
 ''' 备份内容：settings_ddnet.cfg、其他 *.cfg、ddnet-saves.txt、demos\、videos\、assets\、ghosts\
 ''' 压缩包内路径结构与实际目录一致。
+''' 打包在后台线程执行，支持关闭窗体取消。
 ''' </summary>
-Public Class DialogBackup
+Public Class FormBackup
 
     ''' <summary>DDNet 用户数据根目录。</summary>
     Private ReadOnly DdnetDir As String = Path.Combine(
@@ -20,22 +23,32 @@ Public Class DialogBackup
     ''' <summary>各项大小的缓存（键：category；值：字节数）。Load 时扫描一次，之后只做加法。</summary>
     Private ReadOnly _sizeCache As New Dictionary(Of String, Long)
 
+    ''' <summary>当前备份操作的取消令牌源。为 Nothing 表示无操作进行中。</summary>
+    Private _cts As CancellationTokenSource = Nothing
+
+    ' ─── 后台备份辅助类型 ────────────────────────────────────────────
+
+    ''' <summary>备份范围选项（主线程快照，避免后台访问 CheckBox）。</summary>
+    Private Class BackupOptions
+        Public Settings As Boolean
+        Public Saves As Boolean
+        Public Cfg As Boolean
+        Public Demos As Boolean
+        Public Videos As Boolean
+        Public Assets As Boolean
+        Public Ghosts As Boolean
+    End Class
+
+    ''' <summary>后台备份的进度载体。</summary>
+    Private Class BackupProgress
+        Public Current As Integer
+        Public Total As Integer
+        Public Message As String
+    End Class
+
     ' ─── 窗体生命周期 ──────────────────────────────────────────────────
 
     Private Sub DialogBackup_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' 默认勾选全部
-        'chkSettings.Checked = True
-        'chkCfg.Checked = True
-        'chkSaves.Checked = True
-        'chkDemos.Checked = True
-        'chkVideos.Checked = True
-        'chkAssets.Checked = True
-        'chkGhosts.Checked = True
-
-        'ToolTip1.SetToolTip(btnSelectAll, "切换全选/全不选")
-        'ToolTip1.SetToolTip(btnBackupTo, "选择保存位置并开始备份")
-        'ToolTip1.SetToolTip(btnCancel, "关闭窗口")
-
         RefreshSizes()
         UpdateRowEnabledStates()
 
@@ -48,6 +61,24 @@ Public Class DialogBackup
         End If
     End Sub
 
+    ''' <summary>窗体关闭时若正在备份，询问用户是否中断。</summary>
+    Private Sub FormBackup_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
+        If _cts IsNot Nothing AndAlso Not _cts.IsCancellationRequested Then
+            If e.CloseReason = CloseReason.UserClosing Then
+                Dim result = MessageBox.Show("备份正在进行，确认要中断并关闭吗？", "备份",
+                                             MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                If result <> DialogResult.Yes Then
+                    e.Cancel = True
+                    Return
+                End If
+            End If
+            Try
+                _cts.Cancel()
+            Catch
+            End Try
+        End If
+    End Sub
+
     ' ─── 大小与数量显示 ──────────────────────────────────────────────
 
     ''' <summary>刷新 7 组大小 + 数量标签，并缓存各项字节数。</summary>
@@ -55,41 +86,41 @@ Public Class DialogBackup
         ' settings_ddnet.cfg
         Dim a = GetSingleFileInfo("settings_ddnet.cfg")
         _sizeCache("settings") = a.size
-        lblSize1.Text = FormatSizeOrDash(a.size, a.count)
-        lblCount1.Text = FormatCountOrDash(a.count)
+        lblSizeSettings.Text = FormatSizeOrDash(a.size, a.count)
+        lblCountSettings.Text = FormatCountOrDash(a.count)
 
         ' 其他 *.cfg
         Dim b = GetOtherCfgInfo()
         _sizeCache("cfg") = b.size
-        lblSize2.Text = FormatSizeOrDash(b.size, b.count)
-        lblCount2.Text = FormatCountOrDash(b.count)
+        lblSizeCfg.Text = FormatSizeOrDash(b.size, b.count)
+        lblCountCfg.Text = FormatCountOrDash(b.count)
 
         ' ddnet-saves.txt
         Dim c = GetSingleFileInfo("ddnet-saves.txt")
         _sizeCache("saves") = c.size
-        lblSize3.Text = FormatSizeOrDash(c.size, c.count)
-        lblCount3.Text = FormatCountOrDash(c.count)
+        lblSizeSaves.Text = FormatSizeOrDash(c.size, c.count)
+        lblCountSaves.Text = FormatCountOrDash(c.count)
 
         ' 文件夹
         Dim d = GetFolderInfo("demos")
         _sizeCache("demos") = d.size
-        lblSize4.Text = FormatSizeOrDash(d.size, d.count)
-        lblCount4.Text = FormatCountOrDash(d.count)
+        lblSizeDemos.Text = FormatSizeOrDash(d.size, d.count)
+        lblCountDemos.Text = FormatCountOrDash(d.count)
 
         Dim e = GetFolderInfo("videos")
         _sizeCache("videos") = e.size
-        lblSize5.Text = FormatSizeOrDash(e.size, e.count)
-        lblCount5.Text = FormatCountOrDash(e.count)
+        lblSizeVideos.Text = FormatSizeOrDash(e.size, e.count)
+        lblCountVideos.Text = FormatCountOrDash(e.count)
 
         Dim f = GetFolderInfo("assets")
         _sizeCache("assets") = f.size
-        lblSize6.Text = FormatSizeOrDash(f.size, f.count)
-        lblCount6.Text = FormatCountOrDash(f.count)
+        lblSizeAssets.Text = FormatSizeOrDash(f.size, f.count)
+        lblCountAssets.Text = FormatCountOrDash(f.count)
 
         Dim g = GetFolderInfo("ghosts")
         _sizeCache("ghosts") = g.size
-        lblSize7.Text = FormatSizeOrDash(g.size, g.count)
-        lblCount7.Text = FormatCountOrDash(g.count)
+        lblSizeGhosts.Text = FormatSizeOrDash(g.size, g.count)
+        lblCountGhosts.Text = FormatCountOrDash(g.count)
 
         RefreshTotalSize()
     End Sub
@@ -203,8 +234,6 @@ Public Class DialogBackup
 
         Dim newValue As Boolean = Not allChecked
 
-        ' 关闭总大小刷新（避免每个勾选触发一次计算）
-        ' 这里简单处理：直接改，最后手动刷一次
         chkSettings.Checked = newValue
         chkCfg.Checked = newValue
         chkSaves.Checked = newValue
@@ -212,18 +241,16 @@ Public Class DialogBackup
         chkVideos.Checked = newValue
         chkAssets.Checked = newValue
         chkGhosts.Checked = newValue
-
-        ' 各 CheckedChanged 已触发 RefreshTotalSize，不用重复刷
     End Sub
 
-    ' ─── 备份 ──────────────────────────────────────────────────────
+    ' ─── 备份（异步）──────────────────────────────────────────────
 
-    Private Sub btnBackupTo_Click(sender As Object, e As EventArgs) Handles btnBackupTo.Click
+    Private Async Sub btnBackupTo_Click(sender As Object, e As EventArgs) Handles btnBackup.Click
+        If _cts IsNot Nothing Then Return   ' 防重入
+
         If Not (chkSettings.Checked OrElse chkCfg.Checked OrElse chkSaves.Checked OrElse
                 chkDemos.Checked OrElse chkVideos.Checked OrElse
                 chkAssets.Checked OrElse chkGhosts.Checked) Then
-            'MessageBox.Show("请至少选择一项要备份的内容。", "备份",
-            '                MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
@@ -233,34 +260,162 @@ Public Class DialogBackup
             Return
         End If
 
+        ' ── 选保存路径 ──
+        Dim outputPath As String
         Using sfd As New SaveFileDialog()
             sfd.Title = "保存备份"
             sfd.Filter = "Zip 文件 (*.zip)|*.zip|所有文件|*.*"
-            sfd.FileName = "无标题" & ".zip"
+            sfd.FileName = "无标题.zip"
             sfd.DefaultExt = "zip"
             If sfd.ShowDialog(Me) <> DialogResult.OK Then Return
-
-            DoBackup(sfd.FileName)
+            outputPath = sfd.FileName
         End Using
+
+        ' ── 快照复选框状态 ──
+        Dim opt As New BackupOptions With {
+            .Settings = chkSettings.Checked,
+            .Saves = chkSaves.Checked,
+            .Cfg = chkCfg.Checked,
+            .Demos = chkDemos.Checked,
+            .Videos = chkVideos.Checked,
+            .Assets = chkAssets.Checked,
+            .Ghosts = chkGhosts.Checked
+        }
+        Dim rootDir As String = DdnetDir
+
+        ' ── 建立取消源 ──
+        _cts = New CancellationTokenSource()
+        Dim token As CancellationToken = _cts.Token
+
+        ' ── UI 状态 ──
+        Dim origTitle As String = Me.Text
+        ProgressBar2.Visible = True
+        ProgressBar2.Minimum = 0
+        ProgressBar2.Maximum = 1
+        ProgressBar2.Value = 0
+        btnBackup.Enabled = False
+        btnCancel.Enabled = False
+        btnSelectAll.Enabled = False
+        btnSnapshot.Enabled = False
+
+        ' ── 进度回调 ──
+        Dim progress = New Progress(Of BackupProgress)(
+            Sub(p)
+                If IsDisposed OrElse Disposing Then Return
+                Try
+                    If p.Total > 0 AndAlso ProgressBar2.Maximum <> p.Total Then
+                        ProgressBar2.Maximum = p.Total
+                    End If
+                    If p.Current >= ProgressBar2.Minimum AndAlso p.Current <= ProgressBar2.Maximum Then
+                        ProgressBar2.Value = p.Current
+                    End If
+                    If Not String.IsNullOrEmpty(p.Message) Then
+                        Me.Text = $"{origTitle} - {p.Message}"
+                    End If
+                Catch
+                End Try
+            End Sub)
+
+        ' ── 结果状态（后台线程写入，Await 后读取）──
+        Dim succeeded As Boolean = False
+        Dim cancelled As Boolean = False
+        Dim errorMsg As String = ""
+
+        ' ── 后台执行：整个 Lambda 自己 Try/Catch，对外不抛异常 ──
+        Try
+            Await Task.Run(Sub()
+                               Try
+                                   If DoBackupCore(outputPath, rootDir, opt, progress, token) Then
+                                       succeeded = True
+                                   Else
+                                       cancelled = True
+                                   End If
+                               Catch ex As Exception
+                                   errorMsg = ex.Message
+                               End Try
+                           End Sub)
+        Catch ex As Exception
+            ' 极端情况：Task 本身出错（几乎不会发生）
+            errorMsg = ex.Message
+        End Try
+
+        ' ── 处理结果 ──
+        If IsDisposed OrElse Disposing Then
+            ' 窗体已 Dispose，静默清理
+            Try
+                _cts?.Dispose()
+            Catch
+            End Try
+            _cts = Nothing
+            Try
+                If File.Exists(outputPath) AndAlso (cancelled OrElse errorMsg <> "") Then
+                    File.Delete(outputPath)
+                End If
+            Catch
+            End Try
+            Return
+        End If
+
+        If cancelled Then
+            Try
+                If File.Exists(outputPath) Then File.Delete(outputPath)
+            Catch
+            End Try
+            ' 静默：用户取消是主动行为
+        ElseIf errorMsg <> "" Then
+            Try
+                If File.Exists(outputPath) Then File.Delete(outputPath)
+            Catch
+            End Try
+            MessageBox.Show($"备份失败：{errorMsg}", "备份",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error)
+        ElseIf succeeded Then
+            MessageBox.Show("用户数据已备份。", "备份",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information)
+        End If
+
+        ' ── 恢复 UI ──
+        Try
+            _cts?.Dispose()
+        Catch
+        End Try
+        _cts = Nothing
+
+        ProgressBar2.Visible = False
+        ProgressBar2.Value = 0
+        Me.Text = origTitle
+        btnBackup.Enabled = True
+        btnCancel.Enabled = True
+        btnSelectAll.Enabled = True
+        btnSnapshot.Enabled = True
     End Sub
 
-    ''' <summary>执行备份：收集勾选项的文件，写入 zip，末尾追加 verification.txt 元数据。</summary>
-    Private Sub DoBackup(zipPath As String)
+    ''' <summary>
+    ''' 后台线程：收集文件 + 写入 zip + verification.txt。
+    ''' 返回 True 表示成功，False 表示用户取消。真正的错误以异常抛出，由外层 Lambda 捕获。
+    ''' </summary>
+    Private Function DoBackupCore(zipPath As String,
+                                  rootDir As String,
+                                  opt As BackupOptions,
+                                  progress As IProgress(Of BackupProgress),
+                                  token As CancellationToken) As Boolean
+
+        ' ══════ 1. 收集文件 ══════
         Dim entries As New List(Of Tuple(Of String, String))
 
-        If chkSettings.Checked Then
-            Dim f = Path.Combine(DdnetDir, "settings_ddnet.cfg")
+        If opt.Settings Then
+            Dim f = Path.Combine(rootDir, "settings_ddnet.cfg")
             If File.Exists(f) Then entries.Add(Tuple.Create("settings_ddnet.cfg", f))
         End If
 
-        If chkSaves.Checked Then
-            Dim f = Path.Combine(DdnetDir, "ddnet-saves.txt")
+        If opt.Saves Then
+            Dim f = Path.Combine(rootDir, "ddnet-saves.txt")
             If File.Exists(f) Then entries.Add(Tuple.Create("ddnet-saves.txt", f))
         End If
 
-        If chkCfg.Checked Then
+        If opt.Cfg Then
             Try
-                For Each f In Directory.GetFiles(DdnetDir, "*.cfg")
+                For Each f In Directory.GetFiles(rootDir, "*.cfg")
                     Dim fn = Path.GetFileName(f)
                     If fn.Equals("settings_ddnet.cfg", StringComparison.OrdinalIgnoreCase) Then Continue For
                     entries.Add(Tuple.Create(fn, f))
@@ -269,18 +424,20 @@ Public Class DialogBackup
             End Try
         End If
 
-        Dim folderMap As New List(Of Tuple(Of CheckBox, String)) From {
-            Tuple.Create(chkDemos, "demos"),
-            Tuple.Create(chkVideos, "videos"),
-            Tuple.Create(chkAssets, "assets"),
-            Tuple.Create(chkGhosts, "ghosts")
+        Dim folderMap As New List(Of Tuple(Of Boolean, String)) From {
+            Tuple.Create(opt.Demos, "demos"),
+            Tuple.Create(opt.Videos, "videos"),
+            Tuple.Create(opt.Assets, "assets"),
+            Tuple.Create(opt.Ghosts, "ghosts")
         }
         For Each t In folderMap
-            If Not t.Item1.Checked Then Continue For
-            Dim absFolder = Path.Combine(DdnetDir, t.Item2)
+            If token.IsCancellationRequested Then Return False
+            If Not t.Item1 Then Continue For
+            Dim absFolder = Path.Combine(rootDir, t.Item2)
             If Not Directory.Exists(absFolder) Then Continue For
             Try
                 For Each f In Directory.EnumerateFiles(absFolder, "*", SearchOption.AllDirectories)
+                    If token.IsCancellationRequested Then Return False
                     Dim relSub = f.Substring(absFolder.Length).TrimStart("\"c, "/"c)
                     Dim rel = t.Item2 & "\" & relSub
                     entries.Add(Tuple.Create(rel, f))
@@ -290,69 +447,56 @@ Public Class DialogBackup
         Next
 
         If entries.Count = 0 Then
-            MessageBox.Show("没有可备份的文件。", "备份",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return
+            Throw New InvalidOperationException("没有可备份的文件。")
         End If
 
-        Dim origTitle = Me.Text
-        Dim totalSteps As Integer = entries.Count + 1   ' +1 是 verification.txt
+        ' ══════ 2. 写入 zip ══════
+        Dim totalSteps As Integer = entries.Count + 1
 
-        ProgressBar2.Visible = True
-        ProgressBar2.Minimum = 0
-        ProgressBar2.Maximum = totalSteps
-        ProgressBar2.Value = 0
-        btnBackupTo.Enabled = False
-        btnCancel.Enabled = False
-        btnSelectAll.Enabled = False
+        If File.Exists(zipPath) Then File.Delete(zipPath)
 
-        Try
-            If File.Exists(zipPath) Then File.Delete(zipPath)
+        Using zip As ZipArchive = ZipFile.Open(zipPath, ZipArchiveMode.Create)
+            Dim n As Integer = 0
+            For Each entry In entries
+                If token.IsCancellationRequested Then Return False
 
-            Using zip As ZipArchive = ZipFile.Open(zipPath, ZipArchiveMode.Create)
-                ' 逐个写入实际文件
-                Dim n As Integer = 0
-                For Each entry In entries
-                    Dim relPath As String = entry.Item1.Replace("\"c, "/"c)
-                    Dim absPath As String = entry.Item2
-                    Try
-                        zip.CreateEntryFromFile(absPath, relPath, CompressionLevel.Optimal)
-                    Catch
-                    End Try
-                    n += 1
-                    ProgressBar2.Value = n
-                    Me.Text = $"{origTitle} - 拷贝: {Path.GetFileName(absPath)} ({n}/{totalSteps})"
-                Next
+                Dim relPath As String = entry.Item1.Replace("\"c, "/"c)
+                Dim absPath As String = entry.Item2
+                Try
+                    zip.CreateEntryFromFile(absPath, relPath, CompressionLevel.Optimal)
+                Catch
+                End Try
 
-                ' 最后写入 verification.txt（与 Blade 的 .dnfp 格式一致）
-                Dim verEntry As ZipArchiveEntry = zip.CreateEntry("verification.txt")
-                Using writer As New StreamWriter(verEntry.Open(), Encoding.UTF8)
-                    writer.WriteLine("app=DDNetForeEdit")
-                    writer.WriteLine($"date={DateTime.Now:yyyy/MM/dd HH:mm}")
-                    writer.WriteLine("mode=Backup")
-                    writer.WriteLine("source=Local")
-                    writer.WriteLine($"files={entries.Count}")
-                End Using
                 n += 1
-                ProgressBar2.Value = n
-                Me.Text = $"{origTitle} - 写入: verification.txt ({n}/{totalSteps})"
+                progress.Report(New BackupProgress With {
+                    .Current = n,
+                    .Total = totalSteps,
+                    .Message = $"拷贝: {Path.GetFileName(absPath)} ({n}/{totalSteps})"
+                })
+            Next
+
+            If token.IsCancellationRequested Then Return False
+
+            ' verification.txt
+            Dim verEntry As ZipArchiveEntry = zip.CreateEntry("verification.txt")
+            Using writer As New StreamWriter(verEntry.Open(), Encoding.UTF8)
+                writer.WriteLine("app=DDNetForeEdit")
+                writer.WriteLine($"date={DateTime.Now:yyyy/MM/dd HH:mm}")
+                writer.WriteLine("mode=Backup")
+                writer.WriteLine("source=Local")
+                writer.WriteLine($"files={entries.Count}")
             End Using
 
-            Me.Text = origTitle
-            MessageBox.Show("用户数据已备份。", "备份",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information)
-        Catch ex As Exception
-            MessageBox.Show($"备份失败：{ex.Message}", "备份",
-                            MessageBoxButtons.OK, MessageBoxIcon.Error)
-        Finally
-            ProgressBar2.Visible = False
-            ProgressBar2.Value = 0
-            Me.Text = origTitle
-            btnBackupTo.Enabled = True
-            btnCancel.Enabled = True
-            btnSelectAll.Enabled = True
-        End Try
-    End Sub
+            n += 1
+            progress.Report(New BackupProgress With {
+                .Current = n,
+                .Total = totalSteps,
+                .Message = $"写入: verification.txt ({n}/{totalSteps})"
+            })
+        End Using
+
+        Return True
+    End Function
 
     ' ─── 快照（保存配置到程序目录的 backups） ──────────────────────
 
@@ -423,13 +567,13 @@ Public Class DialogBackup
     ''' 未勾选时，标签变灰（模拟禁用视觉），避免用户误以为该项会被备份。
     ''' </summary>
     Private Sub UpdateRowEnabledStates()
-        SetRowEnabled(chkSettings, lblSize1, lblCount1)
-        SetRowEnabled(chkCfg, lblSize2, lblCount2)
-        SetRowEnabled(chkSaves, lblSize3, lblCount3)
-        SetRowEnabled(chkDemos, lblSize4, lblCount4)
-        SetRowEnabled(chkVideos, lblSize5, lblCount5)
-        SetRowEnabled(chkAssets, lblSize6, lblCount6)
-        SetRowEnabled(chkGhosts, lblSize7, lblCount7)
+        SetRowEnabled(chkSettings, lblSizeSettings, lblCountSettings)
+        SetRowEnabled(chkCfg, lblSizeCfg, lblCountCfg)
+        SetRowEnabled(chkSaves, lblSizeSaves, lblCountSaves)
+        SetRowEnabled(chkDemos, lblSizeDemos, lblCountDemos)
+        SetRowEnabled(chkVideos, lblSizeVideos, lblCountVideos)
+        SetRowEnabled(chkAssets, lblSizeAssets, lblCountAssets)
+        SetRowEnabled(chkGhosts, lblSizeGhosts, lblCountGhosts)
     End Sub
 
     ''' <summary>

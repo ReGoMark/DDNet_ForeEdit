@@ -46,16 +46,20 @@ Public Class DialogDirectory
 
     ' ─── 窗体事件 ──────────────────────────────────────────────────────
 
-    ''' <summary>窗体加载时默认选中 DDNet 目录。</summary>
+    ''' <summary>
+    ''' 窗体加载时默认选中 DDNet 目录。
+    ''' </summary>
     Private Sub DialogLocal_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        rbDDNet.Checked = True
+        rdoDDNet.Checked = True
     End Sub
 
-    ''' <summary>点击确定按钮，根据选中的 RadioButton 返回对应路径。</summary>
+    ''' <summary>
+    ''' 点击确定按钮，根据选中的 RadioButton 返回对应路径。
+    ''' </summary>
     Private Sub btnOK_Click(sender As Object, e As EventArgs) Handles btnOK.Click
-        If rbDDNet.Checked Then
+        If rdoDDNet.Checked Then
             _selectedPath = _ddnetPath
-        ElseIf rbTeeworlds.Checked Then
+        ElseIf rdoTeeworlds.Checked Then
             _selectedPath = _teeworldsPath
         Else
             ' 理论上不会发生，因为默认已选中
@@ -68,14 +72,18 @@ Public Class DialogDirectory
         Me.Close()
     End Sub
 
-    ''' <summary>点击取消按钮，放弃选择。</summary>
+    ''' <summary>
+    ''' 点击取消按钮，放弃选择。
+    ''' </summary>
     Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
         _selectedPath = ""
         Me.DialogResult = DialogResult.Cancel
         Me.Close()
     End Sub
 
-    ''' <summary>点击窗体关闭按钮（✕）时视为取消。</summary>
+    ''' <summary>
+    ''' 点击窗体关闭按钮（✕）时视为取消。
+    ''' </summary>
     Private Sub DialogLocal_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         If Me.DialogResult = DialogResult.None Then
             Me.DialogResult = DialogResult.Cancel

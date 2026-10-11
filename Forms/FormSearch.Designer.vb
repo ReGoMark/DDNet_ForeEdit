@@ -24,31 +24,30 @@ Partial Class FormSearch
     Private Sub InitializeComponent()
         components = New ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormSearch))
-        tbKeyword = New TextBox()
+        txtKeywords = New TextBox()
         btnNext = New Button()
-        Button1 = New Button()
         btnTail = New Button()
         btnHead = New Button()
         btnPrior = New Button()
         lblStatus = New Label()
-        btnGo = New Button()
+        btnTurn = New Button()
         btnSelectAll = New Button()
-        cbCases = New CheckBox()
-        cbAllfields = New CheckBox()
-        cbFormal = New CheckBox()
+        cmbCases = New CheckBox()
+        cmbAllwords = New CheckBox()
+        cmbFormal = New CheckBox()
         ToolTip1 = New ToolTip(components)
         Label10 = New Label()
         SuspendLayout()
         ' 
-        ' tbKeyword
+        ' txtKeywords
         ' 
-        tbKeyword.ForeColor = Color.Black
-        tbKeyword.Location = New Point(12, 12)
-        tbKeyword.Multiline = True
-        tbKeyword.Name = "tbKeyword"
-        tbKeyword.PlaceholderText = "输入要查找的内容"
-        tbKeyword.Size = New Size(358, 30)
-        tbKeyword.TabIndex = 0
+        txtKeywords.ForeColor = Color.Black
+        txtKeywords.Location = New Point(12, 12)
+        txtKeywords.Multiline = True
+        txtKeywords.Name = "txtKeywords"
+        txtKeywords.PlaceholderText = "输入要查找的内容"
+        txtKeywords.Size = New Size(358, 30)
+        txtKeywords.TabIndex = 0
         ' 
         ' btnNext
         ' 
@@ -62,19 +61,6 @@ Partial Class FormSearch
         btnNext.TextImageRelation = TextImageRelation.ImageBeforeText
         ToolTip1.SetToolTip(btnNext, "下一个匹配 (F3)")
         btnNext.UseVisualStyleBackColor = True
-        ' 
-        ' Button1
-        ' 
-        Button1.AllowDrop = True
-        Button1.AutoSize = True
-        Button1.Location = New Point(12, 48)
-        Button1.Name = "Button1"
-        Button1.Padding = New Padding(3, 0, 3, 0)
-        Button1.Size = New Size(52, 30)
-        Button1.TabIndex = 15
-        Button1.Text = "取消"
-        Button1.UseVisualStyleBackColor = True
-        Button1.Visible = False
         ' 
         ' btnTail
         ' 
@@ -126,18 +112,18 @@ Partial Class FormSearch
         lblStatus.TabIndex = 20
         lblStatus.Text = "信息"
         ' 
-        ' btnGo
+        ' btnTurn
         ' 
-        btnGo.AllowDrop = True
-        btnGo.AutoSize = True
-        btnGo.Location = New Point(304, 163)
-        btnGo.Name = "btnGo"
-        btnGo.Padding = New Padding(3, 0, 3, 0)
-        btnGo.Size = New Size(66, 30)
-        btnGo.TabIndex = 21
-        btnGo.Text = "转到行"
-        ToolTip1.SetToolTip(btnGo, "按序号跳转(Ctrl+G)")
-        btnGo.UseVisualStyleBackColor = True
+        btnTurn.AllowDrop = True
+        btnTurn.AutoSize = True
+        btnTurn.Location = New Point(304, 163)
+        btnTurn.Name = "btnTurn"
+        btnTurn.Padding = New Padding(3, 0, 3, 0)
+        btnTurn.Size = New Size(66, 30)
+        btnTurn.TabIndex = 21
+        btnTurn.Text = "转到行"
+        ToolTip1.SetToolTip(btnTurn, "按序号跳转(Ctrl+G)")
+        btnTurn.UseVisualStyleBackColor = True
         ' 
         ' btnSelectAll
         ' 
@@ -151,44 +137,44 @@ Partial Class FormSearch
         btnSelectAll.Text = "全选"
         btnSelectAll.UseVisualStyleBackColor = True
         ' 
-        ' cbCases
+        ' cmbCases
         ' 
-        cbCases.Appearance = Appearance.Button
-        cbCases.Image = CType(resources.GetObject("cbCases.Image"), Image)
-        cbCases.Location = New Point(100, 109)
-        cbCases.Name = "cbCases"
-        cbCases.Size = New Size(82, 30)
-        cbCases.TabIndex = 23
-        cbCases.Text = "大小写"
-        cbCases.TextAlign = ContentAlignment.MiddleCenter
-        cbCases.TextImageRelation = TextImageRelation.ImageBeforeText
-        cbCases.UseVisualStyleBackColor = True
+        cmbCases.Appearance = Appearance.Button
+        cmbCases.Image = CType(resources.GetObject("cmbCases.Image"), Image)
+        cmbCases.Location = New Point(100, 109)
+        cmbCases.Name = "cmbCases"
+        cmbCases.Size = New Size(82, 30)
+        cmbCases.TabIndex = 23
+        cmbCases.Text = "大小写"
+        cmbCases.TextAlign = ContentAlignment.MiddleCenter
+        cmbCases.TextImageRelation = TextImageRelation.ImageBeforeText
+        cmbCases.UseVisualStyleBackColor = True
         ' 
-        ' cbAllfields
+        ' cmbAllwords
         ' 
-        cbAllfields.Appearance = Appearance.Button
-        cbAllfields.Image = CType(resources.GetObject("cbAllfields.Image"), Image)
-        cbAllfields.Location = New Point(12, 109)
-        cbAllfields.Name = "cbAllfields"
-        cbAllfields.Size = New Size(82, 30)
-        cbAllfields.TabIndex = 24
-        cbAllfields.Text = "全字段"
-        cbAllfields.TextAlign = ContentAlignment.MiddleCenter
-        cbAllfields.TextImageRelation = TextImageRelation.ImageBeforeText
-        cbAllfields.UseVisualStyleBackColor = True
+        cmbAllwords.Appearance = Appearance.Button
+        cmbAllwords.Image = CType(resources.GetObject("cmbAllwords.Image"), Image)
+        cmbAllwords.Location = New Point(12, 109)
+        cmbAllwords.Name = "cmbAllwords"
+        cmbAllwords.Size = New Size(82, 30)
+        cmbAllwords.TabIndex = 24
+        cmbAllwords.Text = "全字段"
+        cmbAllwords.TextAlign = ContentAlignment.MiddleCenter
+        cmbAllwords.TextImageRelation = TextImageRelation.ImageBeforeText
+        cmbAllwords.UseVisualStyleBackColor = True
         ' 
-        ' cbFormal
+        ' cmbFormal
         ' 
-        cbFormal.Appearance = Appearance.Button
-        cbFormal.Image = CType(resources.GetObject("cbFormal.Image"), Image)
-        cbFormal.Location = New Point(188, 109)
-        cbFormal.Name = "cbFormal"
-        cbFormal.Size = New Size(82, 30)
-        cbFormal.TabIndex = 25
-        cbFormal.Text = "正规则"
-        cbFormal.TextAlign = ContentAlignment.MiddleCenter
-        cbFormal.TextImageRelation = TextImageRelation.ImageBeforeText
-        cbFormal.UseVisualStyleBackColor = True
+        cmbFormal.Appearance = Appearance.Button
+        cmbFormal.Image = CType(resources.GetObject("cmbFormal.Image"), Image)
+        cmbFormal.Location = New Point(188, 109)
+        cmbFormal.Name = "cmbFormal"
+        cmbFormal.Size = New Size(82, 30)
+        cmbFormal.TabIndex = 25
+        cmbFormal.Text = "正规则"
+        cmbFormal.TextAlign = ContentAlignment.MiddleCenter
+        cmbFormal.TextImageRelation = TextImageRelation.ImageBeforeText
+        cmbFormal.UseVisualStyleBackColor = True
         ' 
         ' Label10
         ' 
@@ -208,18 +194,17 @@ Partial Class FormSearch
         BackColor = Color.White
         ClientSize = New Size(382, 205)
         Controls.Add(Label10)
-        Controls.Add(cbFormal)
-        Controls.Add(cbAllfields)
-        Controls.Add(cbCases)
+        Controls.Add(cmbFormal)
+        Controls.Add(cmbAllwords)
+        Controls.Add(cmbCases)
         Controls.Add(btnSelectAll)
-        Controls.Add(btnGo)
+        Controls.Add(btnTurn)
         Controls.Add(lblStatus)
         Controls.Add(btnPrior)
         Controls.Add(btnHead)
         Controls.Add(btnTail)
-        Controls.Add(Button1)
         Controls.Add(btnNext)
-        Controls.Add(tbKeyword)
+        Controls.Add(txtKeywords)
         Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
         ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         FormBorderStyle = FormBorderStyle.FixedSingle
@@ -233,18 +218,17 @@ Partial Class FormSearch
         PerformLayout()
     End Sub
 
-    Friend WithEvents tbKeyword As TextBox
+    Friend WithEvents txtKeywords As TextBox
     Friend WithEvents btnNext As Button
-    Friend WithEvents Button1 As Button
     Friend WithEvents btnTail As Button
     Friend WithEvents btnHead As Button
     Friend WithEvents btnPrior As Button
     Friend WithEvents lblStatus As Label
-    Friend WithEvents btnGo As Button
+    Friend WithEvents btnTurn As Button
     Friend WithEvents btnSelectAll As Button
-    Friend WithEvents cbCases As CheckBox
-    Friend WithEvents cbAllfields As CheckBox
-    Friend WithEvents cbFormal As CheckBox
+    Friend WithEvents cmbCases As CheckBox
+    Friend WithEvents cmbAllwords As CheckBox
+    Friend WithEvents cmbFormal As CheckBox
     Friend WithEvents ToolTip1 As ToolTip
     Friend WithEvents Label10 As Label
 End Class

@@ -9,7 +9,6 @@ Public Class FormSearch
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property TargetList As ListBox
 
-
     ''' <summary>
     ''' 匹配项在目标列表中的索引集合（升序）。
     ''' </summary>
@@ -21,37 +20,34 @@ Public Class FormSearch
     Private _currentMatch As Integer = -1
 
     ''' <summary>
-    ''' 上一次搜索使用的关键词，避免重复计算匹配。
-    ''' 三个复选框状态改变时会被重置，强制下次重算。
+    ''' 上一次搜索使用的关键词，避免重复计算匹配。 三个复选框状态改变时会被重置，强制下次重算。
     ''' </summary>
     Private _lastKeyword As String = ""
 
     ' ─── 生命周期 ──────────────────────────────────────────────────
 
     Private Sub FormSearch_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' 初始化工具提示
-        Dim tip As New ToolTip()
-        tip.SetToolTip(btnSelectAll, "全选所有匹配结果")
-        tip.SetToolTip(cbAllfields, "全字匹配")
-        tip.SetToolTip(cbCases, "区分大小写")
-        tip.SetToolTip(cbFormal, "正则表达式")
+        ' 用设计器里的 ToolTip1（不是局部变量，否则 Load 结束后就被 GC）
+        ToolTip1.SetToolTip(btnSelectAll, "全选所有匹配结果")
+        ToolTip1.SetToolTip(cmbAllwords, "全字匹配")
+        ToolTip1.SetToolTip(cmbCases, "区分大小写")
+        ToolTip1.SetToolTip(cmbFormal, "正则表达式")
 
         ' 用当前列表选中项预填关键词
         If TargetList IsNot Nothing AndAlso TargetList.SelectedIndex >= 0 Then
-            tbKeyword.Text = TargetList.SelectedItem.ToString()
+            txtKeywords.Text = TargetList.SelectedItem.ToString()
         End If
-        tbKeyword.Focus()
-        tbKeyword.SelectAll()
+        txtKeywords.Focus()
+        txtKeywords.SelectAll()
         UpdateStatus("输入关键词进行查找")
     End Sub
 
     ' ─── 核心搜索逻辑 ─────────────────────────────────────────────
 
     ''' <summary>
-    ''' 重新计算匹配项索引集合。
-    ''' 依据三个开关（全字匹配 / 区分大小写 / 正则）组合计算：
-    '''   - 普通模式：IndexOf / Equals（由 _allfields 决定）
-    '''   - 正则模式：Regex.IsMatch，IgnoreCase 由 _cases 决定，全字匹配时自动加 ^(?:...)$
+    ''' 重新计算匹配项索引集合。 依据三个开关（全字匹配 / 区分大小写 / 正则）组合计算：
+    ''' - 普通模式：IndexOf / Equals（由 _allfields 决定）
+    ''' - 正则模式：Regex.IsMatch，IgnoreCase 由 _cases 决定，全字匹配时自动加 ^(?:...)$
     ''' </summary>
     Private Function RebuildMatches(keyword As String) As Boolean
         _matches.Clear()
@@ -63,13 +59,13 @@ Public Class FormSearch
         Dim total As Integer = TargetList.Items.Count
 
         Try
-            If cbFormal.Checked Then
+            If cmbFormal.Checked Then
                 ' ── 正则模式 ──
                 Dim opts As RegexOptions = RegexOptions.None
-                If Not cbCases.Checked Then opts = opts Or RegexOptions.IgnoreCase
+                If Not cmbCases.Checked Then opts = opts Or RegexOptions.IgnoreCase
 
                 Dim pattern As String = keyword
-                If cbAllfields.Checked Then pattern = "^(?:" & pattern & ")$"
+                If cmbAllwords.Checked Then pattern = "^(?:" & pattern & ")$"
 
                 Dim rx As New Regex(pattern, opts)
                 For i As Integer = 0 To total - 1
@@ -79,13 +75,13 @@ Public Class FormSearch
                 Next
             Else
                 ' ── 普通模式 ──
-                Dim cmp As StringComparison = If(cbCases.Checked,
+                Dim cmp As StringComparison = If(cmbCases.Checked,
                                                  StringComparison.Ordinal,
                                                  StringComparison.OrdinalIgnoreCase)
                 For i As Integer = 0 To total - 1
                     Dim item As String = TargetList.Items(i).ToString()
                     Dim hit As Boolean
-                    If cbAllfields.Checked Then
+                    If cmbAllwords.Checked Then
                         hit = String.Equals(item, keyword, cmp)
                     Else
                         hit = item.IndexOf(keyword, cmp) >= 0
@@ -109,7 +105,7 @@ Public Class FormSearch
     ''' 确保匹配项针对当前关键词已经计算过。
     ''' </summary>
     Private Function EnsureMatches() As Boolean
-        Dim kw = tbKeyword.Text.Trim()
+        Dim kw = txtKeywords.Text.Trim()
         If kw <> _lastKeyword Then RebuildMatches(kw)
 
         If _matches.Count = 0 Then
@@ -142,8 +138,7 @@ Public Class FormSearch
     End Sub
 
     ''' <summary>
-    ''' 获取列表中当前第一个选中项的索引；无选中返回 -1。
-    ''' 用作「下一项 / 上一项」的参照点。
+    ''' 获取列表中当前第一个选中项的索引；无选中返回 -1。 用作「下一项 / 上一项」的参照点。
     ''' </summary>
     Private Function GetCurrentListIndex() As Integer
         If TargetList Is Nothing OrElse TargetList.SelectedIndices.Count = 0 Then Return -1
@@ -159,10 +154,6 @@ Public Class FormSearch
         ElseIf _matches.Count = 0 Then
             lblStatus.Text = "未找到匹配项"
         Else
-            Dim modeTag As String = ""
-            If cbFormal.Checked Then modeTag &= "【正则】"
-            If cbAllfields.Checked Then modeTag &= "【全字】"
-            If cbCases.Checked Then modeTag &= "【Aa】"
             lblStatus.Text = $"第 {_currentMatch + 1}/{_matches.Count} 项"
         End If
     End Sub
@@ -173,14 +164,14 @@ Public Class FormSearch
     ''' 三个搜索选项开关变化时，重置缓存并立即重算匹配。
     ''' </summary>
     Private Sub SearchOption_CheckedChanged(sender As Object, e As EventArgs) _
-        Handles cbAllfields.CheckedChanged, cbCases.CheckedChanged, cbFormal.CheckedChanged
+        Handles cmbAllwords.CheckedChanged, cmbCases.CheckedChanged, cmbFormal.CheckedChanged
 
         ' 关键：清空关键词缓存，强制下次重算
         _lastKeyword = ""
 
-        Dim kw = tbKeyword.Text.Trim()
+        Dim kw = txtKeywords.Text.Trim()
         If String.IsNullOrEmpty(kw) Then
-            UpdateStatus("输入关键词进行搜索")
+            UpdateStatus("输入关键词进行查找")
             Return
         End If
 
@@ -251,24 +242,30 @@ Public Class FormSearch
         SelectMatch(foundPos)
     End Sub
 
-    ''' <summary>跳转到第一个匹配。</summary>
+    ''' <summary>
+    ''' 跳转到第一个匹配。
+    ''' </summary>
     Private Sub btnHead_Click(sender As Object, e As EventArgs) Handles btnHead.Click
         If Not EnsureMatches() Then Return
         SelectMatch(0)
     End Sub
 
-    ''' <summary>跳转到最后一个匹配。</summary>
+    ''' <summary>
+    ''' 跳转到最后一个匹配。
+    ''' </summary>
     Private Sub btnTail_Click(sender As Object, e As EventArgs) Handles btnTail.Click
         If Not EnsureMatches() Then Return
         SelectMatch(_matches.Count - 1)
     End Sub
 
-    ''' <summary>按序号跳转到列表项（1 起始）。</summary>
-    Private Sub btnGo_Click(sender As Object, e As EventArgs) Handles btnGo.Click
+    ''' <summary>
+    ''' 按序号跳转到列表项（1 起始）。
+    ''' </summary>
+    Private Sub btnTurn_Click(sender As Object, e As EventArgs) Handles btnTurn.Click
         If TargetList Is Nothing Then Return
 
         Dim idx As Integer
-        If Not Integer.TryParse(tbKeyword.Text.Trim(), idx) Then
+        If Not Integer.TryParse(txtKeywords.Text.Trim(), idx) Then
             UpdateStatus("请输入有效的序号")
             Return
         End If
@@ -283,13 +280,10 @@ Public Class FormSearch
         lblStatus.Text = $"已跳转到第 {idx} 项"
     End Sub
 
-    ''' <summary>关闭对话框。</summary>
-    Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        Close()
-    End Sub
-
-    ''' <summary>回车触发查找下一个；Esc 关闭。</summary>
-    Private Sub tbKeyword_KeyDown(sender As Object, e As KeyEventArgs) Handles tbKeyword.KeyDown
+    ''' <summary>
+    ''' 回车触发查找下一个；Esc 关闭。
+    ''' </summary>
+    Private Sub txtKeywords_KeyDown(sender As Object, e As KeyEventArgs) Handles txtKeywords.KeyDown
         Select Case e.KeyCode
             Case Keys.Enter
                 e.SuppressKeyPress = True
@@ -299,6 +293,7 @@ Public Class FormSearch
                 Me.Close()
         End Select
     End Sub
+
     Protected Overrides Sub OnShown(e As EventArgs)
         MyBase.OnShown(e)
         CenterOnOwner()
@@ -316,7 +311,6 @@ Public Class FormSearch
 
     ''' <summary>
     ''' 全选【搜索结果】：只选中当前关键词匹配的项。
-    ''' 按钮文本保持不变，不做切换。
     ''' </summary>
     Private Sub btnSelectAll_Click(sender As Object, e As EventArgs) Handles btnSelectAll.Click
         If TargetList Is Nothing OrElse TargetList.Items.Count = 0 Then
@@ -333,6 +327,6 @@ Public Class FormSearch
             TargetList.SetSelected(idx, True)
         Next
 
-        UpdateStatus($"已全选 {_matches.Count} 项匹配结果")
+        UpdateStatus($"全选 {_matches.Count} 项结果")
     End Sub
 End Class

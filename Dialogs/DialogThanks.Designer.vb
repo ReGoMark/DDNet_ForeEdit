@@ -23,40 +23,40 @@ Partial Class DialogThanks
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(DialogThanks))
-        lblNote = New Label()
-        Label2 = New Label()
+        lbl1 = New Label()
+        lbl2 = New Label()
         Label3 = New Label()
         Label4 = New Label()
         Label5 = New Label()
         Label8 = New Label()
         Label1 = New Label()
         Label6 = New Label()
-        splitDirectory = New Label()
+        split1 = New Label()
         SuspendLayout()
         ' 
-        ' lblNote
+        ' lbl1
         ' 
-        lblNote.AutoEllipsis = True
-        lblNote.AutoSize = True
-        lblNote.ForeColor = SystemColors.Highlight
-        lblNote.Location = New Point(12, 12)
-        lblNote.Margin = New Padding(3)
-        lblNote.Name = "lblNote"
-        lblNote.Size = New Size(170, 18)
-        lblNote.TabIndex = 11
-        lblNote.Text = "感谢以下参与测试的朋友:"
+        lbl1.AutoEllipsis = True
+        lbl1.AutoSize = True
+        lbl1.ForeColor = SystemColors.Highlight
+        lbl1.Location = New Point(12, 12)
+        lbl1.Margin = New Padding(3)
+        lbl1.Name = "lbl1"
+        lbl1.Size = New Size(170, 18)
+        lbl1.TabIndex = 11
+        lbl1.Text = "感谢以下参与测试的朋友:"
         ' 
-        ' Label2
+        ' lbl2
         ' 
-        Label2.AutoEllipsis = True
-        Label2.AutoSize = True
-        Label2.ForeColor = Color.DarkGray
-        Label2.Location = New Point(12, 210)
-        Label2.Margin = New Padding(3)
-        Label2.Name = "Label2"
-        Label2.Size = New Size(296, 18)
-        Label2.TabIndex = 13
-        Label2.Text = "DDNet ForeEdit 的诞生感谢开源社区的支持"
+        lbl2.AutoEllipsis = True
+        lbl2.AutoSize = True
+        lbl2.ForeColor = Color.DarkGray
+        lbl2.Location = New Point(12, 210)
+        lbl2.Margin = New Padding(3)
+        lbl2.Name = "lbl2"
+        lbl2.Size = New Size(296, 18)
+        lbl2.TabIndex = 13
+        lbl2.Text = "DDNet ForeEdit 的诞生感谢开源社区的支持"
         ' 
         ' Label3
         ' 
@@ -130,17 +130,17 @@ Partial Class DialogThanks
         Label6.TabIndex = 22
         Label6.Text = "@ 秦龙不是龙"
         ' 
-        ' splitDirectory
+        ' split1
         ' 
-        splitDirectory.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        splitDirectory.ForeColor = Color.DarkGray
-        splitDirectory.Location = New Point(12, 183)
-        splitDirectory.Margin = New Padding(3, 6, 3, 6)
-        splitDirectory.Name = "splitDirectory"
-        splitDirectory.Size = New Size(358, 18)
-        splitDirectory.TabIndex = 23
-        splitDirectory.Text = "───────────────────────────────────────────────────────"
-        splitDirectory.TextAlign = ContentAlignment.MiddleLeft
+        split1.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        split1.ForeColor = Color.DarkGray
+        split1.Location = New Point(12, 183)
+        split1.Margin = New Padding(3, 6, 3, 6)
+        split1.Name = "split1"
+        split1.Size = New Size(358, 18)
+        split1.TabIndex = 23
+        split1.Text = "───────────────────────────────────────────────────────"
+        split1.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' DialogThanks
         ' 
@@ -148,15 +148,15 @@ Partial Class DialogThanks
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(382, 243)
-        Controls.Add(splitDirectory)
+        Controls.Add(split1)
         Controls.Add(Label6)
         Controls.Add(Label1)
         Controls.Add(Label8)
         Controls.Add(Label5)
         Controls.Add(Label4)
         Controls.Add(Label3)
-        Controls.Add(Label2)
-        Controls.Add(lblNote)
+        Controls.Add(lbl2)
+        Controls.Add(lbl1)
         Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
         ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         FormBorderStyle = FormBorderStyle.FixedDialog
@@ -171,13 +171,13 @@ Partial Class DialogThanks
         ResumeLayout(False)
         PerformLayout()
     End Sub
-    Friend WithEvents lblNote As Label
-    Friend WithEvents Label2 As Label
+    Friend WithEvents lbl1 As Label
+    Friend WithEvents lbl2 As Label
     Friend WithEvents Label3 As Label
     Friend WithEvents Label4 As Label
     Friend WithEvents Label5 As Label
     Friend WithEvents Label8 As Label
     Friend WithEvents Label1 As Label
     Friend WithEvents Label6 As Label
-    Friend WithEvents splitDirectory As Label
+    Friend WithEvents split1 As Label
 End Class

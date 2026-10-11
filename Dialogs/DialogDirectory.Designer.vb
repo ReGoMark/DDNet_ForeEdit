@@ -25,10 +25,10 @@ Partial Class DialogDirectory
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(DialogDirectory))
         TableLayoutPanel1 = New TableLayoutPanel()
         lblTitle = New Label()
-        rbDDNet = New RadioButton()
-        rbTeeworlds = New RadioButton()
-        splitExport = New Label()
-        Label2 = New Label()
+        rdoDDNet = New RadioButton()
+        rdoTeeworlds = New RadioButton()
+        split1 = New Label()
+        lblNote = New Label()
         btnCancel = New Button()
         btnOK = New Button()
         TableLayoutPanel1.SuspendLayout()
@@ -41,10 +41,10 @@ Partial Class DialogDirectory
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
         TableLayoutPanel1.Controls.Add(lblTitle, 0, 0)
-        TableLayoutPanel1.Controls.Add(rbDDNet, 0, 1)
-        TableLayoutPanel1.Controls.Add(rbTeeworlds, 0, 2)
-        TableLayoutPanel1.Controls.Add(splitExport, 0, 3)
-        TableLayoutPanel1.Controls.Add(Label2, 0, 4)
+        TableLayoutPanel1.Controls.Add(rdoDDNet, 0, 1)
+        TableLayoutPanel1.Controls.Add(rdoTeeworlds, 0, 2)
+        TableLayoutPanel1.Controls.Add(split1, 0, 3)
+        TableLayoutPanel1.Controls.Add(lblNote, 0, 4)
         TableLayoutPanel1.Location = New Point(12, 12)
         TableLayoutPanel1.Margin = New Padding(3, 3, 3, 6)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
@@ -67,70 +67,70 @@ Partial Class DialogDirectory
         lblTitle.Name = "lblTitle"
         lblTitle.Size = New Size(358, 18)
         lblTitle.TabIndex = 0
-        lblTitle.Text = "存在多个用户目录, 请选择: "
+        lblTitle.Text = "选择一个用户目录:"
         ' 
-        ' rbDDNet
+        ' rdoDDNet
         ' 
-        rbDDNet.Appearance = Appearance.Button
-        rbDDNet.AutoSize = True
-        TableLayoutPanel1.SetColumnSpan(rbDDNet, 2)
-        rbDDNet.Dock = DockStyle.Top
-        rbDDNet.Image = CType(resources.GetObject("rbDDNet.Image"), Image)
-        rbDDNet.ImageAlign = ContentAlignment.MiddleLeft
-        rbDDNet.Location = New Point(0, 24)
-        rbDDNet.Margin = New Padding(0, 3, 0, 3)
-        rbDDNet.Name = "rbDDNet"
-        rbDDNet.Padding = New Padding(3, 0, 3, 0)
-        rbDDNet.Size = New Size(358, 46)
-        rbDDNet.TabIndex = 1
-        rbDDNet.TabStop = True
-        rbDDNet.Text = "DDNet 目录" & vbCrLf & "(...\Appdata\Roaming\DDNet\fonts\)"
-        rbDDNet.TextImageRelation = TextImageRelation.ImageBeforeText
-        rbDDNet.UseVisualStyleBackColor = True
+        rdoDDNet.Appearance = Appearance.Button
+        rdoDDNet.AutoSize = True
+        TableLayoutPanel1.SetColumnSpan(rdoDDNet, 2)
+        rdoDDNet.Dock = DockStyle.Top
+        rdoDDNet.Image = CType(resources.GetObject("rdoDDNet.Image"), Image)
+        rdoDDNet.ImageAlign = ContentAlignment.MiddleLeft
+        rdoDDNet.Location = New Point(0, 24)
+        rdoDDNet.Margin = New Padding(0, 3, 0, 3)
+        rdoDDNet.Name = "rdoDDNet"
+        rdoDDNet.Padding = New Padding(3, 0, 3, 0)
+        rdoDDNet.Size = New Size(358, 46)
+        rdoDDNet.TabIndex = 1
+        rdoDDNet.TabStop = True
+        rdoDDNet.Text = "DDNet 目录" & vbCrLf & "(...\Appdata\Roaming\DDNet\fonts\)"
+        rdoDDNet.TextImageRelation = TextImageRelation.ImageBeforeText
+        rdoDDNet.UseVisualStyleBackColor = True
         ' 
-        ' rbTeeworlds
+        ' rdoTeeworlds
         ' 
-        rbTeeworlds.Appearance = Appearance.Button
-        rbTeeworlds.AutoSize = True
-        TableLayoutPanel1.SetColumnSpan(rbTeeworlds, 2)
-        rbTeeworlds.Dock = DockStyle.Top
-        rbTeeworlds.Image = CType(resources.GetObject("rbTeeworlds.Image"), Image)
-        rbTeeworlds.ImageAlign = ContentAlignment.MiddleLeft
-        rbTeeworlds.Location = New Point(0, 76)
-        rbTeeworlds.Margin = New Padding(0, 3, 0, 3)
-        rbTeeworlds.Name = "rbTeeworlds"
-        rbTeeworlds.Padding = New Padding(3, 0, 3, 0)
-        rbTeeworlds.Size = New Size(358, 46)
-        rbTeeworlds.TabIndex = 2
-        rbTeeworlds.TabStop = True
-        rbTeeworlds.Text = "Teeworlds 目录" & vbCrLf & "(...\Appdata\Roaming\Teeworlds\fonts\)"
-        rbTeeworlds.TextImageRelation = TextImageRelation.ImageBeforeText
-        rbTeeworlds.UseVisualStyleBackColor = True
+        rdoTeeworlds.Appearance = Appearance.Button
+        rdoTeeworlds.AutoSize = True
+        TableLayoutPanel1.SetColumnSpan(rdoTeeworlds, 2)
+        rdoTeeworlds.Dock = DockStyle.Top
+        rdoTeeworlds.Image = CType(resources.GetObject("rdoTeeworlds.Image"), Image)
+        rdoTeeworlds.ImageAlign = ContentAlignment.MiddleLeft
+        rdoTeeworlds.Location = New Point(0, 76)
+        rdoTeeworlds.Margin = New Padding(0, 3, 0, 3)
+        rdoTeeworlds.Name = "rdoTeeworlds"
+        rdoTeeworlds.Padding = New Padding(3, 0, 3, 0)
+        rdoTeeworlds.Size = New Size(358, 46)
+        rdoTeeworlds.TabIndex = 2
+        rdoTeeworlds.TabStop = True
+        rdoTeeworlds.Text = "Teeworlds 目录" & vbCrLf & "(...\Appdata\Roaming\Teeworlds\fonts\)"
+        rdoTeeworlds.TextImageRelation = TextImageRelation.ImageBeforeText
+        rdoTeeworlds.UseVisualStyleBackColor = True
         ' 
-        ' splitExport
+        ' split1
         ' 
-        TableLayoutPanel1.SetColumnSpan(splitExport, 2)
-        splitExport.Dock = DockStyle.Fill
-        splitExport.ForeColor = Color.DarkGray
-        splitExport.Location = New Point(3, 128)
-        splitExport.Margin = New Padding(3)
-        splitExport.Name = "splitExport"
-        splitExport.Size = New Size(352, 16)
-        splitExport.TabIndex = 36
-        splitExport.Text = "─────────────────────────────────────────────────────────"
+        TableLayoutPanel1.SetColumnSpan(split1, 2)
+        split1.Dock = DockStyle.Fill
+        split1.ForeColor = Color.DarkGray
+        split1.Location = New Point(3, 128)
+        split1.Margin = New Padding(3)
+        split1.Name = "split1"
+        split1.Size = New Size(352, 16)
+        split1.TabIndex = 36
+        split1.Text = "─────────────────────────────────────────────────────────"
         ' 
-        ' Label2
+        ' lblNote
         ' 
-        Label2.AutoSize = True
-        TableLayoutPanel1.SetColumnSpan(Label2, 2)
-        Label2.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
-        Label2.ForeColor = Color.DarkGray
-        Label2.Location = New Point(0, 150)
-        Label2.Margin = New Padding(0, 3, 0, 3)
-        Label2.Name = "Label2"
-        Label2.Size = New Size(328, 54)
-        Label2.TabIndex = 37
-        Label2.Text = "* DDNet 目录的字体显示优先于 Teeworlds 目录" & vbCrLf & "* 用户目录的字体显示优先于安装目录" & vbCrLf & "* 旧版客户端可能会使用 Teeworlds 目录"
+        lblNote.AutoSize = True
+        TableLayoutPanel1.SetColumnSpan(lblNote, 2)
+        lblNote.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
+        lblNote.ForeColor = Color.DarkGray
+        lblNote.Location = New Point(0, 150)
+        lblNote.Margin = New Padding(0, 3, 0, 3)
+        lblNote.Name = "lblNote"
+        lblNote.Size = New Size(328, 54)
+        lblNote.TabIndex = 37
+        lblNote.Text = "* DDNet 目录的字体显示优先于 Teeworlds 目录" & vbCrLf & "* 用户目录的字体显示优先于安装目录" & vbCrLf & "* 旧版客户端可能会使用 Teeworlds 目录"
         ' 
         ' btnCancel
         ' 
@@ -180,10 +180,10 @@ Partial Class DialogDirectory
 
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
     Friend WithEvents lblTitle As Label
-    Friend WithEvents rbDDNet As RadioButton
-    Friend WithEvents rbTeeworlds As RadioButton
-    Friend WithEvents Label2 As Label
-    Friend WithEvents splitExport As Label
+    Friend WithEvents rdoDDNet As RadioButton
+    Friend WithEvents rdoTeeworlds As RadioButton
+    Friend WithEvents lblNote As Label
+    Friend WithEvents split1 As Label
     Friend WithEvents btnCancel As Button
     Friend WithEvents btnOK As Button
 End Class

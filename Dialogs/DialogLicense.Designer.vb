@@ -23,22 +23,22 @@ Partial Class DialogLicense
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(DialogLicense))
-        TextBox1 = New TextBox()
+        txt1 = New TextBox()
         SuspendLayout()
         ' 
-        ' TextBox1
+        ' txt1
         ' 
-        TextBox1.BackColor = Color.White
-        TextBox1.BorderStyle = BorderStyle.None
-        TextBox1.ForeColor = Color.Black
-        TextBox1.Location = New Point(12, 12)
-        TextBox1.Multiline = True
-        TextBox1.Name = "TextBox1"
-        TextBox1.ReadOnly = True
-        TextBox1.ScrollBars = ScrollBars.Vertical
-        TextBox1.Size = New Size(358, 495)
-        TextBox1.TabIndex = 0
-        TextBox1.Text = resources.GetString("TextBox1.Text")
+        txt1.BackColor = Color.White
+        txt1.BorderStyle = BorderStyle.None
+        txt1.ForeColor = Color.Black
+        txt1.Location = New Point(12, 12)
+        txt1.Multiline = True
+        txt1.Name = "txt1"
+        txt1.ReadOnly = True
+        txt1.ScrollBars = ScrollBars.Vertical
+        txt1.Size = New Size(358, 495)
+        txt1.TabIndex = 0
+        txt1.Text = resources.GetString("txt1.Text")
         ' 
         ' DialogLicense
         ' 
@@ -46,7 +46,7 @@ Partial Class DialogLicense
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(382, 519)
-        Controls.Add(TextBox1)
+        Controls.Add(txt1)
         Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
         ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         FormBorderStyle = FormBorderStyle.FixedDialog
@@ -62,5 +62,5 @@ Partial Class DialogLicense
         PerformLayout()
     End Sub
 
-    Friend WithEvents TextBox1 As TextBox
+    Friend WithEvents txt1 As TextBox
 End Class

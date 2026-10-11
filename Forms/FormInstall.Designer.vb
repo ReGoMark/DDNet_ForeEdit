@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class FormBlade
+Partial Class FormInstall
     Inherits System.Windows.Forms.Form
 
     'Form 重写 Dispose，以清理组件列表。
@@ -22,24 +22,24 @@ Partial Class FormBlade
     '不要使用代码编辑器修改它。
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormBlade))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormInstall))
         btnOpen = New Button()
         btnInstall = New Button()
         Panel1 = New Panel()
         tblPackInfo = New TableLayoutPanel()
         lblZipNote = New Label()
         lblZipDate = New Label()
-        tagZipNote = New Label()
+        tagDNFPNote = New Label()
         lblZipName = New Label()
-        tagZipDate = New Label()
-        tagZipName = New Label()
-        tagZipType = New Label()
-        tagZipSize = New Label()
+        tagDNFPDate = New Label()
+        tagDNFPName = New Label()
+        tagDNFPType = New Label()
+        tagDNFPSize = New Label()
         lblZipType = New Label()
         lblZipSize = New Label()
-        btnZipBroswe = New Button()
-        lstbBlade = New ListBox()
-        lblZip = New Label()
+        btnBroswe = New Button()
+        lstbDNFP = New ListBox()
+        lblDNFP = New Label()
         Panel1.SuspendLayout()
         tblPackInfo.SuspendLayout()
         SuspendLayout()
@@ -86,12 +86,12 @@ Partial Class FormBlade
         tblPackInfo.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         tblPackInfo.Controls.Add(lblZipNote, 1, 4)
         tblPackInfo.Controls.Add(lblZipDate, 1, 3)
-        tblPackInfo.Controls.Add(tagZipNote, 0, 4)
+        tblPackInfo.Controls.Add(tagDNFPNote, 0, 4)
         tblPackInfo.Controls.Add(lblZipName, 1, 0)
-        tblPackInfo.Controls.Add(tagZipDate, 0, 3)
-        tblPackInfo.Controls.Add(tagZipName, 0, 0)
-        tblPackInfo.Controls.Add(tagZipType, 0, 1)
-        tblPackInfo.Controls.Add(tagZipSize, 0, 2)
+        tblPackInfo.Controls.Add(tagDNFPDate, 0, 3)
+        tblPackInfo.Controls.Add(tagDNFPName, 0, 0)
+        tblPackInfo.Controls.Add(tagDNFPType, 0, 1)
+        tblPackInfo.Controls.Add(tagDNFPSize, 0, 2)
         tblPackInfo.Controls.Add(lblZipType, 1, 1)
         tblPackInfo.Controls.Add(lblZipSize, 1, 2)
         tblPackInfo.Dock = DockStyle.Fill
@@ -133,17 +133,17 @@ Partial Class FormBlade
         lblZipDate.Text = "-"
         lblZipDate.TextAlign = ContentAlignment.MiddleLeft
         ' 
-        ' tagZipNote
+        ' tagDNFPNote
         ' 
-        tagZipNote.AutoSize = True
-        tagZipNote.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        tagZipNote.Location = New Point(3, 99)
-        tagZipNote.Margin = New Padding(3)
-        tagZipNote.Name = "tagZipNote"
-        tagZipNote.Size = New Size(36, 18)
-        tagZipNote.TabIndex = 14
-        tagZipNote.Text = "备注"
-        tagZipNote.TextAlign = ContentAlignment.MiddleLeft
+        tagDNFPNote.AutoSize = True
+        tagDNFPNote.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        tagDNFPNote.Location = New Point(3, 99)
+        tagDNFPNote.Margin = New Padding(3)
+        tagDNFPNote.Name = "tagDNFPNote"
+        tagDNFPNote.Size = New Size(36, 18)
+        tagDNFPNote.TabIndex = 14
+        tagDNFPNote.Text = "备注"
+        tagDNFPNote.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' lblZipName
         ' 
@@ -158,53 +158,53 @@ Partial Class FormBlade
         lblZipName.Text = "-"
         lblZipName.TextAlign = ContentAlignment.MiddleLeft
         ' 
-        ' tagZipDate
+        ' tagDNFPDate
         ' 
-        tagZipDate.AutoSize = True
-        tagZipDate.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        tagZipDate.Location = New Point(3, 75)
-        tagZipDate.Margin = New Padding(3)
-        tagZipDate.Name = "tagZipDate"
-        tagZipDate.Size = New Size(36, 18)
-        tagZipDate.TabIndex = 13
-        tagZipDate.Text = "日期"
-        tagZipDate.TextAlign = ContentAlignment.MiddleLeft
+        tagDNFPDate.AutoSize = True
+        tagDNFPDate.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        tagDNFPDate.Location = New Point(3, 75)
+        tagDNFPDate.Margin = New Padding(3)
+        tagDNFPDate.Name = "tagDNFPDate"
+        tagDNFPDate.Size = New Size(36, 18)
+        tagDNFPDate.TabIndex = 13
+        tagDNFPDate.Text = "日期"
+        tagDNFPDate.TextAlign = ContentAlignment.MiddleLeft
         ' 
-        ' tagZipName
+        ' tagDNFPName
         ' 
-        tagZipName.AutoSize = True
-        tagZipName.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        tagZipName.Location = New Point(3, 3)
-        tagZipName.Margin = New Padding(3)
-        tagZipName.Name = "tagZipName"
-        tagZipName.Size = New Size(36, 18)
-        tagZipName.TabIndex = 11
-        tagZipName.Text = "名称"
-        tagZipName.TextAlign = ContentAlignment.MiddleLeft
+        tagDNFPName.AutoSize = True
+        tagDNFPName.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        tagDNFPName.Location = New Point(3, 3)
+        tagDNFPName.Margin = New Padding(3)
+        tagDNFPName.Name = "tagDNFPName"
+        tagDNFPName.Size = New Size(36, 18)
+        tagDNFPName.TabIndex = 11
+        tagDNFPName.Text = "名称"
+        tagDNFPName.TextAlign = ContentAlignment.MiddleLeft
         ' 
-        ' tagZipType
+        ' tagDNFPType
         ' 
-        tagZipType.AutoSize = True
-        tagZipType.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        tagZipType.Location = New Point(3, 27)
-        tagZipType.Margin = New Padding(3)
-        tagZipType.Name = "tagZipType"
-        tagZipType.Size = New Size(36, 18)
-        tagZipType.TabIndex = 19
-        tagZipType.Text = "类型"
-        tagZipType.TextAlign = ContentAlignment.MiddleLeft
+        tagDNFPType.AutoSize = True
+        tagDNFPType.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        tagDNFPType.Location = New Point(3, 27)
+        tagDNFPType.Margin = New Padding(3)
+        tagDNFPType.Name = "tagDNFPType"
+        tagDNFPType.Size = New Size(36, 18)
+        tagDNFPType.TabIndex = 19
+        tagDNFPType.Text = "类型"
+        tagDNFPType.TextAlign = ContentAlignment.MiddleLeft
         ' 
-        ' tagZipSize
+        ' tagDNFPSize
         ' 
-        tagZipSize.AutoSize = True
-        tagZipSize.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        tagZipSize.Location = New Point(3, 51)
-        tagZipSize.Margin = New Padding(3)
-        tagZipSize.Name = "tagZipSize"
-        tagZipSize.Size = New Size(36, 18)
-        tagZipSize.TabIndex = 12
-        tagZipSize.Text = "大小"
-        tagZipSize.TextAlign = ContentAlignment.MiddleLeft
+        tagDNFPSize.AutoSize = True
+        tagDNFPSize.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        tagDNFPSize.Location = New Point(3, 51)
+        tagDNFPSize.Margin = New Padding(3)
+        tagDNFPSize.Name = "tagDNFPSize"
+        tagDNFPSize.Size = New Size(36, 18)
+        tagDNFPSize.TabIndex = 12
+        tagDNFPSize.Text = "大小"
+        tagDNFPSize.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' lblZipType
         ' 
@@ -232,63 +232,62 @@ Partial Class FormBlade
         lblZipSize.Text = "-"
         lblZipSize.TextAlign = ContentAlignment.MiddleLeft
         ' 
-        ' btnZipBroswe
+        ' btnBroswe
         ' 
-        btnZipBroswe.AllowDrop = True
-        btnZipBroswe.BackColor = Color.Transparent
-        btnZipBroswe.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        btnZipBroswe.Image = CType(resources.GetObject("btnZipBroswe.Image"), Image)
-        btnZipBroswe.Location = New Point(12, 12)
-        btnZipBroswe.Name = "btnZipBroswe"
-        btnZipBroswe.Size = New Size(68, 30)
-        btnZipBroswe.TabIndex = 1
-        btnZipBroswe.Text = "浏览"
-        btnZipBroswe.TextAlign = ContentAlignment.MiddleRight
-        btnZipBroswe.TextImageRelation = TextImageRelation.ImageBeforeText
-        btnZipBroswe.UseVisualStyleBackColor = False
+        btnBroswe.AllowDrop = True
+        btnBroswe.BackColor = Color.Transparent
+        btnBroswe.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        btnBroswe.Image = CType(resources.GetObject("btnBroswe.Image"), Image)
+        btnBroswe.Location = New Point(12, 12)
+        btnBroswe.Name = "btnBroswe"
+        btnBroswe.Size = New Size(68, 30)
+        btnBroswe.TabIndex = 1
+        btnBroswe.Text = "浏览"
+        btnBroswe.TextAlign = ContentAlignment.MiddleRight
+        btnBroswe.TextImageRelation = TextImageRelation.ImageBeforeText
+        btnBroswe.UseVisualStyleBackColor = False
         ' 
-        ' lstbBlade
+        ' lstbDNFP
         ' 
-        lstbBlade.DrawMode = DrawMode.OwnerDrawFixed
-        lstbBlade.ForeColor = Color.Black
-        lstbBlade.FormattingEnabled = True
-        lstbBlade.IntegralHeight = False
-        lstbBlade.ItemHeight = 25
-        lstbBlade.Location = New Point(12, 48)
-        lstbBlade.Name = "lstbBlade"
-        lstbBlade.Size = New Size(358, 145)
-        lstbBlade.TabIndex = 47
+        lstbDNFP.DrawMode = DrawMode.OwnerDrawFixed
+        lstbDNFP.ForeColor = Color.Black
+        lstbDNFP.FormattingEnabled = True
+        lstbDNFP.IntegralHeight = False
+        lstbDNFP.ItemHeight = 25
+        lstbDNFP.Location = New Point(12, 48)
+        lstbDNFP.Name = "lstbDNFP"
+        lstbDNFP.Size = New Size(358, 145)
+        lstbDNFP.TabIndex = 47
         ' 
-        ' lblZip
+        ' lblDNFP
         ' 
-        lblZip.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblZip.Location = New Point(86, 18)
-        lblZip.Name = "lblZip"
-        lblZip.Size = New Size(284, 18)
-        lblZip.TabIndex = 48
-        lblZip.Text = "等待数据加载"
-        lblZip.TextAlign = ContentAlignment.MiddleRight
+        lblDNFP.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        lblDNFP.Location = New Point(86, 18)
+        lblDNFP.Name = "lblDNFP"
+        lblDNFP.Size = New Size(284, 18)
+        lblDNFP.TabIndex = 48
+        lblDNFP.Text = "等待数据加载"
+        lblDNFP.TextAlign = ContentAlignment.MiddleRight
         ' 
-        ' FormBlade
+        ' FormInstall
         ' 
         AllowDrop = True
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(382, 387)
-        Controls.Add(lblZip)
+        Controls.Add(lblDNFP)
         Controls.Add(btnInstall)
         Controls.Add(btnOpen)
-        Controls.Add(btnZipBroswe)
-        Controls.Add(lstbBlade)
+        Controls.Add(btnBroswe)
+        Controls.Add(lstbDNFP)
         Controls.Add(Panel1)
         DoubleBuffered = True
         Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
         FormBorderStyle = FormBorderStyle.FixedSingle
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
         MaximizeBox = False
-        MinimizeBox = False
-        Name = "FormBlade"
+        Name = "FormInstall"
         StartPosition = FormStartPosition.CenterParent
         Text = "安装"
         Panel1.ResumeLayout(False)
@@ -303,15 +302,15 @@ Partial Class FormBlade
     Friend WithEvents tblPackInfo As TableLayoutPanel
     Friend WithEvents lblZipNote As Label
     Friend WithEvents lblZipDate As Label
-    Friend WithEvents tagZipNote As Label
+    Friend WithEvents tagDNFPNote As Label
     Friend WithEvents lblZipName As Label
-    Friend WithEvents tagZipDate As Label
-    Friend WithEvents tagZipName As Label
-    Friend WithEvents tagZipType As Label
-    Friend WithEvents tagZipSize As Label
+    Friend WithEvents tagDNFPDate As Label
+    Friend WithEvents tagDNFPName As Label
+    Friend WithEvents tagDNFPType As Label
+    Friend WithEvents tagDNFPSize As Label
     Friend WithEvents lblZipType As Label
     Friend WithEvents lblZipSize As Label
-    Friend WithEvents btnZipBroswe As Button
-    Friend WithEvents lstbBlade As ListBox
-    Friend WithEvents lblZip As Label
+    Friend WithEvents btnBroswe As Button
+    Friend WithEvents lstbDNFP As ListBox
+    Friend WithEvents lblDNFP As Label
 End Class

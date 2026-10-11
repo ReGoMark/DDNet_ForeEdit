@@ -1,44 +1,50 @@
 ﻿''' <summary>
-''' 字体预览窗体，用于实时显示五种语言（西文、日文、韩文、简中、繁中）的字体效果。
-''' 支持自定义预览文本、字号切换（10/12/16 点），并可通过 UpdatePreview 方法由主窗体动态更新各语言字体。
+''' 字体预览窗体，用于实时显示五种语言（西文、日文、韩文、简中、繁中）的字体效果。 支持自定义预览文本、字号切换（10/12/16/32 点），并可通过 UpdatePreview 方法由主窗体动态更新各语言字体。
 ''' </summary>
 Public Class FormPreview
 
     ' ─── 私有字段 ──────────────────────────────────────────────────────
 
-    ''' <summary>RadioButton 到字号（磅值）的映射。</summary>
+    ''' <summary>
+    ''' RadioButton 到字号（磅值）的映射。
+    ''' </summary>
     Private ReadOnly _sizeMap As New Dictionary(Of RadioButton, Single)
 
-    ''' <summary>记录各标签的初始文本（用于还原）。</summary>
+    ''' <summary>
+    ''' 记录各标签的初始文本（用于还原）。
+    ''' </summary>
     Private ReadOnly _defaultTexts As New Dictionary(Of Label, String)
 
-    ''' <summary>当前生效的字号（磅值）。</summary>
+    ''' <summary>
+    ''' 当前生效的字号（磅值）。
+    ''' </summary>
     Private _currentSize As Single = 10.0F
 
     ' ─── 窗体生命周期 ──────────────────────────────────────────────────
 
-    ''' <summary>窗体加载时初始化字号映射、默认文本，并禁用“确认”按钮。</summary>
+    ''' <summary>
+    ''' 窗体加载时初始化字号映射、默认文本，并禁用"确认"按钮。
+    ''' </summary>
     Private Sub FormPreview_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        _sizeMap(rbFont9) = 9.0F
-        _sizeMap(rbFont10) = 10.0F
-        _sizeMap(rbFont12) = 12.0F
-        _sizeMap(rbFont16) = 16.0F
-        _sizeMap(rbFont32) = 32.0F
-        rbFont10.Checked = True
+        _sizeMap(rdoFont10) = 10.0F
+        _sizeMap(rdoFont12) = 12.0F
+        _sizeMap(rdoFont16) = 16.0F
+        _sizeMap(rdoFont32) = 32.0F
+        rdoFont10.Checked = True
 
         ' 记录各标签的初始显示文本
         For Each lbl In GetPreviewLabels()
             _defaultTexts(lbl) = lbl.Text
         Next
-        btnApply.Enabled = False
-
+        btnConfirm.Enabled = False
     End Sub
-
 
     ' ─── 自定义文本控制 ──────────────────────────────────────────────
 
-    ''' <summary>将自定义文本应用到所有预览标签。</summary>
-    Private Sub btnApply_Click(sender As Object, e As EventArgs) Handles btnApply.Click
+    ''' <summary>
+    ''' 将自定义文本应用到所有预览标签。
+    ''' </summary>
+    Private Sub btnConfirm_Click(sender As Object, e As EventArgs) Handles btnConfirm.Click
         Dim customText As String = tbCustom.Text
         ' 若为空则设为空格，防止标签高度塌陷
         If String.IsNullOrEmpty(customText) Then customText = " "
@@ -48,7 +54,9 @@ Public Class FormPreview
         Next
     End Sub
 
-    ''' <summary>将所有预览标签恢复为初始文本。</summary>
+    ''' <summary>
+    ''' 将所有预览标签恢复为初始文本。
+    ''' </summary>
     Private Sub btnRecovery_Click(sender As Object, e As EventArgs) Handles btnRecovery.Click
         For Each lbl In GetPreviewLabels()
             If _defaultTexts.ContainsKey(lbl) Then
@@ -59,9 +67,11 @@ Public Class FormPreview
 
     ' ─── 字号切换 ──────────────────────────────────────────────────────
 
-    ''' <summary>字号单选按钮切换时更新所有预览标签的字号。</summary>
+    ''' <summary>
+    ''' 字号单选按钮切换时更新所有预览标签的字号。
+    ''' </summary>
     Private Sub rbFontSize_CheckedChanged(sender As Object, e As EventArgs) _
-        Handles rbFont9.CheckedChanged, rbFont10.CheckedChanged, rbFont12.CheckedChanged, rbFont16.CheckedChanged, rbFont32.CheckedChanged
+        Handles rdoFont10.CheckedChanged, rdoFont12.CheckedChanged, rdoFont16.CheckedChanged, rdoFont32.CheckedChanged
 
         Dim rb = CType(sender, RadioButton)
         If Not rb.Checked Then Return
@@ -80,10 +90,7 @@ Public Class FormPreview
     ''' 由主窗体调用，更新指定语言的预览标签字体。
     ''' </summary>
     ''' <param name="langKey">语言键（"LA","JP","KR","SC","TC"）。</param>
-    ''' <param name="info">
-    ''' 已解析的 FontNameInfo，包含 AllRawNames / GdiFontStyle 等信息；
-    ''' 传 Nothing 或空名称时恢复为窗体默认字体。
-    ''' </param>
+    ''' <param name="info">已解析的 FontInfoTable，包含 AllRawNames / GdiFontStyle 等信息； 传 Nothing 或空名称时恢复为窗体默认字体。</param>
     Public Sub UpdatePreview(langKey As String, info As FontInfoTable)
         Dim lbl As Label = GetLabelByLang(langKey)
         If lbl Is Nothing Then Return
@@ -105,12 +112,16 @@ Public Class FormPreview
 
     ' ─── 私有辅助方法 ──────────────────────────────────────────────────
 
-    ''' <summary>获取所有预览标签的集合。</summary>
+    ''' <summary>
+    ''' 获取所有预览标签的集合。
+    ''' </summary>
     Private Function GetPreviewLabels() As IEnumerable(Of Label)
         Return {lblLA, lblJP, lblKR, lblSC, lblTC}
     End Function
 
-    ''' <summary>根据语言键返回对应的预览标签。</summary>
+    ''' <summary>
+    ''' 根据语言键返回对应的预览标签。
+    ''' </summary>
     Private Function GetLabelByLang(langKey As String) As Label
         Select Case langKey.ToUpper()
             Case "LA" : Return lblLA
@@ -122,9 +133,11 @@ Public Class FormPreview
         End Select
     End Function
 
-    ''' <summary>自定义文本框内容变化时，控制“确认”按钮的启用状态。</summary>
+    ''' <summary>
+    ''' 自定义文本框内容变化时，控制"确认"按钮的启用状态。
+    ''' </summary>
     Private Sub tbCustom_TextChanged(sender As Object, e As EventArgs) Handles tbCustom.TextChanged
-        btnApply.Enabled = Not String.IsNullOrEmpty(tbCustom.Text)
+        btnConfirm.Enabled = Not String.IsNullOrEmpty(tbCustom.Text)
     End Sub
 
 End Class

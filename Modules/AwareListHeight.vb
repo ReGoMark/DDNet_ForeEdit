@@ -37,4 +37,12 @@ Module AwareListHeight
             ApplyScaledItemHeight(lb)
         Next
     End Sub
+
+    '''' <summary>根据当前 DPI 缩放比例返回图标档位：100 / 125 / 150。</summary>
+    'Public Function GetIconTier(form As Form) As Integer
+    '    Dim scale As Single = GetDpiScale(form)
+    '    If scale >= 1.5F Then Return 150
+    '    If scale >= 1.25F Then Return 125
+    '    Return 100
+    'End Function
 End Module

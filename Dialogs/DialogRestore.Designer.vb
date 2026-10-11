@@ -27,10 +27,10 @@ Partial Class DialogRestore
         btnCancel = New Button()
         TableLayoutPanel1 = New TableLayoutPanel()
         lblTitle = New Label()
-        rbFontConfig = New RadioButton()
-        rbConfig = New RadioButton()
-        splitExport = New Label()
-        Label2 = New Label()
+        rdoFontCfg = New RadioButton()
+        rdoCfg = New RadioButton()
+        split1 = New Label()
+        lblNote = New Label()
         TableLayoutPanel1.SuspendLayout()
         SuspendLayout()
         ' 
@@ -60,10 +60,10 @@ Partial Class DialogRestore
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 20F))
         TableLayoutPanel1.Controls.Add(lblTitle, 0, 0)
-        TableLayoutPanel1.Controls.Add(rbFontConfig, 0, 1)
-        TableLayoutPanel1.Controls.Add(rbConfig, 0, 2)
-        TableLayoutPanel1.Controls.Add(splitExport, 0, 3)
-        TableLayoutPanel1.Controls.Add(Label2, 0, 4)
+        TableLayoutPanel1.Controls.Add(rdoFontCfg, 0, 1)
+        TableLayoutPanel1.Controls.Add(rdoCfg, 0, 2)
+        TableLayoutPanel1.Controls.Add(split1, 0, 3)
+        TableLayoutPanel1.Controls.Add(lblNote, 0, 4)
         TableLayoutPanel1.Location = New Point(12, 12)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
         TableLayoutPanel1.RowCount = 5
@@ -84,64 +84,64 @@ Partial Class DialogRestore
         lblTitle.Name = "lblTitle"
         lblTitle.Size = New Size(358, 18)
         lblTitle.TabIndex = 0
-        lblTitle.Text = "选择恢复默认的模式: "
+        lblTitle.Text = "选择恢复模式: "
         ' 
-        ' rbFontConfig
+        ' rdoFontCfg
         ' 
-        rbFontConfig.Appearance = Appearance.Button
-        rbFontConfig.Dock = DockStyle.Fill
-        rbFontConfig.Image = CType(resources.GetObject("rbFontConfig.Image"), Image)
-        rbFontConfig.ImageAlign = ContentAlignment.MiddleLeft
-        rbFontConfig.Location = New Point(0, 24)
-        rbFontConfig.Margin = New Padding(0, 3, 0, 3)
-        rbFontConfig.Name = "rbFontConfig"
-        rbFontConfig.Padding = New Padding(3, 0, 3, 0)
-        rbFontConfig.Size = New Size(358, 46)
-        rbFontConfig.TabIndex = 1
-        rbFontConfig.TabStop = True
-        rbFontConfig.Text = "恢复默认字体, 默认配置" & vbCrLf & "(删除导入的字体, 恢复官方字体和配置)"
-        rbFontConfig.TextImageRelation = TextImageRelation.ImageBeforeText
-        rbFontConfig.UseVisualStyleBackColor = True
+        rdoFontCfg.Appearance = Appearance.Button
+        rdoFontCfg.Dock = DockStyle.Fill
+        rdoFontCfg.Image = CType(resources.GetObject("rdoFontCfg.Image"), Image)
+        rdoFontCfg.ImageAlign = ContentAlignment.MiddleLeft
+        rdoFontCfg.Location = New Point(0, 24)
+        rdoFontCfg.Margin = New Padding(0, 3, 0, 3)
+        rdoFontCfg.Name = "rdoFontCfg"
+        rdoFontCfg.Padding = New Padding(3, 0, 3, 0)
+        rdoFontCfg.Size = New Size(358, 46)
+        rdoFontCfg.TabIndex = 1
+        rdoFontCfg.TabStop = True
+        rdoFontCfg.Text = "恢复默认字体, 默认配置" & vbCrLf & "(删除导入的字体, 恢复官方字体和配置)"
+        rdoFontCfg.TextImageRelation = TextImageRelation.ImageBeforeText
+        rdoFontCfg.UseVisualStyleBackColor = True
         ' 
-        ' rbConfig
+        ' rdoCfg
         ' 
-        rbConfig.Appearance = Appearance.Button
-        rbConfig.Dock = DockStyle.Fill
-        rbConfig.Image = CType(resources.GetObject("rbConfig.Image"), Image)
-        rbConfig.ImageAlign = ContentAlignment.MiddleLeft
-        rbConfig.Location = New Point(0, 76)
-        rbConfig.Margin = New Padding(0, 3, 0, 3)
-        rbConfig.Name = "rbConfig"
-        rbConfig.Padding = New Padding(3, 0, 3, 0)
-        rbConfig.Size = New Size(358, 46)
-        rbConfig.TabIndex = 2
-        rbConfig.TabStop = True
-        rbConfig.Text = "恢复默认配置" & vbCrLf & "(保留导入字体, 恢复官方配置)"
-        rbConfig.TextImageRelation = TextImageRelation.ImageBeforeText
-        rbConfig.UseVisualStyleBackColor = True
+        rdoCfg.Appearance = Appearance.Button
+        rdoCfg.Dock = DockStyle.Fill
+        rdoCfg.Image = CType(resources.GetObject("rdoCfg.Image"), Image)
+        rdoCfg.ImageAlign = ContentAlignment.MiddleLeft
+        rdoCfg.Location = New Point(0, 76)
+        rdoCfg.Margin = New Padding(0, 3, 0, 3)
+        rdoCfg.Name = "rdoCfg"
+        rdoCfg.Padding = New Padding(3, 0, 3, 0)
+        rdoCfg.Size = New Size(358, 46)
+        rdoCfg.TabIndex = 2
+        rdoCfg.TabStop = True
+        rdoCfg.Text = "恢复默认配置" & vbCrLf & "(保留导入字体, 恢复官方配置)"
+        rdoCfg.TextImageRelation = TextImageRelation.ImageBeforeText
+        rdoCfg.UseVisualStyleBackColor = True
         ' 
-        ' splitExport
+        ' split1
         ' 
-        splitExport.Dock = DockStyle.Fill
-        splitExport.ForeColor = Color.DarkGray
-        splitExport.Location = New Point(3, 128)
-        splitExport.Margin = New Padding(3)
-        splitExport.Name = "splitExport"
-        splitExport.Size = New Size(352, 16)
-        splitExport.TabIndex = 36
-        splitExport.Text = "─────────────────────────────────────────────────────────"
+        split1.Dock = DockStyle.Fill
+        split1.ForeColor = Color.DarkGray
+        split1.Location = New Point(3, 128)
+        split1.Margin = New Padding(3)
+        split1.Name = "split1"
+        split1.Size = New Size(352, 16)
+        split1.TabIndex = 36
+        split1.Text = "─────────────────────────────────────────────────────────"
         ' 
-        ' Label2
+        ' lblNote
         ' 
-        Label2.AutoSize = True
-        Label2.Dock = DockStyle.Top
-        Label2.ForeColor = Color.DarkGray
-        Label2.Location = New Point(0, 150)
-        Label2.Margin = New Padding(0, 3, 0, 3)
-        Label2.Name = "Label2"
-        Label2.Size = New Size(358, 54)
-        Label2.TabIndex = 37
-        Label2.Text = "* 选择「恢复默认字体, 默认配置」: 字体将在下次启动时恢复; 配置文件立即恢复" & vbCrLf & "* 选择「恢复默认配置」: 配置文件立即恢复"
+        lblNote.AutoSize = True
+        lblNote.Dock = DockStyle.Top
+        lblNote.ForeColor = Color.DarkGray
+        lblNote.Location = New Point(0, 150)
+        lblNote.Margin = New Padding(0, 3, 0, 3)
+        lblNote.Name = "lblNote"
+        lblNote.Size = New Size(358, 54)
+        lblNote.TabIndex = 37
+        lblNote.Text = "* 选择「恢复默认字体, 默认配置」: 字体将在下次启动时恢复; 配置文件立即恢复" & vbCrLf & "* 选择「恢复默认配置」: 配置文件立即恢复"
         ' 
         ' DialogRestore
         ' 
@@ -172,8 +172,8 @@ Partial Class DialogRestore
     Friend WithEvents btnCancel As Button
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
     Friend WithEvents lblTitle As Label
-    Friend WithEvents rbFontConfig As RadioButton
-    Friend WithEvents rbConfig As RadioButton
-    Friend WithEvents splitExport As Label
-    Friend WithEvents Label2 As Label
+    Friend WithEvents rdoFontCfg As RadioButton
+    Friend WithEvents rdoCfg As RadioButton
+    Friend WithEvents split1 As Label
+    Friend WithEvents lblNote As Label
 End Class

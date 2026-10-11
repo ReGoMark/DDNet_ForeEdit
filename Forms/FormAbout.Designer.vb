@@ -24,36 +24,23 @@ Partial Class FormAbout
     Private Sub InitializeComponent()
         components = New ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormAbout))
-        lblName = New Label()
         lblVersion = New Label()
         lblCopyright = New Label()
         splitDirectory = New Label()
-        Label6 = New Label()
-        Label9 = New Label()
+        lblTeeworlds = New Label()
         Label10 = New Label()
         lblMail = New Label()
         lblSponsor = New Label()
         lblLicense = New Label()
-        Label14 = New Label()
-        Label16 = New Label()
+        lblSarasaSans = New Label()
+        lblDDNet = New Label()
         lblThanks = New Label()
-        btnApply = New Button()
-        Label1 = New Label()
-        Label2 = New Label()
+        btnOK = New Button()
+        lblGithub = New Label()
+        lbldotNET10 = New Label()
         ToolTip1 = New ToolTip(components)
+        Label1 = New Label()
         SuspendLayout()
-        ' 
-        ' lblName
-        ' 
-        lblName.AutoSize = True
-        lblName.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
-        lblName.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblName.Location = New Point(12, 12)
-        lblName.Margin = New Padding(3)
-        lblName.Name = "lblName"
-        lblName.Size = New Size(120, 18)
-        lblName.TabIndex = 0
-        lblName.Text = "DDNet ForeEdit"
         ' 
         ' lblVersion
         ' 
@@ -86,31 +73,19 @@ Partial Class FormAbout
         splitDirectory.Text = "第三方资源引用  ───────────────────────────────────────────────────────────"
         splitDirectory.TextAlign = ContentAlignment.MiddleLeft
         ' 
-        ' Label6
+        ' lblTeeworlds
         ' 
-        Label6.ForeColor = Color.DarkGray
-        Label6.Location = New Point(12, 39)
-        Label6.Margin = New Padding(3, 6, 3, 6)
-        Label6.Name = "Label6"
-        Label6.Size = New Size(358, 18)
-        Label6.TabIndex = 8
-        Label6.Text = "不可见分割线  ───────────────────────────────────────────────────────────"
-        Label6.TextAlign = ContentAlignment.MiddleLeft
-        Label6.Visible = False
-        ' 
-        ' Label9
-        ' 
-        Label9.AutoEllipsis = True
-        Label9.AutoSize = True
-        Label9.Cursor = Cursors.Hand
-        Label9.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        Label9.Location = New Point(166, 168)
-        Label9.Margin = New Padding(3)
-        Label9.Name = "Label9"
-        Label9.Size = New Size(116, 18)
-        Label9.TabIndex = 11
-        Label9.Text = "Teeworlds-图标"
-        ToolTip1.SetToolTip(Label9, "访问「Teeworlds」官方仓库")
+        lblTeeworlds.AutoEllipsis = True
+        lblTeeworlds.AutoSize = True
+        lblTeeworlds.Cursor = Cursors.Hand
+        lblTeeworlds.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        lblTeeworlds.Location = New Point(166, 168)
+        lblTeeworlds.Margin = New Padding(3)
+        lblTeeworlds.Name = "lblTeeworlds"
+        lblTeeworlds.Size = New Size(116, 18)
+        lblTeeworlds.TabIndex = 11
+        lblTeeworlds.Text = "Teeworlds-图标"
+        ToolTip1.SetToolTip(lblTeeworlds, "访问「Teeworlds」官方仓库")
         ' 
         ' Label10
         ' 
@@ -161,33 +136,33 @@ Partial Class FormAbout
         lblLicense.Text = "许可协议"
         ToolTip1.SetToolTip(lblLicense, "查看用户许可协议")
         ' 
-        ' Label14
+        ' lblSarasaSans
         ' 
-        Label14.AutoEllipsis = True
-        Label14.AutoSize = True
-        Label14.Cursor = Cursors.Hand
-        Label14.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        Label14.Location = New Point(12, 144)
-        Label14.Margin = New Padding(3)
-        Label14.Name = "Label14"
-        Label14.Size = New Size(176, 18)
-        Label14.TabIndex = 36
-        Label14.Text = "Sarasa Gothic-更纱黑体"
-        ToolTip1.SetToolTip(Label14, "访问「更纱黑体」官方仓库")
+        lblSarasaSans.AutoEllipsis = True
+        lblSarasaSans.AutoSize = True
+        lblSarasaSans.Cursor = Cursors.Hand
+        lblSarasaSans.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        lblSarasaSans.Location = New Point(12, 144)
+        lblSarasaSans.Margin = New Padding(3)
+        lblSarasaSans.Name = "lblSarasaSans"
+        lblSarasaSans.Size = New Size(176, 18)
+        lblSarasaSans.TabIndex = 36
+        lblSarasaSans.Text = "Sarasa Gothic-更纱黑体"
+        ToolTip1.SetToolTip(lblSarasaSans, "访问「更纱黑体」官方仓库")
         ' 
-        ' Label16
+        ' lblDDNet
         ' 
-        Label16.AutoEllipsis = True
-        Label16.AutoSize = True
-        Label16.Cursor = Cursors.Hand
-        Label16.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        Label16.Location = New Point(12, 168)
-        Label16.Margin = New Padding(3)
-        Label16.Name = "Label16"
-        Label16.Size = New Size(148, 18)
-        Label16.TabIndex = 37
-        Label16.Text = "DDRaceNetwork-图标"
-        ToolTip1.SetToolTip(Label16, "访问「DDNet」官方仓库")
+        lblDDNet.AutoEllipsis = True
+        lblDDNet.AutoSize = True
+        lblDDNet.Cursor = Cursors.Hand
+        lblDDNet.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        lblDDNet.Location = New Point(12, 168)
+        lblDDNet.Margin = New Padding(3)
+        lblDDNet.Name = "lblDDNet"
+        lblDDNet.Size = New Size(148, 18)
+        lblDDNet.TabIndex = 37
+        lblDDNet.Text = "DDRaceNetwork-图标"
+        ToolTip1.SetToolTip(lblDDNet, "访问「DDNet」官方仓库")
         ' 
         ' lblThanks
         ' 
@@ -202,41 +177,53 @@ Partial Class FormAbout
         lblThanks.Text = "鸣谢"
         ToolTip1.SetToolTip(lblThanks, "查看致谢名单")
         ' 
-        ' btnApply
+        ' btnOK
         ' 
-        btnApply.Location = New Point(318, 264)
-        btnApply.Name = "btnApply"
-        btnApply.Size = New Size(52, 30)
-        btnApply.TabIndex = 39
-        btnApply.Text = "确定"
-        btnApply.UseVisualStyleBackColor = True
+        btnOK.Location = New Point(318, 264)
+        btnOK.Name = "btnOK"
+        btnOK.Size = New Size(52, 30)
+        btnOK.TabIndex = 39
+        btnOK.Text = "确定"
+        btnOK.UseVisualStyleBackColor = True
+        ' 
+        ' lblGithub
+        ' 
+        lblGithub.AutoSize = True
+        lblGithub.Cursor = Cursors.Hand
+        lblGithub.ForeColor = SystemColors.Highlight
+        lblGithub.Location = New Point(82, 222)
+        lblGithub.Margin = New Padding(3)
+        lblGithub.Name = "lblGithub"
+        lblGithub.Size = New Size(56, 18)
+        lblGithub.TabIndex = 40
+        lblGithub.Text = "Github"
+        ToolTip1.SetToolTip(lblGithub, "访问本项目仓库主页")
+        ' 
+        ' lbldotNET10
+        ' 
+        lbldotNET10.AutoSize = True
+        lbldotNET10.Cursor = Cursors.Hand
+        lbldotNET10.ForeColor = Color.DarkGray
+        lbldotNET10.ImageAlign = ContentAlignment.MiddleRight
+        lbldotNET10.Location = New Point(144, 270)
+        lbldotNET10.Name = "lbldotNET10"
+        lbldotNET10.Size = New Size(164, 18)
+        lbldotNET10.TabIndex = 41
+        lbldotNET10.Text = "基于 .NET 10 技术呈现"
+        lbldotNET10.TextAlign = ContentAlignment.MiddleRight
+        ToolTip1.SetToolTip(lbldotNET10, "了解有关「.NET 10」的最新资讯动态")
         ' 
         ' Label1
         ' 
         Label1.AutoSize = True
-        Label1.Cursor = Cursors.Hand
-        Label1.ForeColor = SystemColors.Highlight
-        Label1.Location = New Point(82, 222)
+        Label1.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
+        Label1.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        Label1.Location = New Point(12, 12)
         Label1.Margin = New Padding(3)
         Label1.Name = "Label1"
-        Label1.Size = New Size(56, 18)
-        Label1.TabIndex = 40
-        Label1.Text = "Github"
-        ToolTip1.SetToolTip(Label1, "访问本项目仓库主页")
-        ' 
-        ' Label2
-        ' 
-        Label2.AutoSize = True
-        Label2.Cursor = Cursors.Hand
-        Label2.ForeColor = Color.DarkGray
-        Label2.ImageAlign = ContentAlignment.MiddleRight
-        Label2.Location = New Point(148, 270)
-        Label2.Name = "Label2"
-        Label2.Size = New Size(164, 18)
-        Label2.TabIndex = 41
-        Label2.Text = "基于 .NET 10 技术呈现"
-        Label2.TextAlign = ContentAlignment.MiddleRight
-        ToolTip1.SetToolTip(Label2, "了解有关「.NET 10」的最新资讯动态")
+        Label1.Size = New Size(120, 18)
+        Label1.TabIndex = 42
+        Label1.Text = "DDNet ForeEdit"
         ' 
         ' FormAbout
         ' 
@@ -244,22 +231,21 @@ Partial Class FormAbout
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(382, 306)
-        Controls.Add(Label2)
         Controls.Add(Label1)
-        Controls.Add(btnApply)
+        Controls.Add(lbldotNET10)
+        Controls.Add(lblGithub)
+        Controls.Add(btnOK)
         Controls.Add(lblThanks)
-        Controls.Add(Label16)
-        Controls.Add(Label14)
+        Controls.Add(lblDDNet)
+        Controls.Add(lblSarasaSans)
         Controls.Add(lblLicense)
         Controls.Add(lblSponsor)
         Controls.Add(lblMail)
         Controls.Add(Label10)
-        Controls.Add(Label9)
-        Controls.Add(Label6)
+        Controls.Add(lblTeeworlds)
         Controls.Add(splitDirectory)
         Controls.Add(lblCopyright)
         Controls.Add(lblVersion)
-        Controls.Add(lblName)
         Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
         ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         FormBorderStyle = FormBorderStyle.FixedSingle
@@ -273,22 +259,20 @@ Partial Class FormAbout
         ResumeLayout(False)
         PerformLayout()
     End Sub
-
-    Friend WithEvents lblName As Label
     Friend WithEvents lblVersion As Label
     Friend WithEvents lblCopyright As Label
     Friend WithEvents splitDirectory As Label
-    Friend WithEvents Label6 As Label
-    Friend WithEvents Label9 As Label
+    Friend WithEvents lblTeeworlds As Label
     Friend WithEvents Label10 As Label
     Friend WithEvents lblMail As Label
     Friend WithEvents lblSponsor As Label
     Friend WithEvents lblLicense As Label
-    Friend WithEvents Label14 As Label
-    Friend WithEvents Label16 As Label
+    Friend WithEvents lblSarasaSans As Label
+    Friend WithEvents lblDDNet As Label
     Friend WithEvents lblThanks As Label
-    Friend WithEvents btnApply As Button
-    Friend WithEvents Label1 As Label
-    Friend WithEvents Label2 As Label
+    Friend WithEvents btnOK As Button
+    Friend WithEvents lblGithub As Label
+    Friend WithEvents lbldotNET10 As Label
     Friend WithEvents ToolTip1 As ToolTip
+    Friend WithEvents Label1 As Label
 End Class

@@ -8,17 +8,23 @@ Public Class DialogCheck
 
 #Region "常量"
 
-    ''' <summary>需要检测的字体名称。</summary>
+    ''' <summary>
+    ''' 需要检测的字体名称。
+    ''' </summary>
     Private Const FontName As String = "等距更纱黑体 Slab SC"
 
-    ''' <summary>字体文件名（用于本地打开定位）。</summary>
+    ''' <summary>
+    ''' 字体文件名（用于本地打开定位）。
+    ''' </summary>
     Private Const FontFileName As String = "SarasaMonoSlabSC-Regular.ttf"
 
 #End Region
 
 #Region "字体检测（公开）"
 
-    ''' <summary>检测目标字体是否已安装。</summary>
+    ''' <summary>
+    ''' 检测目标字体是否已安装。
+    ''' </summary>
     Public Shared Function IsFontInstalled() As Boolean
         Using fc As New InstalledFontCollection()
             Return fc.Families.Any(Function(f) f.Name.Equals(FontName, StringComparison.OrdinalIgnoreCase))
@@ -29,8 +35,10 @@ Public Class DialogCheck
 
 #Region "按钮事件"
 
-    ''' <summary>打开字体文件所在文件夹并高亮该文件。</summary>
-    Private Sub btnFolder_Click(sender As Object, e As EventArgs) Handles btnFolder.Click
+    ''' <summary>
+    ''' 打开字体文件所在文件夹并高亮该文件。
+    ''' </summary>
+    Private Sub btnFolder_Click(sender As Object, e As EventArgs) Handles btnLocal.Click
         Dim fontFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", FontFileName)
 
         If File.Exists(fontFile) Then
@@ -45,14 +53,18 @@ Public Class DialogCheck
         End If
     End Sub
 
-    ''' <summary>忽略提示，继续进入程序。</summary>
+    ''' <summary>
+    ''' 忽略提示，继续进入程序。
+    ''' </summary>
     Private Sub btnIgnore_Click(sender As Object, e As EventArgs) Handles btnIgnore.Click
         Me.DialogResult = DialogResult.Ignore
         Me.Close()
     End Sub
 
-    ''' <summary>点击链接，打开更纱黑体 GitHub 发布页。</summary>
-    Private Sub LinkLabel1_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles LinkLabel1.LinkClicked
+    ''' <summary>
+    ''' 点击链接，打开更纱黑体 GitHub 发布页。
+    ''' </summary>
+    Private Sub LinkLabel1_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles link1.LinkClicked
         Try
             Dim psi As New ProcessStartInfo()
             psi.FileName = "https://github.com/be5invis/Sarasa-Gothic/releases"
@@ -66,7 +78,7 @@ Public Class DialogCheck
     ''' <summary>
     ''' 点击「退出程序」：返回 DialogResult.Abort，通知启动流程取消主窗体创建。
     ''' </summary>
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles btnExit.Click
         Me.DialogResult = DialogResult.Abort
         Me.Close()
     End Sub

@@ -5,14 +5,15 @@ Imports System.Text
 Imports System.Text.RegularExpressions
 
 ''' <summary>
-''' BLADE 字体包安装窗体：加载 .dnfp / .json 并直接部署到当前 fonts 目录。
-''' 导出功能在 FormOutput。
+''' BLADE 字体包安装窗体：加载 .dnfp / .json 并直接部署到当前 fonts 目录。 导出功能在 FormOutput。
 ''' </summary>
-Public Class FormBlade
+Public Class FormInstall
 
     ' ─── 由 FormMain 传入的属性 ──────────────────────────────────────
 
-    ''' <summary>当前正在操作的字体目录路径。</summary>
+    ''' <summary>
+    ''' 当前正在操作的字体目录路径。
+    ''' </summary>
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property FontDir As String = ""
 
@@ -26,13 +27,19 @@ Public Class FormBlade
 
     ' ─── 状态字段 ────────────────────────────────────────────────────
 
-    ''' <summary>当前已加载的 .dnfp 文件路径。</summary>
+    ''' <summary>
+    ''' 当前已加载的 .dnfp 文件路径。
+    ''' </summary>
     Private _loadedDnfpPath As String = ""
 
-    ''' <summary>当前已加载的 .json 配置文件路径。</summary>
+    ''' <summary>
+    ''' 当前已加载的 .json 配置文件路径。
+    ''' </summary>
     Private _loadedJsonPath As String = ""
 
-    ''' <summary>当前加载的文件类型（"dnfp" 或 "json"）。</summary>
+    ''' <summary>
+    ''' 当前加载的文件类型（"dnfp" 或 "json"）。
+    ''' </summary>
     Private _loadedFileType As String = ""
 
     ' ─── 窗体生命周期 ──────────────────────────────────────────────────
@@ -45,11 +52,11 @@ Public Class FormBlade
             btnOpen.Enabled = False
         End If
 
-        lstbBlade.ItemHeight = FormMain.SharedItemHeight
+        lstbDNFP.ItemHeight = FormMain.SharedItemHeight
 
         Dim dblProp = GetType(Control).GetProperty("DoubleBuffered", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
         If dblProp IsNot Nothing Then
-            dblProp.SetValue(lstbBlade, True, Nothing)
+            dblProp.SetValue(lstbDNFP, True, Nothing)
         End If
     End Sub
 
@@ -83,7 +90,7 @@ Public Class FormBlade
 
     ' ─── 加载字体包 / JSON ──────────────────────────────────────────
 
-    Private Sub btnZipBroswe_Click(sender As Object, e As EventArgs) Handles btnZipBroswe.Click
+    Private Sub btnZipBroswe_Click(sender As Object, e As EventArgs) Handles btnBroswe.Click
         Using ofd As New OpenFileDialog
             ofd.Title = "选择「.dnfp 或 index.json」"
             ofd.Filter = "通用筛选 (*.dnfp;*.json)|*.dnfp;*.json|DDNet 字体包 (*.dnfp)|*.dnfp|JSON 配置 (*.json)|*.json"
@@ -100,7 +107,7 @@ Public Class FormBlade
         End Using
     End Sub
 
-    Private Sub btnZipBroswe_DragEnter(sender As Object, e As DragEventArgs) Handles btnZipBroswe.DragEnter
+    Private Sub btnZipBroswe_DragEnter(sender As Object, e As DragEventArgs) Handles btnBroswe.DragEnter
         If e.Data.GetDataPresent(DataFormats.FileDrop) Then
             Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
             If files.Length = 1 Then
@@ -114,7 +121,7 @@ Public Class FormBlade
         e.Effect = DragDropEffects.None
     End Sub
 
-    Private Sub btnZipBroswe_DragDrop(sender As Object, e As DragEventArgs) Handles btnZipBroswe.DragDrop
+    Private Sub btnZipBroswe_DragDrop(sender As Object, e As DragEventArgs) Handles btnBroswe.DragDrop
         Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
         If files Is Nothing OrElse files.Length = 0 Then Return
         Dim file = files(0)
@@ -128,7 +135,9 @@ Public Class FormBlade
         End If
     End Sub
 
-    ''' <summary>加载 .dnfp 字体包：验证结构、填充包信息面板、列出内容到 lstbBlade。</summary>
+    ''' <summary>
+    ''' 加载 .dnfp 字体包：验证结构、填充包信息面板、列出内容到 lstbBlade。
+    ''' </summary>
     Private Sub LoadPackage(filePath As String)
         ResetLoadState()
 
@@ -146,14 +155,14 @@ Public Class FormBlade
                 Dim verEntry = archive.GetEntry("verification.txt")
                 If verEntry Is Nothing Then
                     MessageBox.Show("字体包验证失败：缺少 verification.txt。", "读取字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    lblZip.Text = "等待数据加载"
+                    lblDNFP.Text = "等待数据加载"
                     Return
                 End If
 
                 Dim jsonEntry = archive.GetEntry("fonts/index.json")
                 If jsonEntry Is Nothing Then
                     MessageBox.Show("字体包验证失败：缺少 index.json。", "读取字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    lblZip.Text = "等待数据加载"
+                    lblDNFP.Text = "等待数据加载"
                     Return
                 End If
 
@@ -196,18 +205,18 @@ Public Class FormBlade
                 lblZipType.Text = If(String.IsNullOrEmpty(modeStr) OrElse modeStr = "-", sourceStr, $"{modeStr}, {sourceStr}")
 
                 ' 列出包内容
-                lstbBlade.Items.Clear()
+                lstbDNFP.Items.Clear()
                 Dim fontCount As Integer = 0
                 For Each entry As ZipArchiveEntry In archive.Entries
                     If entry.FullName.StartsWith("fonts/", StringComparison.OrdinalIgnoreCase) AndAlso
                        Not entry.FullName.EndsWith("/") Then
                         Dim fileName = entry.Name
-                        lstbBlade.Items.Add(fileName)
+                        lstbDNFP.Items.Add(fileName)
                         If Not fileName.Equals("index.json", StringComparison.OrdinalIgnoreCase) Then fontCount += 1
                     End If
                 Next
 
-                lblZip.Text = $"字体 {fontCount} 项, 配置 1 项"
+                lblDNFP.Text = $"字体 {fontCount} 项, 配置 1 项"
             End Using
 
             ' 文件信息
@@ -226,7 +235,9 @@ Public Class FormBlade
         End Try
     End Sub
 
-    ''' <summary>加载 .json 配置（仅用于覆盖 fonts 目录的 index.json）。</summary>
+    ''' <summary>
+    ''' 加载 .json 配置（仅用于覆盖 fonts 目录的 index.json）。
+    ''' </summary>
     Private Sub ImportJsonConfig(filePath As String)
         ResetLoadState()
 
@@ -245,13 +256,13 @@ Public Class FormBlade
 
         Try
             Dim fi As New FileInfo(filePath)
-            lstbBlade.Items.Add("index.json")
+            lstbDNFP.Items.Add("index.json")
             lblZipName.Text = fi.Name
             lblZipSize.Text = FormatBytes(fi.Length)
             lblZipDate.Text = fi.LastWriteTime.ToString("yyyy/MM/dd HH:mm")
             lblZipNote.Text = "-"
             lblZipType.Text = "JSON 配置"
-            lblZip.Text = "配置 1 项"
+            lblDNFP.Text = "配置 1 项"
 
             _loadedJsonPath = filePath
             _loadedFileType = "json"
@@ -266,7 +277,7 @@ Public Class FormBlade
         _loadedJsonPath = ""
         _loadedDnfpPath = ""
         _loadedFileType = ""
-        lstbBlade.Items.Clear()
+        lstbDNFP.Items.Clear()
         lblZipName.Text = "-"
         lblZipSize.Text = "-"
         lblZipDate.Text = "-"
@@ -278,7 +289,8 @@ Public Class FormBlade
 
     ' ─── 安装 ────────────────────────────────────────────────────────
 
-    ''' <summary>安装按钮：
+    ''' <summary>
+    ''' 安装按钮：
     ''' - .json → 直接覆盖 fonts\index.json。
     ''' - .dnfp → 解压 → 分类（新增/覆盖/删除）→ 立即复制或挂起 → 写 index.json。
     ''' </summary>
@@ -290,15 +302,8 @@ Public Class FormBlade
                 Return
             End If
 
-            Using dlg As New DialogMessage()
-                dlg.Text = "确认安装"
-                dlg.TitleText = "即将覆盖配置文件, 是否继续?"
-                dlg.DescriptionText = " "
-                dlg.ConfirmText = "覆盖"
-                dlg.CancelText = "取消"
-                dlg.Items.Add("index.json")
-                If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
-            End Using
+            Dim confirm = MessageBox.Show("确认要覆盖当前配置吗？", "确认安装", MessageBoxButtons.OKCancel, MessageBoxIcon.Question)
+            If confirm <> DialogResult.OK Then Return
 
             Try
                 File.Copy(_loadedJsonPath, Path.Combine(FontDir, "index.json"), True)
@@ -387,10 +392,16 @@ Public Class FormBlade
             Next
 
             ' 7. 确认对话框
+            Dim packSize As Long = 0
+            Try
+                packSize = New FileInfo(_loadedDnfpPath).Length
+            Catch
+            End Try
+
             Using dlg As New DialogMessage()
                 dlg.Text = "确认安装"
                 dlg.TitleText = $"确认要安装「{Path.GetFileName(_loadedDnfpPath)}」吗？"
-                dlg.DescriptionText = "替换字体和删除字体将在下次启动时执行"
+                dlg.DescriptionText = $"字体包大小: {FormatBytes(packSize)}"
                 dlg.ConfirmText = "安装"
                 dlg.CancelText = "取消"
 
@@ -478,7 +489,6 @@ Public Class FormBlade
             Else
                 MessageBox.Show("字体包安装成功。", "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Information)
             End If
-
         Catch ex As Exception
             MessageBox.Show("安装字体包时发生错误：" & ex.Message, "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
         Finally
@@ -515,11 +525,11 @@ Public Class FormBlade
 
     ' ─── 列表自绘 ────────────────────────────────────────────────────
 
-    Private Sub lstbBlade_DrawItem(sender As Object, e As DrawItemEventArgs) Handles lstbBlade.DrawItem
-        If e.Index < 0 OrElse e.Index >= lstbBlade.Items.Count Then Return
+    Private Sub lstbBlade_DrawItem(sender As Object, e As DrawItemEventArgs) Handles lstbDNFP.DrawItem
+        If e.Index < 0 OrElse e.Index >= lstbDNFP.Items.Count Then Return
         e.DrawBackground()
 
-        Dim itemText = lstbBlade.Items(e.Index).ToString
+        Dim itemText = lstbDNFP.Items(e.Index).ToString
         Dim textColor = If((e.State And DrawItemState.Selected) <> 0, SystemColors.HighlightText, Color.Black)
 
         Dim textY = e.Bounds.Y + (e.Bounds.Height - e.Font.Height) \ 2

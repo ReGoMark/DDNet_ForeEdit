@@ -1,6 +1,5 @@
 ﻿Imports System.Drawing.Text
 Imports System.IO
-Imports System.Runtime
 Imports System.Runtime.InteropServices
 Imports System.Text
 Imports System.Text.RegularExpressions
@@ -31,7 +30,7 @@ Public Class FormMain
 #Region "── 状态字段：字体映射与缓存 ────────────────────────────────"
 
     ''' <summary>
-    ''' 与 lstbDirFonts.Items 平行：索引 i 对应的内部键（唯一，用于所有字典）。 格式： "{文件名}#{faceIndex}"（小写）。显示文本另行存放于 lstbDirFonts.Items(i)。
+    ''' 与 lstDirFonts.Items 平行：索引 i 对应的内部键（唯一，用于所有字典）。 格式： "{文件名}#{faceIndex}"（小写）。显示文本另行存放于 lstDirFonts.Items(i)。
     ''' </summary>
     Private _listKeys As New List(Of String)
 
@@ -105,7 +104,7 @@ Public Class FormMain
     Private _originalKoreanFont As String = ""
     Private _originalSimplifiedChineseFont As String = ""
     Private _originalTraditionalChineseFont As String = ""
-
+    Private _isLoading As Boolean = False
 #End Region
 
 #Region "── 状态字段：子窗体与共享资源 ────────────────────────────"
@@ -131,7 +130,7 @@ Public Class FormMain
 
 #Region "── 常量：版本与标题 ──────────────────────────────────────"
 
-    Public ReadOnly BuildVersion As String = "Build 1009.73"
+    Public ReadOnly BuildVersion As String = "Build 1011.154"
     Private ReadOnly TitleText As String = "DDNet ForeEdit"
 
 #End Region
@@ -183,7 +182,7 @@ Public Class FormMain
     ''' 取当前选中项的键。
     ''' </summary>
     Private Function SelectedKey() As String
-        Return KeyAt(lstbDirFonts.SelectedIndex)
+        Return KeyAt(lstDirFonts.SelectedIndex)
     End Function
 
     ''' <summary>
@@ -191,7 +190,7 @@ Public Class FormMain
     ''' </summary>
     Private Function ComboKey(cb As ComboBox) As String
         If cb Is Nothing OrElse cb.SelectedIndex < 0 Then Return ""
-        Dim offset As Integer = If(cb Is cbLA, 0, 1)
+        Dim offset As Integer = If(cb Is cmbLA, 0, 1)
         Return KeyAt(cb.SelectedIndex - offset)
     End Function
 
@@ -218,24 +217,23 @@ Public Class FormMain
         Me.KeyPreview = True
         lblDirFonts.Text = "等待数据加载"
 
-        lstbDirFonts.ItemHeight = AwareListHeight.GetScaledItemHeight(Me)
-        lstbFallbackFonts.ItemHeight = AwareListHeight.GetScaledItemHeight(Me)
+        lstDirFonts.ItemHeight = AwareListHeight.GetScaledItemHeight(Me)
+        lstFallback.ItemHeight = AwareListHeight.GetScaledItemHeight(Me)
         SharedItemHeight = AwareListHeight.GetScaledItemHeight(Me)
 
         Dim dblProp = GetType(Control).GetProperty(
             "DoubleBuffered",
             Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
         If dblProp IsNot Nothing Then
-            dblProp.SetValue(lstbDirFonts, True, Nothing)
-            dblProp.SetValue(lstbFallbackFonts, True, Nothing)
+            dblProp.SetValue(lstDirFonts, True, Nothing)
+            dblProp.SetValue(lstFallback, True, Nothing)
         End If
 
         _menu.AddRange({
     New Win32ContextMenu.MenuItem() With {.Id = 1, .Text = "预览(&P)", .ShortcutText = "Ctrl+P", .Icon = ImageList1.Images(0), .OnClick = Sub() btnPreview.PerformClick()},
-    New Win32ContextMenu.MenuItem() With {.Id = 2, .Text = "查找(&F)", .ShortcutText = "Ctrl+F", .Icon = ImageList1.Images(4), .OnClick = Sub() btnSearch.PerformClick()},
-    New Win32ContextMenu.MenuItem() With {.Id = 3, .Text = "安装(&B)", .ShortcutText = "Ctrl+B", .Icon = ImageList1.Images(1), .OnClick = Sub() btnBlade.PerformClick()},
-    New Win32ContextMenu.MenuItem() With {.Id = 4, .Text = "导出(&R)", .ShortcutText = "Ctrl+R", .Icon = ImageList1.Images(5), .OnClick = Sub() btnCopy.PerformClick()},
-    New Win32ContextMenu.MenuItem() With {.Id = 5, .Text = "备份(&K)", .ShortcutText = "Ctrl+K", .Icon = ImageList1.Images(6), .OnClick = Sub() DialogBackup.ShowDialog(Me)},
+    New Win32ContextMenu.MenuItem() With {.Id = 2, .Text = "查找(&F)", .ShortcutText = "Ctrl+F", .Icon = ImageList1.Images(1), .OnClick = Sub() btnSearch.PerformClick()},
+    New Win32ContextMenu.MenuItem() With {.Id = 3, .Text = "安装(&B)", .ShortcutText = "Ctrl+B", .Icon = ImageList1.Images(2), .OnClick = Sub() btnBlade.PerformClick()},
+    New Win32ContextMenu.MenuItem() With {.Id = 4, .Text = "导出(&R)", .ShortcutText = "Ctrl+R", .Icon = ImageList1.Images(3), .OnClick = Sub() btnOutput.PerformClick()},
     Win32ContextMenu.MenuItem.Separator,
     New Win32ContextMenu.MenuItem() With {.Id = 4, .Text = "管理(&M)",
     .SubItems = New List(Of Win32ContextMenu.MenuItem) From {
@@ -247,9 +245,10 @@ Public Class FormMain
             Win32ContextMenu.MenuItem.Separator,
             New Win32ContextMenu.MenuItem() With {.Id = 47, .Text = "恢复默认(&R)", .ShortcutText = "F8", .OnClick = Sub() btnDefault.PerformClick()}
         }},
+    New Win32ContextMenu.MenuItem() With {.Id = 5, .Text = "备份(&K)", .ShortcutText = "Ctrl+K", .Icon = ImageList1.Images(4), .OnClick = Sub() FormBackup.ShowDialog(Me)},
     New Win32ContextMenu.MenuItem() With {.Id = 5, .Text = "刷新(&R)", .ShortcutText = "F5", .OnClick = Sub() btnRefresh.PerformClick()},
     Win32ContextMenu.MenuItem.Separator,
-    New Win32ContextMenu.MenuItem() With {.Id = 7, .Text = "帮助(&H)", .Icon = ImageList1.Images(3),
+    New Win32ContextMenu.MenuItem() With {.Id = 7, .Text = "帮助(&H)", .Icon = ImageList1.Images(5),
     .SubItems = New List(Of Win32ContextMenu.MenuItem) From {
             New Win32ContextMenu.MenuItem() With {.Id = 74, .Text = "下载字体资源(&R)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://www.maoken.com/", .UseShellExecute = True})},
             New Win32ContextMenu.MenuItem() With {.Id = 75, .Text = "下载游戏材质(&H)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://teedata.net/", .UseShellExecute = True})},
@@ -342,24 +341,24 @@ Public Class FormMain
     ''' 将当前选中字体设置为指定语言的字体。
     ''' </summary>
     Private Sub SetSelectedFontAsLanguage(langKey As String)
-        Dim listIdx As Integer = lstbDirFonts.SelectedIndex
+        Dim listIdx As Integer = lstDirFonts.SelectedIndex
         If listIdx < 0 Then Return
 
         Dim targetCb As ComboBox = Nothing
         Select Case langKey.ToUpper()
-            Case "LA" : targetCb = cbLA
-            Case "JP" : targetCb = cbJP
-            Case "KR" : targetCb = cbKR
-            Case "SC" : targetCb = cbSC
-            Case "TC" : targetCb = cbTC
+            Case "LA" : targetCb = cmbLA
+            Case "JP" : targetCb = cmbJP
+            Case "KR" : targetCb = cmbKR
+            Case "SC" : targetCb = cmbSC
+            Case "TC" : targetCb = cmbTC
             Case Else : Return
         End Select
 
-        If langKey.ToUpper() <> "LA" AndAlso Not chkLanguageVariants.Checked Then
-            chkLanguageVariants.Checked = True
+        If langKey.ToUpper() <> "LA" AndAlso Not chkLanguage.Checked Then
+            chkLanguage.Checked = True
         End If
 
-        Dim offset As Integer = If(targetCb Is cbLA, 0, 1)
+        Dim offset As Integer = If(targetCb Is cmbLA, 0, 1)
         Dim cbIdx As Integer = listIdx + offset
         If cbIdx >= 0 AndAlso cbIdx < targetCb.Items.Count Then
             targetCb.SelectedIndex = cbIdx
@@ -377,12 +376,12 @@ Public Class FormMain
 
         Dim familyName As String = ""
         If Not _gdiToFamily.TryGetValue(key, familyName) Then
-            familyName = lstbDirFonts.SelectedItem.ToString()
+            familyName = lstDirFonts.SelectedItem.ToString()
         End If
 
         If _fallbacks.Contains(familyName) Then Return
 
-        If Not chkFallbackFonts.Checked Then chkFallbackFonts.Checked = True
+        If Not chkFallback.Checked Then chkFallback.Checked = True
 
         _fallbacks.Add(familyName)
         RefreshFallbackListBox()
@@ -417,110 +416,138 @@ Public Class FormMain
 #End Region
 
 #Region "── 核心加载逻辑 ──────────────────────────────────────────"
-
     Private Sub LoadFontDirectory(fdirectory As String,
                                   Optional sourceLabel As String = "",
                                   Optional skipLocalCheck As Boolean = False)
 
-        Dim appData As String = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
-        Dim ddnetFonts As String = Path.Combine(appData, "DDNet", "fonts")
-        Dim teeworldsFonts As String = Path.Combine(appData, "Teeworlds", "fonts")
-        Dim hasDDNet As Boolean = Directory.Exists(ddnetFonts)
-        Dim hasTeeworlds As Boolean = Directory.Exists(teeworldsFonts)
+        If _isLoading Then Return
+        _isLoading = True
+        Try
+            Dim appData As String = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData)
+            Dim ddnetFonts As String = Path.Combine(appData, "DDNet", "fonts")
+            Dim teeworldsFonts As String = Path.Combine(appData, "Teeworlds", "fonts")
+            Dim hasDDNet As Boolean = Directory.Exists(ddnetFonts)
+            Dim hasTeeworlds As Boolean = Directory.Exists(teeworldsFonts)
 
-        If fdirectory.ToLower() <> ddnetFonts.ToLower() AndAlso
-           fdirectory.ToLower() <> teeworldsFonts.ToLower() Then
-            _installDirectory = fdirectory
-        End If
-
-        UpdateLocalDirectoryIndicator(hasDDNet, hasTeeworlds)
-
-        If chkDirSelect.Checked AndAlso Not skipLocalCheck Then
-            fdirectory = ResolveUserDirectory(hasDDNet, hasTeeworlds, ddnetFonts, teeworldsFonts)
-            If String.IsNullOrEmpty(fdirectory) Then Return
-        Else
-            If Not String.IsNullOrEmpty(_installDirectory) AndAlso Not skipLocalCheck Then
-                fdirectory = _installDirectory
-            End If
-        End If
-
-        _currentFontDirectory = fdirectory
-        tbPath.Text = fdirectory
-
-        ClearAllCaches()
-
-        Dim dirExists As Boolean = Directory.Exists(fdirectory)
-        CheckStandardFontIntegrity()
-        CheckJsonIntegrity()
-
-        lstbDirFonts.Items.Clear()
-        _listKeys.Clear()
-
-        If dirExists Then
-            Dim fontFiles As New List(Of String)
-            fontFiles.AddRange(Directory.GetFiles(fdirectory, "*.ttf"))
-            fontFiles.AddRange(Directory.GetFiles(fdirectory, "*.ttc"))
-            fontFiles.AddRange(Directory.GetFiles(fdirectory, "*.otf"))
-            fontFiles.Sort()
-
-            If File.Exists(PendingDeletionsPath) Then
-                Dim markedFullPaths = File.ReadAllLines(PendingDeletionsPath).Where(Function(line) Not String.IsNullOrWhiteSpace(line))
-                Dim markedFileNames As New HashSet(Of String)(markedFullPaths.Select(Function(p) Path.GetFileName(p)), StringComparer.OrdinalIgnoreCase)
-                fontFiles = fontFiles.Where(Function(f) Not markedFileNames.Contains(Path.GetFileName(f))).ToList()
+            If fdirectory.ToLower() <> ddnetFonts.ToLower() AndAlso
+               fdirectory.ToLower() <> teeworldsFonts.ToLower() Then
+                _installDirectory = fdirectory
             End If
 
-            ProgressBar1.Visible = True
-            ProgressBar1.Minimum = 0
-            ProgressBar1.Maximum = If(fontFiles.Count > 0, fontFiles.Count, 1)
-            ProgressBar1.Value = 0
-            Dim loadedCount As Integer = 0
+            UpdateLocalDirectoryIndicator(hasDDNet, hasTeeworlds)
 
-            For Each filePath As String In fontFiles
-                Dim fileName As String = Path.GetFileName(filePath)
-                Dim nameInfos As List(Of FontInfoTable) = FontInfoReader.ReadAllFontNames(filePath)
-
-                Try
-                    Dim pfc As New PrivateFontCollection()
-                    pfc.AddFontFile(filePath)
-                    If pfc.Families.Length > 0 Then
-                        _fontCollections.Add(pfc)
-                        RegisterFontFile(filePath, pfc, nameInfos)
-                    Else
-                        lstbDirFonts.Items.Add(fileName)
-                        _listKeys.Add(fileName.ToLower())
-                        pfc.Dispose()
-                    End If
-                Catch ex As Exception
-                    lstbDirFonts.Items.Add(fileName)
-                    _listKeys.Add(fileName.ToLower())
-                End Try
-
-                loadedCount += 1
-                ProgressBar1.Value = loadedCount
-                Me.Text = $"{TitleText} - 读取: {fileName}"
-                '({loadedCount}/{fontFiles.Count})"
-            Next
-            ProgressBar1.Visible = False
-
-            If Not String.IsNullOrEmpty(sourceLabel) Then
-                Dim dirSizeBytes As Long = GetDirectorySize(fdirectory)
-                Dim sizeText As String = FormatBytes(dirSizeBytes)
-                Dim sourceText As String = If(String.IsNullOrEmpty(sourceLabel), "", sourceLabel & " ")
-                Me.Text = $"{TitleText} - {sourceText} ({sizeText})"
+            If chkLocalDir.Checked AndAlso Not skipLocalCheck Then
+                fdirectory = ResolveUserDirectory(hasDDNet, hasTeeworlds, ddnetFonts, teeworldsFonts)
+                If String.IsNullOrEmpty(fdirectory) Then Return
             Else
-                Me.Text = TitleText
+                If Not String.IsNullOrEmpty(_installDirectory) AndAlso Not skipLocalCheck Then
+                    fdirectory = _installDirectory
+                End If
             End If
-        End If
 
-        UpdateFontStatisticsLabel()
-        PopulateComboBoxes()
-        LoadFallbackList()
-        UpdateLanguageVariantControls()
-        UpdateFallbackControls()
+            _currentFontDirectory = fdirectory
+            tbPath.Text = fdirectory
 
-        If Not dirExists Then
-            MessageBox.Show($"未找到字体目录: {fdirectory}", "加载字体目录", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-        End If
+            ClearAllCaches()
+
+            Dim dirExists As Boolean = Directory.Exists(fdirectory)
+            CheckStandardFontIntegrity()
+            CheckJsonIntegrity()
+
+            lstDirFonts.Items.Clear()
+            _listKeys.Clear()
+
+            If dirExists Then
+                Dim fontFiles As New List(Of String)
+                fontFiles.AddRange(Directory.GetFiles(fdirectory, "*.ttf"))
+                fontFiles.AddRange(Directory.GetFiles(fdirectory, "*.ttc"))
+                fontFiles.AddRange(Directory.GetFiles(fdirectory, "*.otf"))
+                fontFiles.Sort()
+
+                If File.Exists(PendingDeletionsPath) Then
+                    Dim markedFullPaths = File.ReadAllLines(PendingDeletionsPath).Where(Function(line) Not String.IsNullOrWhiteSpace(line))
+                    Dim markedFileNames As New HashSet(Of String)(markedFullPaths.Select(Function(p) Path.GetFileName(p)), StringComparer.OrdinalIgnoreCase)
+                    fontFiles = fontFiles.Where(Function(f) Not markedFileNames.Contains(Path.GetFileName(f))).ToList()
+                End If
+
+                ProgressBar1.Visible = True
+                ProgressBar1.Minimum = 0
+                ProgressBar1.Maximum = If(fontFiles.Count > 0, fontFiles.Count, 1)
+                ProgressBar1.Value = 0
+
+                btnDefault.Enabled = False
+                btnSearch.Enabled = False
+                btnApply.Enabled = False
+                btnOutput.Enabled = False
+                btnBlade.Enabled = False
+                chkLocalDir.Enabled = False
+                Dim loadedCount As Integer = 0
+
+                For Each filePath As String In fontFiles
+                    Dim fileName As String = Path.GetFileName(filePath)
+                    Dim nameInfos As List(Of FontInfoTable) = FontInfoReader.ReadAllFontNames(filePath)
+
+                    Try
+                        Dim pfc As New PrivateFontCollection()
+                        pfc.AddFontFile(filePath)
+                        If pfc.Families.Length > 0 Then
+                            _fontCollections.Add(pfc)
+                            RegisterFontFile(filePath, pfc, nameInfos)
+                        Else
+                            lstDirFonts.Items.Add(fileName)
+                            _listKeys.Add(fileName.ToLower())
+                            pfc.Dispose()
+                        End If
+                    Catch ex As Exception
+                        lstDirFonts.Items.Add(fileName)
+                        _listKeys.Add(fileName.ToLower())
+                    End Try
+
+                    loadedCount += 1
+                    ProgressBar1.Value = loadedCount
+                    Me.Text = $"{TitleText} - 读取: {fileName}"
+
+                    ' ★ 关键一行：让主线程处理一次消息，UI 就能刷新/拖动/响应
+                    Application.DoEvents()
+                Next
+
+                ProgressBar1.Visible = False
+                btnDefault.Enabled = True
+                btnSearch.Enabled = True
+                btnApply.Enabled = True
+                btnOutput.Enabled = True
+                btnBlade.Enabled = True
+                chkLocalDir.Enabled = True
+
+                If Not String.IsNullOrEmpty(sourceLabel) Then
+                    Dim dirSizeBytes As Long = GetDirectorySize(fdirectory)
+                    Dim sizeText As String = FormatBytes(dirSizeBytes)
+                    Dim sourceText As String = If(String.IsNullOrEmpty(sourceLabel), "", sourceLabel & " ")
+                    Me.Text = $"{TitleText} - {sourceText} ({sizeText})"
+                Else
+                    Me.Text = TitleText
+                End If
+            End If
+
+            UpdateFontStatisticsLabel()
+            PopulateComboBoxes()
+            LoadFallbackList()
+            UpdateLanguageVariantControls()
+            UpdateFallbackControls()
+
+            If Not dirExists Then
+                MessageBox.Show($"未找到字体目录: {fdirectory}", "加载字体目录", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            End If
+
+        Finally
+            _isLoading = False
+            btnDefault.Enabled = True
+            btnSearch.Enabled = True
+            btnApply.Enabled = True
+            btnOutput.Enabled = True
+            btnBlade.Enabled = True
+            chkLocalDir.Enabled = True
+        End Try
     End Sub
 
     Private Sub ClearAllCaches()
@@ -562,7 +589,7 @@ Public Class FormMain
             Dim i As Integer = 0
             For Each fam As FontFamily In pfc.Families
                 Dim key As String = MakeFaceKey(filePath, i)
-                lstbDirFonts.Items.Add(fam.Name)
+                lstDirFonts.Items.Add(fam.Name)
                 _listKeys.Add(key)
                 _fontCache(key) = pfc
                 _gdiToFilePath(key) = filePath
@@ -582,7 +609,7 @@ Public Class FormMain
 
             Dim key As String = MakeFaceKey(filePath, i)
 
-            lstbDirFonts.Items.Add(displayName)   ' 显示文本不加后缀，允许重复
+            lstDirFonts.Items.Add(displayName)   ' 显示文本不加后缀，允许重复
             _listKeys.Add(key)
             _fontCache(key) = pfc
             _gdiToFilePath(key) = filePath
@@ -697,21 +724,21 @@ Public Class FormMain
 
     Private Sub UpdateLocalDirectoryIndicator(hasDDNet As Boolean, hasTeeworlds As Boolean)
         If hasDDNet AndAlso hasTeeworlds Then
-            chkDirSelect.ForeColor = Color.FromArgb(0, 120, 215)
-            chkDirSelect.Text = "优先目录 ✔"
-            ToolTip1.SetToolTip(chkDirSelect, "存在多用户目录, DDNet 目录优先")
+            chkLocalDir.ForeColor = Color.FromArgb(0, 120, 215)
+            chkLocalDir.Text = "优先目录 ✔"
+            ToolTip1.SetToolTip(chkLocalDir, "存在多用户目录, DDNet 目录优先")
         ElseIf hasDDNet Then
-            chkDirSelect.ForeColor = Color.FromArgb(0, 176, 80)
-            chkDirSelect.Text = "用户目录 ✔"
-            ToolTip1.SetToolTip(chkDirSelect, "存在 DDNet 目录")
+            chkLocalDir.ForeColor = Color.FromArgb(0, 176, 80)
+            chkLocalDir.Text = "用户目录 ✔"
+            ToolTip1.SetToolTip(chkLocalDir, "存在 DDNet 目录")
         ElseIf hasTeeworlds Then
-            chkDirSelect.ForeColor = Color.FromArgb(255, 140, 0)
-            chkDirSelect.Text = "兼容目录 ✔"
-            ToolTip1.SetToolTip(chkDirSelect, "存在 Teeworlds 目录")
+            chkLocalDir.ForeColor = Color.FromArgb(255, 140, 0)
+            chkLocalDir.Text = "兼容目录 ✔"
+            ToolTip1.SetToolTip(chkLocalDir, "存在 Teeworlds 目录")
         Else
-            chkDirSelect.ForeColor = Color.FromArgb(232, 17, 35)
-            chkDirSelect.Text = "用户目录 ✖"
-            ToolTip1.SetToolTip(chkDirSelect, "不存在用户目录, 使用安装目录")
+            chkLocalDir.ForeColor = Color.FromArgb(232, 17, 35)
+            chkLocalDir.Text = "用户目录 ✖"
+            ToolTip1.SetToolTip(chkLocalDir, "不存在用户目录, 使用安装目录")
         End If
     End Sub
 
@@ -725,7 +752,7 @@ Public Class FormMain
                 If dlg.ShowDialog(Me) = DialogResult.OK Then
                     target = dlg.SelectedPath
                 Else
-                    chkDirSelect.CheckState = CheckState.Unchecked
+                    chkLocalDir.CheckState = CheckState.Unchecked
                     Return ""
                 End If
             End Using
@@ -740,14 +767,14 @@ Public Class FormMain
         If Not Directory.Exists(target) Then
             Dim result = MessageBox.Show("用户目录不存在，是否创建？", "创建用户目录", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
             If result <> DialogResult.Yes Then
-                chkDirSelect.CheckState = CheckState.Unchecked
+                chkLocalDir.CheckState = CheckState.Unchecked
                 Return ""
             End If
             Try
                 Directory.CreateDirectory(target)
             Catch ex As Exception
                 MessageBox.Show($"用户目录创建失败：{ex.Message}", "创建用户目录", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                chkDirSelect.CheckState = CheckState.Unchecked
+                chkLocalDir.CheckState = CheckState.Unchecked
                 Return ""
             End Try
         End If
@@ -759,15 +786,12 @@ Public Class FormMain
 #Region "── 字体统计与组合框 ──────────────────────────────────────"
 
     Private Sub UpdateFontStatisticsLabel()
-        Dim totalItems As Integer = lstbDirFonts.Items.Count
+        Dim totalItems As Integer = lstDirFonts.Items.Count
         Dim ttcCount As Integer = _ttcTag.Count
         Dim actualFiles As Integer = _gdiToFilePath.Values.Distinct(StringComparer.OrdinalIgnoreCase).Count()
         Dim unusedList As List(Of String) = GetUnusedFontFiles()
         Dim unusedCount As Integer = If(unusedList IsNot Nothing, unusedList.Count, 0)
 
-        'Dim baseText As String = If(ttcCount > 0,
-        '                            $"字体 {totalItems} 项, 实际 {actualFiles} 项",
-        '                            $"字体 {totalItems} 项")
         Dim baseText As String = If(ttcCount > 0,
                                     $"字体 {totalItems} 项", $"字体 {totalItems} 项")
         lblDirFonts.Text = If(unusedCount > 0, $"{baseText} (未使用 {unusedCount} 项)", baseText)
@@ -783,19 +807,19 @@ Public Class FormMain
     ''' </summary>
     Private Sub SyncComboBoxItems()
         _isFillingComboBoxes = True
-        For Each cb As ComboBox In {cbLA, cbJP, cbKR, cbSC, cbTC}
+        For Each cb As ComboBox In {cmbLA, cmbJP, cmbKR, cmbSC, cmbTC}
             Dim previousKey As String = ComboKey(cb)
             cb.Items.Clear()
-            If cb IsNot cbLA Then cb.Items.Add("-")
-            For i As Integer = 0 To lstbDirFonts.Items.Count - 1
-                cb.Items.Add(lstbDirFonts.Items(i))
+            If cb IsNot cmbLA Then cb.Items.Add("-")
+            For i As Integer = 0 To lstDirFonts.Items.Count - 1
+                cb.Items.Add(lstDirFonts.Items(i))
             Next
 
             Dim restored As Boolean = False
             If Not String.IsNullOrEmpty(previousKey) Then
                 Dim li As Integer = ListIndexByKey(previousKey)
                 If li >= 0 Then
-                    Dim offset As Integer = If(cb Is cbLA, 0, 1)
+                    Dim offset As Integer = If(cb Is cmbLA, 0, 1)
                     Dim cbIdx As Integer = li + offset
                     If cbIdx >= 0 AndAlso cbIdx < cb.Items.Count Then
                         cb.SelectedIndex = cbIdx
@@ -819,8 +843,8 @@ Public Class FormMain
         _jsonFontFileOrder.Clear()
         Dim jsonPath As String = Path.Combine(_currentFontDirectory, "index.json")
         If Not File.Exists(jsonPath) Then
-            chkLanguageVariants.Checked = False
-            chkFallbackFonts.Checked = False
+            chkLanguage.Checked = False
+            chkFallback.Checked = False
             Return
         End If
 
@@ -830,27 +854,27 @@ Public Class FormMain
             _jsonFontFileOrder = ParseJsonFontFileOrder(jsonText)
 
             _originalDefaultFont = ParseJsonString(jsonText, "default")
-            SelectComboBoxItemByFamilyName(cbLA, _originalDefaultFont)
+            SelectComboBoxItemByFamilyName(cmbLA, _originalDefaultFont)
 
             Dim variantsBlock As String = ParseJsonBlock(jsonText, "language variants")
             Dim hasVariants As Boolean = Not String.IsNullOrWhiteSpace(variantsBlock) AndAlso variantsBlock.Contains(":")
-            chkLanguageVariants.Checked = hasVariants
+            chkLanguage.Checked = hasVariants
 
             If hasVariants Then
                 _originalJapaneseFont = ParseJsonString(variantsBlock, "japanese")
                 _originalKoreanFont = ParseJsonString(variantsBlock, "korean")
                 _originalSimplifiedChineseFont = ParseJsonString(variantsBlock, "simplified_chinese")
                 _originalTraditionalChineseFont = ParseJsonString(variantsBlock, "traditional_chinese")
-                SelectComboBoxItemByFamilyName(cbJP, _originalJapaneseFont)
-                SelectComboBoxItemByFamilyName(cbKR, _originalKoreanFont)
-                SelectComboBoxItemByFamilyName(cbSC, _originalSimplifiedChineseFont)
-                SelectComboBoxItemByFamilyName(cbTC, _originalTraditionalChineseFont)
+                SelectComboBoxItemByFamilyName(cmbJP, _originalJapaneseFont)
+                SelectComboBoxItemByFamilyName(cmbKR, _originalKoreanFont)
+                SelectComboBoxItemByFamilyName(cmbSC, _originalSimplifiedChineseFont)
+                SelectComboBoxItemByFamilyName(cmbTC, _originalTraditionalChineseFont)
             End If
 
             Dim fallbackPattern As String = """fallbacks""\s*:\s*\[([\s\S]*?)\]"
             Dim fbMatch As Match = Regex.Match(jsonText, fallbackPattern, RegexOptions.IgnoreCase)
             Dim hasFallbacks As Boolean = fbMatch.Success AndAlso Regex.IsMatch(fbMatch.Groups(1).Value, """[^""]+""")
-            chkFallbackFonts.Checked = hasFallbacks
+            chkFallback.Checked = hasFallbacks
         Catch ex As Exception
         Finally
             _isFillingComboBoxes = False
@@ -870,7 +894,7 @@ Public Class FormMain
         If String.IsNullOrEmpty(key) Then Return
         Dim li As Integer = ListIndexByKey(key)
         If li < 0 Then Return
-        Dim offset As Integer = If(cb Is cbLA, 0, 1)
+        Dim offset As Integer = If(cb Is cmbLA, 0, 1)
         Dim cbIdx As Integer = li + offset
         If cbIdx >= 0 AndAlso cbIdx < cb.Items.Count Then
             cb.SelectedIndex = cbIdx
@@ -882,7 +906,7 @@ Public Class FormMain
 #Region "── 预览标签与字体获取 ────────────────────────────────────"
 
     Private Sub RefreshAllPreviewLabels()
-        Dim comboBoxes As ComboBox() = {cbLA, cbJP, cbKR, cbSC, cbTC}
+        Dim comboBoxes As ComboBox() = {cmbLA, cmbJP, cmbKR, cmbSC, cmbTC}
         Dim labels As Label() = {lblLA, lblJP, lblKorean, lblSC, lblTC}
         For i As Integer = 0 To comboBoxes.Length - 1
             Dim key As String = ComboKey(comboBoxes(i))
@@ -927,11 +951,11 @@ Public Class FormMain
 #End Region
 
 #Region "── 字体列表自绘与选中 ────────────────────────────────────"
-    Private Sub lstbDirectoryFonts_DrawItem(sender As Object, e As DrawItemEventArgs) Handles lstbDirFonts.DrawItem
-        If e.Index < 0 OrElse e.Index >= lstbDirFonts.Items.Count Then Return
+    Private Sub lstbDirectoryFonts_DrawItem(sender As Object, e As DrawItemEventArgs) Handles lstDirFonts.DrawItem
+        If e.Index < 0 OrElse e.Index >= lstDirFonts.Items.Count Then Return
         e.DrawBackground()
 
-        Dim itemText As String = lstbDirFonts.Items(e.Index).ToString()
+        Dim itemText As String = lstDirFonts.Items(e.Index).ToString()
         Dim key As String = KeyAt(e.Index)
 
         If Not _drawFontCache.ContainsKey(key) Then
@@ -951,35 +975,15 @@ Public Class FormMain
         End If
         Dim seqSize As SizeF = _tagSizeCache(seqCacheKey)
 
-        ' ── TTC 标签尺寸（已注释停用）──
-        'Dim ttcText As String = ""
-        'Dim hasTtc As Boolean = _ttcTag.TryGetValue(key, ttcText)
-        'Dim ttcSize As SizeF = SizeF.Empty
-        'If hasTtc Then
-        '    Dim ttcCacheKey As String = "#ttc:" & ttcText
-        '    If Not _tagSizeCache.ContainsKey(ttcCacheKey) Then
-        '        _tagSizeCache(ttcCacheKey) = e.Graphics.MeasureString(ttcText, _tagFont)
-        '    End If
-        '    ttcSize = _tagSizeCache(ttcCacheKey)
-        'End If
-
         ' ── 计算右侧保留宽度（仅序号）──
         Const rightPad As Single = 4
         Dim reservedRight As Single = seqSize.Width + rightPad
-        'If hasTtc Then reservedRight += gap + ttcSize.Width
 
         ' ── 主文本（避开右侧标签区）──
         Dim textRect As New Rectangle(e.Bounds.X + 2, e.Bounds.Y,
                                       CInt(e.Bounds.Width - reservedRight - 4), e.Bounds.Height)
         TextRenderer.DrawText(e.Graphics, itemText, drawFont, textRect, textColor,
                           TextFormatFlags.Left Or TextFormatFlags.VerticalCenter Or TextFormatFlags.NoPrefix)
-
-        ' ── TTC 标签（已注释停用）──
-        'If hasTtc Then
-        '    Dim ttcX As Single = e.Bounds.Right - seqSize.Width - rightPad - gap - ttcSize.Width
-        '    e.Graphics.DrawString(ttcText, _tagFont, tagBrush,
-        '        New PointF(ttcX, e.Bounds.Y + (e.Bounds.Height - ttcSize.Height) / 2 + 1))
-        'End If
 
         ' ── 序号（最右侧）──
         Dim seqX As Single = e.Bounds.Right - seqSize.Width - rightPad
@@ -989,13 +993,13 @@ Public Class FormMain
         e.DrawFocusRectangle()
     End Sub
 
-    Private Sub lstbDirectoryFonts_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstbDirFonts.SelectedIndexChanged
-        If lstbDirFonts.SelectedItems.Count > 1 Then
-            lblDirFonts.Text = $"选中 {lstbDirFonts.SelectedItems.Count} 项 (字体 {lstbDirFonts.Items.Count} 项)"
+    Private Sub lstbDirectoryFonts_SelectedIndexChanged(sender As Object, e As EventArgs) Handles lstDirFonts.SelectedIndexChanged
+        If lstDirFonts.SelectedItems.Count > 1 Then
+            lblDirFonts.Text = $"选中 {lstDirFonts.SelectedItems.Count} 项 (字体 {lstDirFonts.Items.Count} 项)"
             Return
         End If
-        If lstbDirFonts.SelectedItems.Count = 1 Then UpdateFontStatisticsLabel()
-        If lstbDirFonts.SelectedItems.Count = 0 Then ClearPropertyPanel() : Return
+        If lstDirFonts.SelectedItems.Count = 1 Then UpdateFontStatisticsLabel()
+        If lstDirFonts.SelectedItems.Count = 0 Then ClearPropertyPanel() : Return
 
         Dim key As String = SelectedKey()
         Dim filePath As String = ""
@@ -1021,7 +1025,7 @@ Public Class FormMain
         If info IsNot Nothing Then
             Dim weightPart As String = If(info.WeightClass > 0, info.WeightName, "")
             Dim widthPart As String = If(info.WidthClass > 0 AndAlso info.WidthClass <> 5, info.WidthName, "")
-            Dim italicPart As String = If(info.IsItalic, "斜", "")     ' ← 新增：斜体标记
+            Dim italicPart As String = If(info.IsItalic, "斜", "")
             Dim extras As String = String.Join(", ", {weightPart, widthPart, italicPart}.Where(Function(s) s <> ""))
             lblFontType.Text = If(String.IsNullOrEmpty(extras), baseType, $"{baseType}, {extras}")
         Else
@@ -1054,20 +1058,20 @@ Public Class FormMain
 
 #Region "── 字体列表右键菜单与相关操作 ────────────────────────────"
 
-    Private Sub lstbDirFonts_MouseDown(sender As Object, e As MouseEventArgs) Handles lstbDirFonts.MouseDown
+    Private Sub lstbDirFonts_MouseDown(sender As Object, e As MouseEventArgs) Handles lstDirFonts.MouseDown
         If e.Button <> MouseButtons.Right Then Return
 
-        Dim idx As Integer = lstbDirFonts.IndexFromPoint(e.Location)
-        If idx < 0 OrElse idx >= lstbDirFonts.Items.Count Then Return
+        Dim idx As Integer = lstDirFonts.IndexFromPoint(e.Location)
+        If idx < 0 OrElse idx >= lstDirFonts.Items.Count Then Return
 
-        If Not lstbDirFonts.SelectedIndices.Contains(idx) Then
-            lstbDirFonts.ClearSelected()
-            lstbDirFonts.SelectedIndex = idx
+        If Not lstDirFonts.SelectedIndices.Contains(idx) Then
+            lstDirFonts.ClearSelected()
+            lstDirFonts.SelectedIndex = idx
         End If
 
-        If lstbDirFonts.SelectedIndices.Count <> 1 Then Return
+        If lstDirFonts.SelectedIndices.Count <> 1 Then Return
 
-        _listContextMenu.Show(lstbDirFonts, e.Location)
+        _listContextMenu.Show(lstDirFonts, e.Location)
     End Sub
 
     Private Sub OpenSelectedFontFile()
@@ -1120,11 +1124,11 @@ Public Class FormMain
     End Sub
 
     Private Sub SelectAllFonts()
-        If lstbDirFonts.Items.Count = 0 Then Return
-        If lstbDirFonts.SelectionMode = SelectionMode.One Then Return
-        lstbDirFonts.ClearSelected()
-        For i As Integer = 0 To lstbDirFonts.Items.Count - 1
-            lstbDirFonts.SetSelected(i, True)
+        If lstDirFonts.Items.Count = 0 Then Return
+        If lstDirFonts.SelectionMode = SelectionMode.One Then Return
+        lstDirFonts.ClearSelected()
+        For i As Integer = 0 To lstDirFonts.Items.Count - 1
+            lstDirFonts.SetSelected(i, True)
         Next
     End Sub
 
@@ -1132,14 +1136,14 @@ Public Class FormMain
 
 #Region "── ComboBox 事件 ─────────────────────────────────────────"
 
-    Private Sub ComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cbLA.SelectedIndexChanged,
-        cbJP.SelectedIndexChanged, cbKR.SelectedIndexChanged, cbSC.SelectedIndexChanged, cbTC.SelectedIndexChanged
+    Private Sub ComboBox_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbLA.SelectedIndexChanged,
+        cmbJP.SelectedIndexChanged, cmbKR.SelectedIndexChanged, cmbSC.SelectedIndexChanged, cmbTC.SelectedIndexChanged
 
         If _isFillingComboBoxes Then Return
 
         Dim cb = CType(sender, ComboBox)
         Dim labelMap As New Dictionary(Of ComboBox, Label) From {
-            {cbLA, lblLA}, {cbJP, lblJP}, {cbKR, lblKorean}, {cbSC, lblSC}, {cbTC, lblTC}
+            {cmbLA, lblLA}, {cmbJP, lblJP}, {cmbKR, lblKorean}, {cmbSC, lblSC}, {cmbTC, lblTC}
         }
         Dim key As String = ComboKey(cb)
         If Not String.IsNullOrEmpty(key) AndAlso labelMap.ContainsKey(cb) Then
@@ -1147,7 +1151,8 @@ Public Class FormMain
         End If
 
         If _previewWindow IsNot Nothing AndAlso _previewWindow.Visible Then
-            Dim langKey = cb.Name.Replace("cb", "").ToUpper()
+            ' ★ 修正：ComboBox 名称前缀由 "cb" 改为 "cmb"
+            Dim langKey = cb.Name.Replace("cmb", "").ToUpper()
             Dim curNi As FontInfoTable = Nothing
             If Not String.IsNullOrEmpty(key) Then _gdiToFontInfo.TryGetValue(key, curNi)
             _previewWindow.UpdatePreview(langKey, curNi)
@@ -1159,7 +1164,7 @@ Public Class FormMain
 #Region "── 回退字体管理 ──────────────────────────────────────────"
 
     Private Sub LoadFallbackList()
-        lstbFallbackFonts.Items.Clear()
+        lstFallback.Items.Clear()
         _fallbacks.Clear()
 
         Dim jsonPath As String = Path.Combine(_currentFontDirectory, "index.json")
@@ -1185,32 +1190,32 @@ Public Class FormMain
     End Sub
 
     Private Sub PopulateFallbackComboBox()
-        cbFallbackFonts.Items.Clear()
-        For i As Integer = 0 To lstbDirFonts.Items.Count - 1
-            cbFallbackFonts.Items.Add(lstbDirFonts.Items(i))
+        cmbFallback.Items.Clear()
+        For i As Integer = 0 To lstDirFonts.Items.Count - 1
+            cmbFallback.Items.Add(lstDirFonts.Items(i))
         Next
-        If cbFallbackFonts.Items.Count > 0 Then cbFallbackFonts.SelectedIndex = 0
+        If cmbFallback.Items.Count > 0 Then cmbFallback.SelectedIndex = 0
     End Sub
 
     Private Sub RefreshFallbackListBox()
-        lstbFallbackFonts.Items.Clear()
+        lstFallback.Items.Clear()
         For Each familyName As String In _fallbacks
             Dim key As String = ResolveFaceKey(familyName)
             Dim displayName As String = familyName
             If Not String.IsNullOrEmpty(key) Then
                 Dim li As Integer = ListIndexByKey(key)
-                If li >= 0 Then displayName = lstbDirFonts.Items(li).ToString()
+                If li >= 0 Then displayName = lstDirFonts.Items(li).ToString()
             End If
-            lstbFallbackFonts.Items.Add(displayName)
+            lstFallback.Items.Add(displayName)
         Next
-        lstbFallbackFonts.Refresh()
+        lstFallback.Refresh()
     End Sub
 
-    Private Sub lstbFallbackFonts_DrawItem(sender As Object, e As DrawItemEventArgs) Handles lstbFallbackFonts.DrawItem
-        If e.Index < 0 OrElse e.Index >= lstbFallbackFonts.Items.Count Then Return
+    Private Sub lstbFallbackFonts_DrawItem(sender As Object, e As DrawItemEventArgs) Handles lstFallback.DrawItem
+        If e.Index < 0 OrElse e.Index >= lstFallback.Items.Count Then Return
         e.DrawBackground()
 
-        Dim itemText As String = lstbFallbackFonts.Items(e.Index).ToString()
+        Dim itemText As String = lstFallback.Items(e.Index).ToString()
         Dim textColor As Color = If((e.State And DrawItemState.Selected) <> 0,
                                     SystemColors.HighlightText, Color.Black)
         Dim textRect As New Rectangle(e.Bounds.X + 2, e.Bounds.Y, e.Bounds.Width - 8, e.Bounds.Height)
@@ -1232,57 +1237,57 @@ Public Class FormMain
     End Sub
 
     Private Sub InsertFallbackItem(sender As Object, e As EventArgs) Handles btnInsert.Click
-        Dim cbIdx As Integer = cbFallbackFonts.SelectedIndex
+        Dim cbIdx As Integer = cmbFallback.SelectedIndex
         If cbIdx < 0 Then Return
         Dim key As String = KeyAt(cbIdx)
         If String.IsNullOrEmpty(key) Then Return
 
         Dim familyName As String = ""
         If Not _gdiToFamily.TryGetValue(key, familyName) Then
-            familyName = lstbDirFonts.Items(cbIdx).ToString()
+            familyName = lstDirFonts.Items(cbIdx).ToString()
         End If
 
-        Dim insertIndex As Integer = If(lstbFallbackFonts.SelectedIndex >= 0,
-                                        lstbFallbackFonts.SelectedIndex + 1,
+        Dim insertIndex As Integer = If(lstFallback.SelectedIndex >= 0,
+                                        lstFallback.SelectedIndex + 1,
                                         _fallbacks.Count)
         If _fallbacks.Contains(familyName) Then Return
 
         _fallbacks.Insert(insertIndex, familyName)
         RefreshFallbackListBox()
-        lstbFallbackFonts.SelectedIndex = insertIndex
+        lstFallback.SelectedIndex = insertIndex
     End Sub
 
     Private Sub RemoveFallbackItem(sender As Object, e As EventArgs) Handles btnRemove.Click
-        Dim idx As Integer = lstbFallbackFonts.SelectedIndex
+        Dim idx As Integer = lstFallback.SelectedIndex
         If idx < 0 Then Return
         _fallbacks.RemoveAt(idx)
         RefreshFallbackListBox()
-        If _fallbacks.Count > 0 Then lstbFallbackFonts.SelectedIndex = Math.Min(idx, _fallbacks.Count - 1)
+        If _fallbacks.Count > 0 Then lstFallback.SelectedIndex = Math.Min(idx, _fallbacks.Count - 1)
     End Sub
 
-    Private Sub RestoreFallbackList(sender As Object, e As EventArgs) Handles btnRecoveryFallbackFonts.Click
+    Private Sub RestoreFallbackList(sender As Object, e As EventArgs) Handles btnRecoveryFallback.Click
         LoadFallbackList()
     End Sub
 
     Private Sub MoveFallbackUp(sender As Object, e As EventArgs) Handles btnUp.Click
-        Dim idx As Integer = lstbFallbackFonts.SelectedIndex
+        Dim idx As Integer = lstFallback.SelectedIndex
         If idx > 0 Then
             Dim temp As String = _fallbacks(idx)
             _fallbacks(idx) = _fallbacks(idx - 1)
             _fallbacks(idx - 1) = temp
             RefreshFallbackListBox()
-            lstbFallbackFonts.SelectedIndex = idx - 1
+            lstFallback.SelectedIndex = idx - 1
         End If
     End Sub
 
     Private Sub MoveFallbackDown(sender As Object, e As EventArgs) Handles btnDown.Click
-        Dim idx As Integer = lstbFallbackFonts.SelectedIndex
+        Dim idx As Integer = lstFallback.SelectedIndex
         If idx >= 0 AndAlso idx < _fallbacks.Count - 1 Then
             Dim temp As String = _fallbacks(idx)
             _fallbacks(idx) = _fallbacks(idx + 1)
             _fallbacks(idx + 1) = temp
             RefreshFallbackListBox()
-            lstbFallbackFonts.SelectedIndex = idx + 1
+            lstFallback.SelectedIndex = idx + 1
         End If
     End Sub
 
@@ -1290,14 +1295,14 @@ Public Class FormMain
 
 #Region "── 开关：语言变体 / 回退字体 ──────────────────────────────"
 
-    Private Sub chkLanguageVariants_CheckedChanged(sender As Object, e As EventArgs) Handles chkLanguageVariants.CheckedChanged
+    Private Sub chkLanguageVariants_CheckedChanged(sender As Object, e As EventArgs) Handles chkLanguage.CheckedChanged
         UpdateLanguageVariantControls()
     End Sub
 
     Private Sub UpdateLanguageVariantControls()
-        Dim enabled As Boolean = chkLanguageVariants.Checked
-        cbJP.Enabled = enabled : cbKR.Enabled = enabled
-        cbSC.Enabled = enabled : cbTC.Enabled = enabled
+        Dim enabled As Boolean = chkLanguage.Checked
+        cmbJP.Enabled = enabled : cmbKR.Enabled = enabled
+        cmbSC.Enabled = enabled : cmbTC.Enabled = enabled
         btnFollowJP.Enabled = enabled : btnFollowKR.Enabled = enabled
         btnFollowSC.Enabled = enabled : btnFollowTC.Enabled = enabled
         btnRecoveryJP.Enabled = enabled : btnRecoveryKR.Enabled = enabled
@@ -1308,17 +1313,17 @@ Public Class FormMain
         tagKR.Enabled = enabled : tagSC.Enabled = enabled
     End Sub
 
-    Private Sub chkFallbackFonts_CheckedChanged(sender As Object, e As EventArgs) Handles chkFallbackFonts.CheckedChanged
+    Private Sub chkFallbackFonts_CheckedChanged(sender As Object, e As EventArgs) Handles chkFallback.CheckedChanged
         UpdateFallbackControls()
     End Sub
 
     Private Sub UpdateFallbackControls()
-        Dim enabled As Boolean = chkFallbackFonts.Checked
-        lstbFallbackFonts.Enabled = enabled
-        cbFallbackFonts.Enabled = enabled
+        Dim enabled As Boolean = chkFallback.Checked
+        lstFallback.Enabled = enabled
+        cmbFallback.Enabled = enabled
         btnInsert.Enabled = enabled
         btnRemove.Enabled = enabled
-        btnRecoveryFallbackFonts.Enabled = enabled
+        btnRecoveryFallback.Enabled = enabled
         btnUp.Enabled = enabled
         btnDown.Enabled = enabled
     End Sub
@@ -1333,13 +1338,13 @@ Public Class FormMain
         Dim btn = CType(sender, Button)
         Dim targetComboBox As ComboBox = Nothing
         Select Case btn.Name
-            Case "btnFollowJP" : targetComboBox = cbJP
-            Case "btnFollowKR" : targetComboBox = cbKR
-            Case "btnFollowSC" : targetComboBox = cbSC
-            Case "btnFollowTC" : targetComboBox = cbTC
+            Case "btnFollowJP" : targetComboBox = cmbJP
+            Case "btnFollowKR" : targetComboBox = cmbKR
+            Case "btnFollowSC" : targetComboBox = cmbSC
+            Case "btnFollowTC" : targetComboBox = cmbTC
         End Select
-        If targetComboBox IsNot Nothing AndAlso cbLA.SelectedIndex >= 0 Then
-            Dim cbIdx As Integer = cbLA.SelectedIndex + 1
+        If targetComboBox IsNot Nothing AndAlso cmbLA.SelectedIndex >= 0 Then
+            Dim cbIdx As Integer = cmbLA.SelectedIndex + 1
             If cbIdx < targetComboBox.Items.Count Then targetComboBox.SelectedIndex = cbIdx
         End If
     End Sub
@@ -1349,11 +1354,11 @@ Public Class FormMain
 
         Dim btn = CType(sender, Button)
         Select Case btn.Name
-            Case "btnRecoveryLA" : If Not String.IsNullOrEmpty(_originalDefaultFont) Then SelectComboBoxItemByFamilyName(cbLA, _originalDefaultFont)
-            Case "btnRecoveryJP" : If Not String.IsNullOrEmpty(_originalJapaneseFont) Then SelectComboBoxItemByFamilyName(cbJP, _originalJapaneseFont)
-            Case "btnRecoveryKR" : If Not String.IsNullOrEmpty(_originalKoreanFont) Then SelectComboBoxItemByFamilyName(cbKR, _originalKoreanFont)
-            Case "btnRecoverySC" : If Not String.IsNullOrEmpty(_originalSimplifiedChineseFont) Then SelectComboBoxItemByFamilyName(cbSC, _originalSimplifiedChineseFont)
-            Case "btnRecoveryTC" : If Not String.IsNullOrEmpty(_originalTraditionalChineseFont) Then SelectComboBoxItemByFamilyName(cbTC, _originalTraditionalChineseFont)
+            Case "btnRecoveryLA" : If Not String.IsNullOrEmpty(_originalDefaultFont) Then SelectComboBoxItemByFamilyName(cmbLA, _originalDefaultFont)
+            Case "btnRecoveryJP" : If Not String.IsNullOrEmpty(_originalJapaneseFont) Then SelectComboBoxItemByFamilyName(cmbJP, _originalJapaneseFont)
+            Case "btnRecoveryKR" : If Not String.IsNullOrEmpty(_originalKoreanFont) Then SelectComboBoxItemByFamilyName(cmbKR, _originalKoreanFont)
+            Case "btnRecoverySC" : If Not String.IsNullOrEmpty(_originalSimplifiedChineseFont) Then SelectComboBoxItemByFamilyName(cmbSC, _originalSimplifiedChineseFont)
+            Case "btnRecoveryTC" : If Not String.IsNullOrEmpty(_originalTraditionalChineseFont) Then SelectComboBoxItemByFamilyName(cmbTC, _originalTraditionalChineseFont)
         End Select
     End Sub
 
@@ -1362,7 +1367,7 @@ Public Class FormMain
     ''' </summary>
     Private Function GetSelectedFamilyName(cb As ComboBox) As String
         If cb.SelectedIndex < 0 Then Return ""
-        If cb IsNot cbLA AndAlso cb.SelectedIndex = 0 Then Return ""
+        If cb IsNot cmbLA AndAlso cb.SelectedIndex = 0 Then Return ""
         Dim key As String = ComboKey(cb)
         If String.IsNullOrEmpty(key) Then Return ""
         Dim familyName As String = ""
@@ -1380,7 +1385,7 @@ Public Class FormMain
                                               If Not String.IsNullOrEmpty(k) AndAlso seen.Add(k) Then keys.Add(k)
                                           End Sub
 
-        For Each cb As ComboBox In {cbLA, cbJP, cbKR, cbSC, cbTC}
+        For Each cb As ComboBox In {cmbLA, cmbJP, cmbKR, cmbSC, cmbTC}
             If Not String.IsNullOrEmpty(GetSelectedFamilyName(cb)) Then
                 addKey(ComboKey(cb))
             End If
@@ -1448,8 +1453,8 @@ Public Class FormMain
             If winner <> "" AndAlso Not String.Equals(winner, key, StringComparison.OrdinalIgnoreCase) Then
                 Dim li As Integer = ListIndexByKey(key)
                 Dim winIdx As Integer = ListIndexByKey(winner)
-                Dim keyText As String = If(li >= 0, lstbDirFonts.Items(li).ToString(), key)
-                Dim winText As String = If(winIdx >= 0, lstbDirFonts.Items(winIdx).ToString(), winner)
+                Dim keyText As String = If(li >= 0, lstDirFonts.Items(li).ToString(), key)
+                Dim winText As String = If(winIdx >= 0, lstDirFonts.Items(winIdx).ToString(), winner)
                 conflicts.Add($"{ddnetName}：选中的是「{keyText}」，游戏会加载「{winText}」")
             End If
         Next
@@ -1467,13 +1472,13 @@ Public Class FormMain
             If i < fontFileNames.Count - 1 Then sb.AppendLine(",") Else sb.AppendLine()
         Next
         sb.AppendLine("    ],")
-        sb.AppendLine($"    ""default"": ""{GetSelectedFamilyName(cbLA)}"",")
+        sb.AppendLine($"    ""default"": ""{GetSelectedFamilyName(cmbLA)}"",")
         sb.AppendLine("    ""language variants"": {")
-        If chkLanguageVariants.Checked Then
+        If chkLanguage.Checked Then
             Dim lines As New List(Of String)
             Dim langMap As New Dictionary(Of String, ComboBox) From {
-                {"japanese", cbJP}, {"korean", cbKR},
-                {"simplified_chinese", cbSC}, {"traditional_chinese", cbTC}
+                {"japanese", cmbJP}, {"korean", cmbKR},
+                {"simplified_chinese", cmbSC}, {"traditional_chinese", cmbTC}
             }
             For Each kvp In langMap
                 Dim famName As String = GetSelectedFamilyName(kvp.Value)
@@ -1524,11 +1529,11 @@ Public Class FormMain
             File.WriteAllText(jsonPath, content, Encoding.UTF8)
             _jsonFontFileOrder = ParseJsonFontFileOrder(content)
 
-            _originalDefaultFont = GetSelectedFamilyName(cbLA)
-            _originalJapaneseFont = GetSelectedFamilyName(cbJP)
-            _originalKoreanFont = GetSelectedFamilyName(cbKR)
-            _originalSimplifiedChineseFont = GetSelectedFamilyName(cbSC)
-            _originalTraditionalChineseFont = GetSelectedFamilyName(cbTC)
+            _originalDefaultFont = GetSelectedFamilyName(cmbLA)
+            _originalJapaneseFont = GetSelectedFamilyName(cmbJP)
+            _originalKoreanFont = GetSelectedFamilyName(cmbKR)
+            _originalSimplifiedChineseFont = GetSelectedFamilyName(cmbSC)
+            _originalTraditionalChineseFont = GetSelectedFamilyName(cmbTC)
 
             If (Control.ModifierKeys And Keys.Shift) = Keys.Shift Then
                 Dim parentDir = Directory.GetParent(_currentFontDirectory)?.Parent
@@ -1543,7 +1548,7 @@ Public Class FormMain
     ''' <summary>
     ''' 打开导出窗体（FormOutput），传入选中的字体数据和配置内容。
     ''' </summary>
-    Private Sub ExportConfiguration(sender As Object, e As EventArgs) Handles btnCopy.Click
+    Private Sub ExportConfiguration(sender As Object, e As EventArgs) Handles btnOutput.Click
         If String.IsNullOrEmpty(_currentFontDirectory) Then
             MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
@@ -1625,7 +1630,7 @@ Public Class FormMain
             Return
         End If
 
-        If chkDirSelect.Checked Then
+        If chkLocalDir.Checked Then
             Dim result = MessageBox.Show($"要恢复用户目录的默认状态，请按以下步骤操作：
 * 单击「确定」在资源管理器中打开该文件夹
 * 关闭本程序，注意不是关闭资源管理器
@@ -1655,7 +1660,7 @@ Public Class FormMain
             Return
         End If
 
-        Using dlg As New DialogRestore()
+        Using dlg As New DialogRestore
             If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
 
             If dlg.SelectedMode = DialogRestore.RestoreMode.FontAndConfig Then
@@ -1692,7 +1697,7 @@ Public Class FormMain
                     AppendPendingLines(PendingCopiesPath, failedCopies)
                     AppendPendingLines(PendingDeletionsPath, toDelete)
 
-                    Dim hasPending As Boolean = (failedCopies.Count > 0) OrElse (toDelete.Count > 0)
+                    Dim hasPending = failedCopies.Count > 0 OrElse toDelete.Count > 0
                     If hasPending Then
                         MessageBox.Show("默认字体和配置恢复成功，下次启动时生效。", "还原默认字体", MessageBoxButtons.OK, MessageBoxIcon.Information)
                     Else
@@ -1737,7 +1742,7 @@ Public Class FormMain
 
     Private Sub RefreshCurrentDirectory(sender As Object, e As EventArgs) Handles btnRefresh.Click
         If Not String.IsNullOrEmpty(_currentFontDirectory) Then
-            If chkDirSelect.Checked Then
+            If chkLocalDir.Checked Then
                 LoadFontDirectory(_currentFontDirectory, "", skipLocalCheck:=True)
             Else
                 LoadFontDirectory(_currentFontDirectory, GetSourceLabel(_lastFileExtension), skipLocalCheck:=True)
@@ -1747,10 +1752,10 @@ Public Class FormMain
         End If
     End Sub
 
-    Private Sub chkLocal_CheckedChanged(sender As Object, e As EventArgs) Handles chkDirSelect.CheckedChanged
+    Private Sub chkLocal_CheckedChanged(sender As Object, e As EventArgs) Handles chkLocalDir.CheckedChanged
         If Not String.IsNullOrEmpty(_installDirectory) Then
             LoadFontDirectory(_installDirectory)
-            If chkDirSelect.Checked Then
+            If chkLocalDir.Checked Then
                 LoadFontDirectory(_currentFontDirectory, "", skipLocalCheck:=True)
             Else
                 LoadFontDirectory(_currentFontDirectory, GetSourceLabel(_lastFileExtension), skipLocalCheck:=True)
@@ -1979,14 +1984,14 @@ Public Class FormMain
                 pfc.AddFontFile(filePath)
                 If pfc.Families.Length = 0 Then
                     pfc.Dispose()
-                    lstbDirFonts.Items.Add(fileName)
+                    lstDirFonts.Items.Add(fileName)
                     _listKeys.Add(fileName.ToLower())
                     Continue For
                 End If
                 _fontCollections.Add(pfc)
                 RegisterFontFile(filePath, pfc, nameInfos)
             Catch ex As Exception
-                lstbDirFonts.Items.Add(fileName)
+                lstDirFonts.Items.Add(fileName)
                 _listKeys.Add(fileName.ToLower())
             End Try
         Next
@@ -2013,7 +2018,7 @@ Public Class FormMain
         Dim filePathSet As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
         Dim blockedNames As New List(Of String)
 
-        For Each idx As Integer In lstbDirFonts.SelectedIndices
+        For Each idx As Integer In lstDirFonts.SelectedIndices
             Dim key As String = KeyAt(idx)
             If String.IsNullOrEmpty(key) Then Continue For
             Dim fp As String = ""
@@ -2054,7 +2059,6 @@ Public Class FormMain
             For Each fp As String In normalFiles
                 dlg.Items.Add(Path.GetFileName(fp))
             Next
-            ' 计算总大小（filePathSet 已去重，按实际文件累加）
             Dim totalSize As Long = 0
             For Each fp As String In filePathSet
                 Try
@@ -2077,11 +2081,10 @@ Public Class FormMain
                 Next
             Next
 
-            ' 同步移除 ListBox 与平行键列表
-            For i = lstbDirFonts.Items.Count - 1 To 0 Step -1
+            For i = lstDirFonts.Items.Count - 1 To 0 Step -1
                 Dim key As String = KeyAt(i)
                 If toRemoveKeys.Contains(key) Then
-                    lstbDirFonts.Items.RemoveAt(i)
+                    lstDirFonts.Items.RemoveAt(i)
                     _listKeys.RemoveAt(i)
                 End If
             Next
@@ -2150,7 +2153,7 @@ Public Class FormMain
     End Sub
 
     Private Sub ShowFontPropertiesForSelected()
-        If lstbDirFonts.SelectedIndex < 0 Then
+        If lstDirFonts.SelectedIndex < 0 Then
             MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
@@ -2185,7 +2188,7 @@ Public Class FormMain
 
 #Region "── 双击字体列表 / 复制字体名与族名 ──────────────────────"
 
-    Private Sub lstbDirectoryFonts_DoubleClick(sender As Object, e As EventArgs) Handles lstbDirFonts.DoubleClick
+    Private Sub lstbDirectoryFonts_DoubleClick(sender As Object, e As EventArgs) Handles lstDirFonts.DoubleClick
         OpenSelectedFontFile()
     End Sub
 
@@ -2206,8 +2209,8 @@ Public Class FormMain
     ''' 复制当前选中字体的显示名（ListBox 文本）。
     ''' </summary>
     Private Sub CopySelectedFontName()
-        If lstbDirFonts.SelectedIndex < 0 Then Return
-        Dim itemText = lstbDirFonts.SelectedItem.ToString()
+        If lstDirFonts.SelectedIndex < 0 Then Return
+        Dim itemText = lstDirFonts.SelectedItem.ToString()
         If Not String.IsNullOrEmpty(itemText) Then Clipboard.SetText(itemText)
     End Sub
 
@@ -2232,7 +2235,7 @@ Public Class FormMain
     Private Sub SynchronizePreviewWindow()
         If _previewWindow Is Nothing OrElse _previewWindow.IsDisposed Then Return
         Dim configs As New Dictionary(Of String, ComboBox) From {
-            {"LA", cbLA}, {"JP", cbJP}, {"KR", cbKR}, {"SC", cbSC}, {"TC", cbTC}
+            {"LA", cmbLA}, {"JP", cmbJP}, {"KR", cmbKR}, {"SC", cmbSC}, {"TC", cmbTC}
         }
         For Each kvp In configs
             Dim curNi As FontInfoTable = Nothing
@@ -2389,7 +2392,7 @@ Public Class FormMain
 
 #Region "── 配置指示灯 / 未使用字体检查 ────────────────────────────"
 
-    Private Sub lblConfig_Click(sender As Object, e As EventArgs) Handles lblConfig.Click
+    Private Sub lblConfig_Click(sender As Object, e As EventArgs) Handles lblCfg.Click
         OpenJsonConfig()
     End Sub
 
@@ -2495,19 +2498,19 @@ Public Class FormMain
 
     Private Sub SelectUnusedFontsInList(unusedFileNames As List(Of String))
         If unusedFileNames Is Nothing OrElse unusedFileNames.Count = 0 Then Return
-        If lstbDirFonts.Items.Count = 0 Then Return
+        If lstDirFonts.Items.Count = 0 Then Return
 
         Dim unusedSet As New HashSet(Of String)(unusedFileNames, StringComparer.OrdinalIgnoreCase)
-        lstbDirFonts.ClearSelected()
-        For i As Integer = 0 To lstbDirFonts.Items.Count - 1
+        lstDirFonts.ClearSelected()
+        For i As Integer = 0 To lstDirFonts.Items.Count - 1
             Dim key As String = KeyAt(i)
             Dim filePath As String = ""
             If _gdiToFilePath.TryGetValue(key, filePath) Then
-                If unusedSet.Contains(Path.GetFileName(filePath)) Then lstbDirFonts.SetSelected(i, True)
+                If unusedSet.Contains(Path.GetFileName(filePath)) Then lstDirFonts.SetSelected(i, True)
             End If
         Next
-        lstbDirFonts.Focus()
-        lblDirFonts.Text = $"选中 {lstbDirFonts.SelectedIndices.Count} 项 (字体 {lstbDirFonts.Items.Count} 项)"
+        lstDirFonts.Focus()
+        lblDirFonts.Text = $"选中 {lstDirFonts.SelectedIndices.Count} 项 (字体 {lstDirFonts.Items.Count} 项)"
     End Sub
 
 #End Region
@@ -2517,9 +2520,9 @@ Public Class FormMain
     Private Sub CheckJsonIntegrity()
         Dim jsonPath = Path.Combine(_currentFontDirectory, "index.json")
         If Not File.Exists(jsonPath) Then
-            lblConfig.ForeColor = Color.FromArgb(232, 17, 35)
-            lblConfig.Text = "配置 ✖"
-            ToolTip1.SetToolTip(lblConfig, "状态：配置缺失")
+            lblCfg.ForeColor = Color.FromArgb(232, 17, 35)
+            lblCfg.Text = "配置 ✖"
+            ToolTip1.SetToolTip(lblCfg, "状态：配置缺失")
             Return
         End If
 
@@ -2528,9 +2531,9 @@ Public Class FormMain
             Dim pattern = """font files""\s*:\s*\[\s*(.*?)\s*\]"
             Dim m = Regex.Match(jsonText, pattern, RegexOptions.Singleline)
             If Not m.Success Then
-                lblConfig.ForeColor = Color.FromArgb(255, 140, 0)
-                lblConfig.Text = "配置 ✖"
-                ToolTip1.SetToolTip(lblConfig, "状态：配置格式错误")
+                lblCfg.ForeColor = Color.FromArgb(255, 140, 0)
+                lblCfg.Text = "配置 ✖"
+                ToolTip1.SetToolTip(lblCfg, "状态：配置格式错误")
                 Return
             End If
 
@@ -2541,17 +2544,17 @@ Public Class FormMain
             Next
 
             If missing.Count = 0 Then
-                lblConfig.ForeColor = Color.FromArgb(0, 176, 80)
-                lblConfig.Text = "配置 ✔"
-                ToolTip1.SetToolTip(lblConfig, "状态：配置就绪")
+                lblCfg.ForeColor = Color.FromArgb(0, 176, 80)
+                lblCfg.Text = "配置 ✔"
+                ToolTip1.SetToolTip(lblCfg, "状态：配置就绪")
             Else
-                lblConfig.ForeColor = Color.FromArgb(255, 140, 0)
-                lblConfig.Text = "配置 ✖"
-                ToolTip1.SetToolTip(lblConfig, "状态：配置字体引用缺失")
+                lblCfg.ForeColor = Color.FromArgb(255, 140, 0)
+                lblCfg.Text = "配置 ✖"
+                ToolTip1.SetToolTip(lblCfg, "状态：配置字体引用缺失")
             End If
         Catch ex As Exception
-            lblConfig.ForeColor = Color.FromArgb(232, 17, 35)
-            lblConfig.Text = "配置 ✖"
+            lblCfg.ForeColor = Color.FromArgb(232, 17, 35)
+            lblCfg.Text = "配置 ✖"
         End Try
     End Sub
 
@@ -2578,7 +2581,7 @@ Public Class FormMain
     ''' </summary>
     Private Sub OpenBladeTool(sender As Object, e As EventArgs) Handles btnBlade.Click
         Try
-            Dim shareForm As New FormBlade
+            Dim shareForm As New FormInstall
             shareForm.FontDir = _currentFontDirectory
             shareForm.ShowDialog(Me)
         Catch ex As Exception
@@ -2602,7 +2605,7 @@ Public Class FormMain
                                                 End If
                                             End Sub
 
-        For Each cb As ComboBox In {cbLA, cbJP, cbKR, cbSC, cbTC}
+        For Each cb As ComboBox In {cmbLA, cmbJP, cmbKR, cmbSC, cmbTC}
             Dim key As String = ComboKey(cb)
             If Not String.IsNullOrEmpty(key) Then addByKey(key)
         Next
@@ -2844,17 +2847,17 @@ Public Class FormMain
     End Sub
 
     Private Sub OpenSearchDialog()
-        If lstbDirFonts.Items.Count = 0 Then
+        If lstDirFonts.Items.Count = 0 Then
             MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
         If _searchWindow Is Nothing OrElse _searchWindow.IsDisposed Then
             _searchWindow = New FormSearch()
-            _searchWindow.TargetList = lstbDirFonts
+            _searchWindow.TargetList = lstDirFonts
             _searchWindow.Show(Me)
         Else
-            _searchWindow.TargetList = lstbDirFonts
+            _searchWindow.TargetList = lstDirFonts
             If Not _searchWindow.Visible Then _searchWindow.Show(Me)
             _searchWindow.BringToFront()
             _searchWindow.Activate()
@@ -2874,20 +2877,20 @@ Public Class FormMain
 
         If ctrl AndAlso Not shift Then
             Select Case key
-                Case Keys.I : btnCopy.PerformClick() : Return True
+                Case Keys.I : btnOutput.PerformClick() : Return True
                 Case Keys.O : btnBrowse.PerformClick() : Return True
                 Case Keys.L : btnLocate.PerformClick() : Return True
                 Case Keys.R : btnRefresh.PerformClick() : Return True
                 Case Keys.I : btnFontInstall.PerformClick() : Return True
                 Case Keys.P : btnPreview.PerformClick() : Return True
                 Case Keys.S : btnApply.PerformClick() : Return True
-                Case Keys.J : btnCopy.PerformClick() : Return True
+                Case Keys.J : btnOutput.PerformClick() : Return True
                 Case Keys.F : btnSearch.PerformClick() : Return True
                 Case Keys.B : btnBlade.PerformClick() : Return True
-                Case Keys.U : chkDirSelect.Checked = Not chkDirSelect.Checked : Return True
-                Case Keys.K : DialogBackup.ShowDialog(Me)
+                Case Keys.U : chkLocalDir.Checked = Not chkLocalDir.Checked : Return True
+                Case Keys.K : FormBackup.ShowDialog(Me)
                 Case Keys.A
-                    If lstbDirFonts.Focused Then
+                    If lstDirFonts.Focused Then
                         SelectAllFonts()
                         Return True
                     End If
@@ -2912,31 +2915,31 @@ Public Class FormMain
                     Catch ex As Exception
                         MessageBox.Show($"无法打开链接：{ex.Message}", "打开链接失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     End Try
-                Case Keys.F2
-                    CopyScreenshotToClipboard()
+                'Case Keys.F2
+                '    CopyScreenshotToClipboard()
                 Case Keys.F5 : btnRefresh.PerformClick() : Return True
                 Case Keys.F8
                     btnDefault.PerformClick() : Return True
-                Case Keys.F12
-                    Dim exePath As String = IO.Path.Combine(System.Windows.Forms.Application.StartupPath, "tool", "FontInfoReader.exe")
-                    Try
-                        If IO.File.Exists(exePath) Then
-                            Process.Start(New ProcessStartInfo(exePath) With {.UseShellExecute = True, .WorkingDirectory = IO.Path.GetDirectoryName(exePath)})
-                        Else
-                            MessageBox.Show($"程序不存在：{exePath}", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                        End If
-                    Catch ex As Exception
-                        MessageBox.Show($"启动失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    End Try
+                'Case Keys.F12
+                '    Dim exePath As String = IO.Path.Combine(System.Windows.Forms.Application.StartupPath, "tool", "FontInfoReader.exe")
+                '    Try
+                '        If IO.File.Exists(exePath) Then
+                '            Process.Start(New ProcessStartInfo(exePath) With {.UseShellExecute = True, .WorkingDirectory = IO.Path.GetDirectoryName(exePath)})
+                '        Else
+                '            MessageBox.Show($"程序不存在：{exePath}", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                '        End If
+                '    Catch ex As Exception
+                '        MessageBox.Show($"启动失败：{ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                '    End Try
                 Case Keys.Apps
                     btnMenu.PerformClick() : Return True
                 Case Keys.Enter
-                    If lstbDirFonts.Focused Then
+                    If lstDirFonts.Focused Then
                         OpenSelectedFontFile()
                         Return True
                     End If
                 Case Keys.Delete
-                    If lstbDirFonts.Focused Then
+                    If lstDirFonts.Focused Then
                         UninstallSelectedFont()
                         Return True
                     End If

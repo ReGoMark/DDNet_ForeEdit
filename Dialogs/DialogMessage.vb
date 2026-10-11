@@ -5,7 +5,9 @@ Public Class DialogMessage
 
     ' ── 公开属性（由调用方设置）────────────────────────────────────
 
-    ''' <summary>标题标签文本（lblTitle）</summary>
+    ''' <summary>
+    ''' 标题标签文本（lblTitle）
+    ''' </summary>
     <DefaultValue("")>
     Public Property TitleText As String
         Get
@@ -16,7 +18,9 @@ Public Class DialogMessage
         End Set
     End Property
 
-    ''' <summary>说明文本（lblNote，分隔线下方）；为空时自动隐藏分隔线和 lblNote</summary>
+    ''' <summary>
+    ''' 说明文本（lblNote，分隔线下方）；为空时自动隐藏分隔线和 lblNote
+    ''' </summary>
     <DefaultValue("")>
     Public Property DescriptionText As String
         Get
@@ -25,12 +29,14 @@ Public Class DialogMessage
         Set(value As String)
             lblNote.Text = value
             Dim hasDesc As Boolean = Not String.IsNullOrWhiteSpace(value)
-            splitNote.Visible = hasDesc
+            split1.Visible = hasDesc
             lblNote.Visible = hasDesc
         End Set
     End Property
 
-    ''' <summary>确定按钮文本，默认"确定(&amp;O)"</summary>
+    ''' <summary>
+    ''' 确定按钮文本，默认"确定(&amp;O)"
+    ''' </summary>
     <DefaultValue("确定")>
     Public Property ConfirmText As String
         Get
@@ -41,7 +47,9 @@ Public Class DialogMessage
         End Set
     End Property
 
-    ''' <summary>取消按钮文本，默认"取消(&amp;C)"</summary>
+    ''' <summary>
+    ''' 取消按钮文本，默认"取消(&amp;C)"
+    ''' </summary>
     <DefaultValue("取消")>
     Public Property CancelText As String
         Get
@@ -52,20 +60,22 @@ Public Class DialogMessage
         End Set
     End Property
 
-    ''' <summary>列表项目集合（只读展示，不支持选中）</summary>
+    ''' <summary>
+    ''' 列表项目集合（只读展示，不支持选中）
+    ''' </summary>
     <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public ReadOnly Property Items As ListBox.ObjectCollection
         Get
-            Return lstbPopup.Items
+            Return lstContent.Items
         End Get
     End Property
 
     ' ── 列表自绘（与 lstFallback_DrawItem 完全一致的风格）────────
-    Private Sub lstbFonts_DrawItem(sender As Object, e As DrawItemEventArgs) Handles lstbPopup.DrawItem
-        If e.Index < 0 OrElse e.Index >= lstbPopup.Items.Count Then Return
+    Private Sub lstbFonts_DrawItem(sender As Object, e As DrawItemEventArgs) Handles lstContent.DrawItem
+        If e.Index < 0 OrElse e.Index >= lstContent.Items.Count Then Return
         e.DrawBackground()
 
-        Dim itemText As String = lstbPopup.Items(e.Index).ToString()
+        Dim itemText As String = lstContent.Items(e.Index).ToString()
         Dim textColor As Color = If((e.State And DrawItemState.Selected) <> 0,
                                 SystemColors.HighlightText, Color.Black)
 
@@ -105,7 +115,7 @@ Public Class DialogMessage
     End Sub
 
     Private Sub DialogPopup_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        lstbPopup.ItemHeight = FormMain.SharedItemHeight
+        lstContent.ItemHeight = FormMain.SharedItemHeight
     End Sub
 
 End Class

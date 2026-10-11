@@ -2,9 +2,11 @@
 Imports System.IO
 Imports System.IO.Compression
 Imports System.Text
+Imports System.Threading
 
 ''' <summary>
 ''' 导出窗体：负责将当前字体目录的字体和配置导出为 .dnfp 字体包或 index.json 配置文件。
+''' 打包为异步操作，支持用户取消。
 ''' </summary>
 Public Class FormOutput
 
@@ -38,6 +40,17 @@ Public Class FormOutput
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property DirectoryType As String = ""
 
+    ' ─── 状态字段 ──────────────────────────────────────────────────────
+
+    ''' <summary>当前打包操作的取消令牌源。为 Nothing 表示无操作进行中。</summary>
+    Private _cts As CancellationTokenSource = Nothing
+
+    ''' <summary>后台打包的进度载体。</summary>
+    Private Class PackProgress
+        Public Current As Integer
+        Public Message As String
+    End Class
+
     ' ─── 窗体生命周期 ──────────────────────────────────────────────────
 
     ''' <summary>窗体加载事件：初始化控件状态。</summary>
@@ -48,21 +61,21 @@ Public Class FormOutput
         If FullFontFiles Is Nothing Then FullFontFiles = New List(Of String)
         If String.IsNullOrEmpty(JsonContent) Then JsonContent = ""
 
-        tbNote.MaxLength = 40
-        rbNormal.Checked = True
+        txtNote.MaxLength = 40
+        rdoDefault.Checked = True
         chkNote.Checked = False
-        tbNote.Enabled = False
-        tbNote.Text = ""
+        txtNote.Enabled = False
+        txtNote.Text = ""
 
         Dim hasAnyFonts As Boolean = NormFontFiles.Count > 0 OrElse StdFontFiles.Count > 0 OrElse FullFontFiles.Count > 0
         Dim hasJson As Boolean = Not String.IsNullOrEmpty(JsonContent)
 
         If Not hasAnyFonts OrElse Not hasJson Then
-            btnSaveDNFP.Enabled = False
-            btnSaveJson.Enabled = False
+            btnDNFP.Enabled = False
+            btnCfg.Enabled = False
             tblExportMode.Enabled = False
-            Label3.Enabled = False
-            lblUsername.Enabled = False
+            tagInsert.Enabled = False
+            lblUserName.Enabled = False
             lblTime.Enabled = False
             lblDate.Enabled = False
         End If
@@ -72,15 +85,16 @@ Public Class FormOutput
     End Sub
 
     ' ─── 估算包体积 ──────────────────────────────────────────────────
+
     ''' <summary>刷新三种打包模式的预估体积标签和字体数量标签。</summary>
     Private Sub RefreshPackSizeLabels()
-        lblNormal.Text = FormatBytes(EstimatePackedSize(NormFontFiles))
-        lblStandard.Text = FormatBytes(EstimatePackedSize(StdFontFiles))
-        lblFull.Text = FormatBytes(EstimatePackedSize(FullFontFiles))
+        lblSizeDefault.Text = FormatBytes(EstimatePackedSize(NormFontFiles))
+        lblSizeStandard.Text = FormatBytes(EstimatePackedSize(StdFontFiles))
+        lblSizeFull.Text = FormatBytes(EstimatePackedSize(FullFontFiles))
 
-        lblCount1.Text = FormatCount(NormFontFiles)
-        lblCount2.Text = FormatCount(StdFontFiles)
-        lblCount3.Text = FormatCount(FullFontFiles)
+        lblCountDefault.Text = FormatCount(NormFontFiles)
+        lblCountStandard.Text = FormatCount(StdFontFiles)
+        lblCountFull.Text = FormatCount(FullFontFiles)
     End Sub
 
     ''' <summary>把字体列表格式化为 "共 N 项"。</summary>
@@ -130,27 +144,27 @@ Public Class FormOutput
 
     ''' <summary>备注复选框状态改变时启用/禁用备注文本框。</summary>
     Private Sub chkNote_CheckedChanged(sender As Object, e As EventArgs) Handles chkNote.CheckedChanged
-        tbNote.Enabled = chkNote.Checked
-        Label3.Enabled = chkNote.Checked
+        txtNote.Enabled = chkNote.Checked
+        tagInsert.Enabled = chkNote.Checked
         lblDate.Enabled = chkNote.Checked
         lblTime.Enabled = chkNote.Checked
-        lblUsername.Enabled = chkNote.Checked
+        lblUserName.Enabled = chkNote.Checked
     End Sub
 
     ' ─── 打包模式切换 ─────────────────────────────────────────────────
 
     ''' <summary>默认打包模式选中时更新标签颜色。</summary>
-    Private Sub rbNormal_CheckedChanged(sender As Object, e As EventArgs) Handles rbNormal.CheckedChanged
+    Private Sub rbNormal_CheckedChanged(sender As Object, e As EventArgs) Handles rdoDefault.CheckedChanged
         UpdateRadioButtonLabels()
     End Sub
 
     ''' <summary>标准打包模式选中时更新标签颜色。</summary>
-    Private Sub rbStandard_CheckedChanged(sender As Object, e As EventArgs) Handles rbStandard.CheckedChanged
+    Private Sub rbStandard_CheckedChanged(sender As Object, e As EventArgs) Handles rdoStandard.CheckedChanged
         UpdateRadioButtonLabels()
     End Sub
 
     ''' <summary>完整打包模式选中时更新标签颜色。</summary>
-    Private Sub rbFull_CheckedChanged(sender As Object, e As EventArgs) Handles rbFull.CheckedChanged
+    Private Sub rbFull_CheckedChanged(sender As Object, e As EventArgs) Handles rdoFull.CheckedChanged
         UpdateRadioButtonLabels()
     End Sub
 
@@ -159,34 +173,34 @@ Public Class FormOutput
         Dim activeColor As Color = Color.FromArgb(64, 64, 64)
         Dim inactiveColor As Color = Color.DarkGray
 
-        If rbNormal.Checked Then
-            lblNormal.ForeColor = activeColor
-            lblCount1.ForeColor = activeColor
-            lblStandard.ForeColor = inactiveColor
-            lblCount2.ForeColor = inactiveColor
-            lblFull.ForeColor = inactiveColor
-            lblCount3.ForeColor = inactiveColor
-        ElseIf rbStandard.Checked Then
-            lblNormal.ForeColor = inactiveColor
-            lblCount1.ForeColor = inactiveColor
-            lblStandard.ForeColor = activeColor
-            lblCount2.ForeColor = activeColor
-            lblFull.ForeColor = inactiveColor
-            lblCount3.ForeColor = inactiveColor
+        If rdoDefault.Checked Then
+            lblSizeDefault.ForeColor = activeColor
+            lblCountDefault.ForeColor = activeColor
+            lblSizeStandard.ForeColor = inactiveColor
+            lblCountStandard.ForeColor = inactiveColor
+            lblSizeFull.ForeColor = inactiveColor
+            lblCountFull.ForeColor = inactiveColor
+        ElseIf rdoStandard.Checked Then
+            lblSizeDefault.ForeColor = inactiveColor
+            lblCountDefault.ForeColor = inactiveColor
+            lblSizeStandard.ForeColor = activeColor
+            lblCountStandard.ForeColor = activeColor
+            lblSizeFull.ForeColor = inactiveColor
+            lblCountFull.ForeColor = inactiveColor
         Else
-            lblNormal.ForeColor = inactiveColor
-            lblCount1.ForeColor = inactiveColor
-            lblStandard.ForeColor = inactiveColor
-            lblCount2.ForeColor = inactiveColor
-            lblFull.ForeColor = activeColor
-            lblCount3.ForeColor = activeColor
+            lblSizeDefault.ForeColor = inactiveColor
+            lblCountDefault.ForeColor = inactiveColor
+            lblSizeStandard.ForeColor = inactiveColor
+            lblCountStandard.ForeColor = inactiveColor
+            lblSizeFull.ForeColor = activeColor
+            lblCountFull.ForeColor = activeColor
         End If
     End Sub
 
     ' ─── 快速插入：用户名 / 日期 / 时间 ──────────────────────────────
 
     ''' <summary>点击「用户名」标签：在备注框光标处插入 "@" + 当前 Windows 用户名。</summary>
-    Private Sub lblUsername_Click(sender As Object, e As EventArgs) Handles lblUsername.Click
+    Private Sub lblUsername_Click(sender As Object, e As EventArgs) Handles lblUserName.Click
         InsertTextIntoNote("@" & Environment.UserName)
     End Sub
 
@@ -206,36 +220,54 @@ Public Class FormOutput
 
         If Not chkNote.Checked Then chkNote.Checked = True
 
-        ' 计算剩余可用长度：MaxLength - (现有长度 - 被选中的长度)
-        Dim currentLen As Integer = tbNote.TextLength
-        Dim selLen As Integer = tbNote.SelectionLength
-        Dim maxLen As Integer = tbNote.MaxLength
+        Dim currentLen As Integer = txtNote.TextLength
+        Dim selLen As Integer = txtNote.SelectionLength
+        Dim maxLen As Integer = txtNote.MaxLength
         Dim remain As Integer = maxLen - (currentLen - selLen)
 
         If remain <= 0 Then Return
 
-        ' 超出剩余空间则截断
         If text.Length > remain Then
             text = text.Substring(0, remain)
         End If
 
-        tbNote.SelectedText = text
-        tbNote.Focus()
+        txtNote.SelectedText = text
+        txtNote.Focus()
+    End Sub
+
+    ' ─── 窗体关闭：打包中弹确认 ──────────────────────────────────────
+
+    ''' <summary>窗体关闭时若正在打包，询问用户是否中断。</summary>
+    Private Sub FormOutput_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
+        If _cts IsNot Nothing AndAlso Not _cts.IsCancellationRequested Then
+            If e.CloseReason = CloseReason.UserClosing Then
+                Dim result = MessageBox.Show("字体包正在导出，确认要中断并关闭吗？", "导出字体包",
+                                             MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+                If result <> DialogResult.Yes Then
+                    e.Cancel = True
+                    Return
+                End If
+            End If
+            Try
+                _cts.Cancel()
+            Catch
+            End Try
+        End If
     End Sub
 
     ' ─── 保存字体包（.dnfp）─────────────────────────────────────────────
 
-    ''' <summary>保存字体包按钮点击事件：将选中模式的字体打包为 .dnfp 文件。</summary>
-    Private Sub btnSaveDNFP_Click(sender As Object, e As EventArgs) Handles btnSaveDNFP.Click
+    ''' <summary>保存字体包按钮点击事件：异步将选中模式的字体打包为 .dnfp 文件，支持取消。</summary>
+    Private Async Sub btnSaveDNFP_Click(sender As Object, e As EventArgs) Handles btnDNFP.Click
+        ' ── 选择要打包的文件 ──
         Dim filesToPack As List(Of String)
-        Dim defaultFileName As String = "无标题"
-
-        If rbNormal.Checked Then
-            filesToPack = NormFontFiles
-        ElseIf rbStandard.Checked Then
-            filesToPack = StdFontFiles
+        Dim modeStr As String
+        If rdoDefault.Checked Then
+            filesToPack = NormFontFiles : modeStr = "Normal"
+        ElseIf rdoStandard.Checked Then
+            filesToPack = StdFontFiles : modeStr = "Standard"
         Else
-            filesToPack = FullFontFiles
+            filesToPack = FullFontFiles : modeStr = "Full"
         End If
 
         If filesToPack Is Nothing OrElse filesToPack.Count = 0 Then
@@ -248,91 +280,158 @@ Public Class FormOutput
             Return
         End If
 
+        ' ── 选保存路径 ──
+        Dim outputPath As String
         Using sfd As New SaveFileDialog()
             sfd.Title = "保存字体包"
-            sfd.FileName = defaultFileName
+            sfd.FileName = "无标题"
             sfd.Filter = "DDNet 字体包 (*.dnfp)|*.dnfp|所有文件|*.*"
             sfd.DefaultExt = "dnfp"
             If sfd.ShowDialog(Me) <> DialogResult.OK Then Return
+            outputPath = sfd.FileName
+        End Using
 
-            Dim tempJsonPath As String = Path.Combine(Path.GetTempPath(), "dnfe_export_index.json")
-            Dim origTitle As String = Me.Text
-            Dim totalSteps As Integer = filesToPack.Count + 2
+        ' ── 建立取消源 ──
+        _cts = New CancellationTokenSource()
+        Dim token As CancellationToken = _cts.Token
 
-            ProgressBar1.Visible = True
-            ProgressBar1.Minimum = 0
-            ProgressBar1.Maximum = totalSteps
-            ProgressBar1.Value = 0
-            btnSaveDNFP.Enabled = False
-            btnSaveJson.Enabled = False
+        ' ── UI 状态 ──
+        Dim origTitle As String = Me.Text
+        ProgressBar1.Visible = True
+        ProgressBar1.Minimum = 0
+        ProgressBar1.Maximum = filesToPack.Count + 2
+        ProgressBar1.Value = 0
+        btnDNFP.Enabled = False
+        btnCfg.Enabled = False
 
-            Try
-                File.WriteAllText(tempJsonPath, JsonContent, Encoding.UTF8)
-                If File.Exists(sfd.FileName) Then File.Delete(sfd.FileName)
-
-                Using zipArchive As ZipArchive = ZipFile.Open(sfd.FileName, ZipArchiveMode.Create)
-                    ' 步骤1：写入 index.json
-                    zipArchive.CreateEntryFromFile(tempJsonPath, "fonts/index.json", CompressionLevel.Optimal)
-                    ProgressBar1.Value = 1
-                    Me.Text = $"{origTitle} - 写入: index.json"
-
-                    ' 步骤2~N：写入字体文件
-                    Dim nstep As Integer = 1
-                    For Each fontFile As String In filesToPack
-                        If File.Exists(fontFile) Then
-                            Dim fileName As String = Path.GetFileName(fontFile)
-                            zipArchive.CreateEntryFromFile(fontFile, $"fonts/{fileName}", CompressionLevel.Optimal)
-                            nstep += 1
-                            ProgressBar1.Value = nstep
-                            Me.Text = $"{origTitle} - 拷贝: {fileName} ({nstep}/{totalSteps})"
-                        End If
-                    Next
-
-                    ' 最后一步：写入验证文件
-                    Dim verEntry As ZipArchiveEntry = zipArchive.CreateEntry("verification.txt")
-                    Dim modeStr As String
-                    If rbNormal.Checked Then
-                        modeStr = "Normal"
-                    ElseIf rbStandard.Checked Then
-                        modeStr = "Standard"
-                    Else
-                        modeStr = "Full"
+        ' ── 进度回调（自动编组回 UI 线程）──
+        Dim progress = New Progress(Of PackProgress)(
+            Sub(p)
+                If IsDisposed OrElse Disposing Then Return
+                Try
+                    If p.Current >= ProgressBar1.Minimum AndAlso p.Current <= ProgressBar1.Maximum Then
+                        ProgressBar1.Value = p.Current
                     End If
+                    If Not String.IsNullOrEmpty(p.Message) Then
+                        Me.Text = $"{origTitle} - {p.Message} ({p.Current}/{ProgressBar1.Maximum})"
+                    End If
+                Catch
+                End Try
+            End Sub)
 
-                    Using writer As New StreamWriter(verEntry.Open(), Encoding.UTF8)
-                        writer.WriteLine($"app=DDNetForeEdit")
-                        writer.WriteLine($"date={DateTime.Now:yyyy/MM/dd HH:mm}")
-                        writer.WriteLine($"mode={modeStr}")
-                        writer.WriteLine($"source={DirectoryType}")
-                        writer.WriteLine($"fonts={filesToPack.Count}")
-                        If chkNote.Checked AndAlso Not String.IsNullOrWhiteSpace(tbNote.Text) Then
-                            writer.WriteLine($"note={tbNote.Text.Trim()}")
-                        End If
-                    End Using
-                    nstep += 1
-                    ProgressBar1.Value = nstep
-                    Me.Text = $"{origTitle} - 写入: verification.txt"
-                End Using
-            Catch ex As Exception
-                MessageBox.Show("导出字体包时发生错误：" & ex.Message, "导出字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            Finally
+        ' ── 快照：避免后台线程访问 UI 控件 ──
+        Dim filesSnapshot As List(Of String) = filesToPack.ToList()
+        Dim jsonSnapshot As String = JsonContent
+        Dim noteSnapshot As String = If(chkNote.Checked, txtNote.Text.Trim(), "")
+        Dim dirTypeSnapshot As String = DirectoryType
+
+        Try
+            Await Task.Run(Sub() DoPackZip(outputPath, filesSnapshot, jsonSnapshot,
+                                           noteSnapshot, modeStr, dirTypeSnapshot, progress, token), token)
+
+            If Not IsDisposed AndAlso Not Disposing Then
+                MessageBox.Show("字体包已导出。", "导出字体包", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            End If
+        Catch ex As OperationCanceledException
+            ' 用户取消或关闭：删除未完成的输出文件
+            Try
+                If File.Exists(outputPath) Then File.Delete(outputPath)
+            Catch
+            End Try
+            'If Not IsDisposed AndAlso Not Disposing Then
+            '    MessageBox.Show("导出已取消，未完成的文件已删除。", "导出字体包",
+            '                    MessageBoxButtons.OK, MessageBoxIcon.Information)
+            'End If
+        Catch ex As Exception
+            ' 出错时也清理半成品
+            Try
+                If File.Exists(outputPath) Then File.Delete(outputPath)
+            Catch
+            End Try
+            If Not IsDisposed AndAlso Not Disposing Then
+                MessageBox.Show("导出字体包时发生错误：" & ex.Message, "导出字体包",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End If
+        Finally
+            Try
+                _cts?.Dispose()
+            Catch
+            End Try
+            _cts = Nothing
+
+            If Not IsDisposed AndAlso Not Disposing Then
                 ProgressBar1.Visible = False
                 ProgressBar1.Value = 0
                 Me.Text = origTitle
-                btnSaveDNFP.Enabled = True
-                btnSaveJson.Enabled = True
-                Try
-                    If File.Exists(tempJsonPath) Then File.Delete(tempJsonPath)
-                Catch
-                End Try
+                btnDNFP.Enabled = True
+                btnCfg.Enabled = True
+            End If
+        End Try
+    End Sub
+
+    ''' <summary>后台线程：打包所有字体到 .dnfp 文件。支持取消。</summary>
+    Private Sub DoPackZip(outputPath As String,
+                          filesToPack As List(Of String),
+                          jsonContent As String,
+                          noteText As String,
+                          modeStr As String,
+                          dirType As String,
+                          progress As IProgress(Of PackProgress),
+                          token As CancellationToken)
+        Dim tempJsonPath As String = Path.Combine(Path.GetTempPath(),
+                                                  "dnfe_export_" & Guid.NewGuid().ToString("N") & ".json")
+        Try
+            token.ThrowIfCancellationRequested()
+
+            File.WriteAllText(tempJsonPath, jsonContent, Encoding.UTF8)
+            If File.Exists(outputPath) Then File.Delete(outputPath)
+
+            Using zipArchive As ZipArchive = ZipFile.Open(outputPath, ZipArchiveMode.Create)
+                ' ── 1. index.json（小文本，保留 Optimal）──
+                token.ThrowIfCancellationRequested()
+                zipArchive.CreateEntryFromFile(tempJsonPath, "fonts/index.json", CompressionLevel.Optimal)
+                progress.Report(New PackProgress With {.Current = 1, .Message = "写入: index.json"})
+
+                ' ── 2. 字体文件（Fastest，比 Optimal 快 3~5 倍）──
+                Dim n As Integer = 1
+                For Each fontFile As String In filesToPack
+                    token.ThrowIfCancellationRequested()
+                    If File.Exists(fontFile) Then
+                        Dim fn As String = Path.GetFileName(fontFile)
+                        zipArchive.CreateEntryFromFile(fontFile, "fonts/" & fn, CompressionLevel.Fastest)
+                        n += 1
+                        progress.Report(New PackProgress With {.Current = n, .Message = "拷贝: " & fn})
+                    End If
+                Next
+
+                ' ── 3. verification.txt ──
+                token.ThrowIfCancellationRequested()
+                Dim verEntry As ZipArchiveEntry = zipArchive.CreateEntry("verification.txt", CompressionLevel.Optimal)
+                Using writer As New StreamWriter(verEntry.Open(), Encoding.UTF8)
+                    writer.WriteLine("app=DDNetForeEdit")
+                    writer.WriteLine($"date={DateTime.Now:yyyy/MM/dd HH:mm}")
+                    writer.WriteLine($"mode={modeStr}")
+                    writer.WriteLine($"source={dirType}")
+                    writer.WriteLine($"fonts={filesToPack.Count}")
+                    If Not String.IsNullOrWhiteSpace(noteText) Then
+                        writer.WriteLine($"note={noteText}")
+                    End If
+                End Using
+                n += 1
+                progress.Report(New PackProgress With {.Current = n, .Message = "写入: verification.txt"})
+            End Using
+        Finally
+            Try
+                If File.Exists(tempJsonPath) Then File.Delete(tempJsonPath)
+            Catch
             End Try
-        End Using
+        End Try
     End Sub
 
     ' ─── 保存配置（.json）─────────────────────────────────────────────
 
     ''' <summary>保存配置按钮点击事件：将当前 index.json 内容保存为独立文件。</summary>
-    Private Sub btnSaveJson_Click(sender As Object, e As EventArgs) Handles btnSaveJson.Click
+    Private Sub btnSaveJson_Click(sender As Object, e As EventArgs) Handles btnCfg.Click
         If String.IsNullOrEmpty(JsonContent) Then
             MessageBox.Show("配置内容为空，拒绝导出。", "保存配置", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
@@ -346,7 +445,7 @@ Public Class FormOutput
             Try
                 If File.Exists(sfd.FileName) Then File.Delete(sfd.FileName)
                 File.WriteAllText(sfd.FileName, JsonContent, Encoding.UTF8)
-                'MessageBox.Show("配置文件已导出。", "保存配置", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                MessageBox.Show("配置文件已导出。", "保存配置", MessageBoxButtons.OK, MessageBoxIcon.Information)
             Catch ex As Exception
                 MessageBox.Show($"配置文件导出失败：{ex.Message}", "保存配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try
