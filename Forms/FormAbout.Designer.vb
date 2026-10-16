@@ -79,12 +79,12 @@ Partial Class FormAbout
         lblTeeworlds.AutoSize = True
         lblTeeworlds.Cursor = Cursors.Hand
         lblTeeworlds.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblTeeworlds.Location = New Point(166, 168)
+        lblTeeworlds.Location = New Point(194, 168)
         lblTeeworlds.Margin = New Padding(3)
         lblTeeworlds.Name = "lblTeeworlds"
-        lblTeeworlds.Size = New Size(116, 18)
+        lblTeeworlds.Size = New Size(80, 18)
         lblTeeworlds.TabIndex = 11
-        lblTeeworlds.Text = "Teeworlds-图标"
+        lblTeeworlds.Text = "Teeworlds"
         ToolTip1.SetToolTip(lblTeeworlds, "访问「Teeworlds」官方仓库")
         ' 
         ' Label10
@@ -145,9 +145,9 @@ Partial Class FormAbout
         lblSarasaSans.Location = New Point(12, 144)
         lblSarasaSans.Margin = New Padding(3)
         lblSarasaSans.Name = "lblSarasaSans"
-        lblSarasaSans.Size = New Size(176, 18)
+        lblSarasaSans.Size = New Size(192, 18)
         lblSarasaSans.TabIndex = 36
-        lblSarasaSans.Text = "Sarasa Gothic-更纱黑体"
+        lblSarasaSans.Text = "Sarasa Gothic (更纱黑体)"
         ToolTip1.SetToolTip(lblSarasaSans, "访问「更纱黑体」官方仓库")
         ' 
         ' lblDDNet
@@ -159,9 +159,9 @@ Partial Class FormAbout
         lblDDNet.Location = New Point(12, 168)
         lblDDNet.Margin = New Padding(3)
         lblDDNet.Name = "lblDDNet"
-        lblDDNet.Size = New Size(148, 18)
+        lblDDNet.Size = New Size(176, 18)
         lblDDNet.TabIndex = 37
-        lblDDNet.Text = "DDRaceNetwork-图标"
+        lblDDNet.Text = "DDRaceNetwork (DDNet)"
         ToolTip1.SetToolTip(lblDDNet, "访问「DDNet」官方仓库")
         ' 
         ' lblThanks
@@ -205,7 +205,8 @@ Partial Class FormAbout
         lbldotNET10.Cursor = Cursors.Hand
         lbldotNET10.ForeColor = Color.DarkGray
         lbldotNET10.ImageAlign = ContentAlignment.MiddleRight
-        lbldotNET10.Location = New Point(144, 270)
+        lbldotNET10.Location = New Point(145, 270)
+        lbldotNET10.Margin = New Padding(3, 0, 6, 0)
         lbldotNET10.Name = "lbldotNET10"
         lbldotNET10.Size = New Size(164, 18)
         lbldotNET10.TabIndex = 41

@@ -160,10 +160,10 @@ Partial Class FormMain
         lblCfg.AutoSize = True
         lblCfg.Cursor = Cursors.Hand
         lblCfg.Dock = DockStyle.Left
-        lblCfg.Location = New Point(240, 3)
-        lblCfg.Margin = New Padding(0, 3, 0, 3)
+        lblCfg.Location = New Point(240, 2)
+        lblCfg.Margin = New Padding(0, 2, 0, 2)
         lblCfg.Name = "lblCfg"
-        lblCfg.Size = New Size(58, 24)
+        lblCfg.Size = New Size(58, 26)
         lblCfg.TabIndex = 6
         lblCfg.Text = "配置 ✔"
         lblCfg.TextAlign = ContentAlignment.MiddleLeft
@@ -199,14 +199,14 @@ Partial Class FormMain
         lblPreset.AutoSize = True
         lblPreset.Cursor = Cursors.Hand
         lblPreset.Dock = DockStyle.Left
-        lblPreset.Location = New Point(182, 3)
-        lblPreset.Margin = New Padding(3, 3, 0, 3)
+        lblPreset.Location = New Point(182, 2)
+        lblPreset.Margin = New Padding(3, 2, 0, 2)
         lblPreset.Name = "lblPreset"
-        lblPreset.Size = New Size(58, 24)
+        lblPreset.Size = New Size(58, 26)
         lblPreset.TabIndex = 5
         lblPreset.Text = "预装 ✔"
         lblPreset.TextAlign = ContentAlignment.MiddleLeft
-        ToolTip1.SetToolTip(lblPreset, "预装字体验证(Ctrl+Shift+S)")
+        ToolTip1.SetToolTip(lblPreset, "预装字体验证(Ctrl+Shift+V)")
         ' 
         ' tbPath
         ' 
@@ -221,6 +221,7 @@ Partial Class FormMain
         ' btnBrowse
         ' 
         btnBrowse.AllowDrop = True
+        btnBrowse.AutoSize = True
         btnBrowse.Image = CType(resources.GetObject("btnBrowse.Image"), Image)
         btnBrowse.Location = New Point(0, 0)
         btnBrowse.Margin = New Padding(0, 0, 3, 0)
@@ -250,10 +251,10 @@ Partial Class FormMain
         pnlFontInfo.BackColor = Color.White
         pnlFontInfo.BorderStyle = BorderStyle.FixedSingle
         pnlFontInfo.Controls.Add(tblFontInfo)
-        pnlFontInfo.Location = New Point(278, 27)
+        pnlFontInfo.Location = New Point(278, 30)
         pnlFontInfo.Name = "pnlFontInfo"
         pnlFontInfo.Padding = New Padding(0, 1, 0, 1)
-        pnlFontInfo.Size = New Size(222, 149)
+        pnlFontInfo.Size = New Size(222, 148)
         pnlFontInfo.TabIndex = 5
         ' 
         ' tblFontInfo
@@ -276,6 +277,7 @@ Partial Class FormMain
         tblFontInfo.Controls.Add(tagFontName, 0, 0)
         tblFontInfo.Dock = DockStyle.Fill
         tblFontInfo.Location = New Point(0, 1)
+        tblFontInfo.Margin = New Padding(3, 2, 3, 2)
         tblFontInfo.Name = "tblFontInfo"
         tblFontInfo.RowCount = 6
         tblFontInfo.RowStyles.Add(New RowStyle(SizeType.Percent, 16.666666F))
@@ -284,17 +286,17 @@ Partial Class FormMain
         tblFontInfo.RowStyles.Add(New RowStyle(SizeType.Percent, 16.666666F))
         tblFontInfo.RowStyles.Add(New RowStyle(SizeType.Percent, 16.666666F))
         tblFontInfo.RowStyles.Add(New RowStyle(SizeType.Percent, 16.666666F))
-        tblFontInfo.Size = New Size(220, 145)
+        tblFontInfo.Size = New Size(220, 144)
         tblFontInfo.TabIndex = 0
         ' 
         ' tagFontFamily
         ' 
         tagFontFamily.AutoSize = True
         tagFontFamily.Dock = DockStyle.Left
-        tagFontFamily.Location = New Point(3, 27)
-        tagFontFamily.Margin = New Padding(3)
+        tagFontFamily.Location = New Point(3, 26)
+        tagFontFamily.Margin = New Padding(3, 2, 3, 2)
         tagFontFamily.Name = "tagFontFamily"
-        tagFontFamily.Size = New Size(36, 18)
+        tagFontFamily.Size = New Size(36, 20)
         tagFontFamily.TabIndex = 1
         tagFontFamily.Text = "族名"
         tagFontFamily.TextAlign = ContentAlignment.MiddleLeft
@@ -303,10 +305,10 @@ Partial Class FormMain
         ' 
         tagFontType.AutoSize = True
         tagFontType.Dock = DockStyle.Left
-        tagFontType.Location = New Point(3, 51)
-        tagFontType.Margin = New Padding(3)
+        tagFontType.Location = New Point(3, 50)
+        tagFontType.Margin = New Padding(3, 2, 3, 2)
         tagFontType.Name = "tagFontType"
-        tagFontType.Size = New Size(36, 18)
+        tagFontType.Size = New Size(36, 20)
         tagFontType.TabIndex = 2
         tagFontType.Text = "类型"
         tagFontType.TextAlign = ContentAlignment.MiddleLeft
@@ -315,10 +317,10 @@ Partial Class FormMain
         ' 
         tagFontCoverage.AutoSize = True
         tagFontCoverage.Dock = DockStyle.Left
-        tagFontCoverage.Location = New Point(3, 75)
-        tagFontCoverage.Margin = New Padding(3)
+        tagFontCoverage.Location = New Point(3, 74)
+        tagFontCoverage.Margin = New Padding(3, 2, 3, 2)
         tagFontCoverage.Name = "tagFontCoverage"
-        tagFontCoverage.Size = New Size(36, 18)
+        tagFontCoverage.Size = New Size(36, 20)
         tagFontCoverage.TabIndex = 3
         tagFontCoverage.Text = "语言"
         tagFontCoverage.TextAlign = ContentAlignment.MiddleLeft
@@ -327,10 +329,10 @@ Partial Class FormMain
         ' 
         tagFontSize.AutoSize = True
         tagFontSize.Dock = DockStyle.Left
-        tagFontSize.Location = New Point(3, 99)
-        tagFontSize.Margin = New Padding(3)
+        tagFontSize.Location = New Point(3, 98)
+        tagFontSize.Margin = New Padding(3, 2, 3, 2)
         tagFontSize.Name = "tagFontSize"
-        tagFontSize.Size = New Size(36, 18)
+        tagFontSize.Size = New Size(36, 20)
         tagFontSize.TabIndex = 4
         tagFontSize.Text = "大小"
         tagFontSize.TextAlign = ContentAlignment.MiddleLeft
@@ -339,10 +341,10 @@ Partial Class FormMain
         ' 
         tagFontModify.AutoSize = True
         tagFontModify.Dock = DockStyle.Left
-        tagFontModify.Location = New Point(3, 123)
-        tagFontModify.Margin = New Padding(3)
+        tagFontModify.Location = New Point(3, 122)
+        tagFontModify.Margin = New Padding(3, 2, 3, 2)
         tagFontModify.Name = "tagFontModify"
-        tagFontModify.Size = New Size(36, 19)
+        tagFontModify.Size = New Size(36, 20)
         tagFontModify.TabIndex = 5
         tagFontModify.Text = "日期"
         tagFontModify.TextAlign = ContentAlignment.MiddleLeft
@@ -352,8 +354,8 @@ Partial Class FormMain
         lblFontName.AutoEllipsis = True
         lblFontName.AutoSize = True
         lblFontName.Cursor = Cursors.Hand
-        lblFontName.Location = New Point(45, 3)
-        lblFontName.Margin = New Padding(3)
+        lblFontName.Location = New Point(45, 2)
+        lblFontName.Margin = New Padding(3, 2, 3, 2)
         lblFontName.Name = "lblFontName"
         lblFontName.Size = New Size(16, 18)
         lblFontName.TabIndex = 6
@@ -365,8 +367,8 @@ Partial Class FormMain
         lblFontFamily.AutoEllipsis = True
         lblFontFamily.AutoSize = True
         lblFontFamily.Cursor = Cursors.Hand
-        lblFontFamily.Location = New Point(45, 27)
-        lblFontFamily.Margin = New Padding(3)
+        lblFontFamily.Location = New Point(45, 26)
+        lblFontFamily.Margin = New Padding(3, 2, 3, 2)
         lblFontFamily.Name = "lblFontFamily"
         lblFontFamily.Size = New Size(16, 18)
         lblFontFamily.TabIndex = 7
@@ -377,8 +379,8 @@ Partial Class FormMain
         ' 
         lblFontType.AutoEllipsis = True
         lblFontType.AutoSize = True
-        lblFontType.Location = New Point(45, 51)
-        lblFontType.Margin = New Padding(3)
+        lblFontType.Location = New Point(45, 50)
+        lblFontType.Margin = New Padding(3, 2, 3, 2)
         lblFontType.Name = "lblFontType"
         lblFontType.Size = New Size(16, 18)
         lblFontType.TabIndex = 8
@@ -389,8 +391,8 @@ Partial Class FormMain
         ' 
         lblFontCoverage.AutoEllipsis = True
         lblFontCoverage.AutoSize = True
-        lblFontCoverage.Location = New Point(45, 75)
-        lblFontCoverage.Margin = New Padding(3)
+        lblFontCoverage.Location = New Point(45, 74)
+        lblFontCoverage.Margin = New Padding(3, 2, 3, 2)
         lblFontCoverage.Name = "lblFontCoverage"
         lblFontCoverage.Size = New Size(16, 18)
         lblFontCoverage.TabIndex = 9
@@ -401,8 +403,8 @@ Partial Class FormMain
         ' 
         lblFontSize.AutoEllipsis = True
         lblFontSize.AutoSize = True
-        lblFontSize.Location = New Point(45, 99)
-        lblFontSize.Margin = New Padding(3)
+        lblFontSize.Location = New Point(45, 98)
+        lblFontSize.Margin = New Padding(3, 2, 3, 2)
         lblFontSize.Name = "lblFontSize"
         lblFontSize.Size = New Size(16, 18)
         lblFontSize.TabIndex = 10
@@ -413,8 +415,8 @@ Partial Class FormMain
         ' 
         lblFontModify.AutoEllipsis = True
         lblFontModify.AutoSize = True
-        lblFontModify.Location = New Point(45, 123)
-        lblFontModify.Margin = New Padding(3)
+        lblFontModify.Location = New Point(45, 122)
+        lblFontModify.Margin = New Padding(3, 2, 3, 2)
         lblFontModify.Name = "lblFontModify"
         lblFontModify.Size = New Size(16, 18)
         lblFontModify.TabIndex = 11
@@ -425,10 +427,10 @@ Partial Class FormMain
         ' 
         tagFontName.AutoSize = True
         tagFontName.Dock = DockStyle.Left
-        tagFontName.Location = New Point(3, 3)
-        tagFontName.Margin = New Padding(3)
+        tagFontName.Location = New Point(3, 2)
+        tagFontName.Margin = New Padding(3, 2, 3, 2)
         tagFontName.Name = "tagFontName"
-        tagFontName.Size = New Size(36, 18)
+        tagFontName.Size = New Size(36, 20)
         tagFontName.TabIndex = 0
         tagFontName.Text = "标题"
         tagFontName.TextAlign = ContentAlignment.MiddleLeft
@@ -444,7 +446,7 @@ Partial Class FormMain
         TableLayoutPanel4.Controls.Add(btnFontInstall, 0, 0)
         TableLayoutPanel4.Controls.Add(btnFontInfo, 3, 0)
         TableLayoutPanel4.Controls.Add(btnFontUninstall, 1, 0)
-        TableLayoutPanel4.Location = New Point(278, 182)
+        TableLayoutPanel4.Location = New Point(278, 184)
         TableLayoutPanel4.Name = "TableLayoutPanel4"
         TableLayoutPanel4.RowCount = 1
         TableLayoutPanel4.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
@@ -468,6 +470,7 @@ Partial Class FormMain
         ' 
         ' btnFontInfo
         ' 
+        btnFontInfo.AutoSize = True
         btnFontInfo.Location = New Point(170, 0)
         btnFontInfo.Margin = New Padding(3, 0, 0, 0)
         btnFontInfo.Name = "btnFontInfo"
@@ -495,17 +498,17 @@ Partial Class FormMain
         lstDirFonts.FormattingEnabled = True
         lstDirFonts.IntegralHeight = False
         lstDirFonts.ItemHeight = 25
-        lstDirFonts.Location = New Point(12, 27)
+        lstDirFonts.Location = New Point(12, 30)
         lstDirFonts.Name = "lstDirFonts"
         lstDirFonts.SelectionMode = SelectionMode.MultiExtended
-        lstDirFonts.Size = New Size(260, 185)
+        lstDirFonts.Size = New Size(260, 184)
         lstDirFonts.TabIndex = 4
         ' 
         ' splitDirectory
         ' 
         splitDirectory.ForeColor = Color.DarkGray
-        splitDirectory.Location = New Point(12, 48)
-        splitDirectory.Margin = New Padding(3)
+        splitDirectory.Location = New Point(12, 51)
+        splitDirectory.Margin = New Padding(3, 6, 3, 6)
         splitDirectory.Name = "splitDirectory"
         splitDirectory.Size = New Size(488, 18)
         splitDirectory.TabIndex = 2
@@ -517,8 +520,8 @@ Partial Class FormMain
         lblDirFonts.AutoEllipsis = True
         lblDirFonts.AutoSize = True
         lblDirFonts.Cursor = Cursors.Hand
-        lblDirFonts.Location = New Point(0, 3)
-        lblDirFonts.Margin = New Padding(0, 3, 3, 3)
+        lblDirFonts.Location = New Point(0, 2)
+        lblDirFonts.Margin = New Padding(0, 2, 3, 2)
         lblDirFonts.Name = "lblDirFonts"
         lblDirFonts.Size = New Size(92, 18)
         lblDirFonts.TabIndex = 0
@@ -530,8 +533,8 @@ Partial Class FormMain
         ' 
         lblLocalFonts.AutoSize = True
         lblLocalFonts.Cursor = Cursors.Hand
-        lblLocalFonts.Location = New Point(452, 3)
-        lblLocalFonts.Margin = New Padding(0, 3, 0, 3)
+        lblLocalFonts.Location = New Point(452, 2)
+        lblLocalFonts.Margin = New Padding(0, 2, 0, 2)
         lblLocalFonts.Name = "lblLocalFonts"
         lblLocalFonts.Size = New Size(36, 18)
         lblLocalFonts.TabIndex = 1
@@ -542,8 +545,8 @@ Partial Class FormMain
         ' splitFont
         ' 
         splitFont.AutoSize = True
-        splitFont.Location = New Point(436, 3)
-        splitFont.Margin = New Padding(0, 3, 0, 3)
+        splitFont.Location = New Point(436, 2)
+        splitFont.Margin = New Padding(0, 2, 0, 2)
         splitFont.Name = "splitFont"
         splitFont.Size = New Size(16, 18)
         splitFont.TabIndex = 2
@@ -554,8 +557,8 @@ Partial Class FormMain
         ' 
         lblSystemFonts.AutoSize = True
         lblSystemFonts.Cursor = Cursors.Hand
-        lblSystemFonts.Location = New Point(400, 3)
-        lblSystemFonts.Margin = New Padding(3, 3, 0, 3)
+        lblSystemFonts.Location = New Point(400, 2)
+        lblSystemFonts.Margin = New Padding(3, 2, 0, 2)
         lblSystemFonts.Name = "lblSystemFonts"
         lblSystemFonts.Size = New Size(36, 18)
         lblSystemFonts.TabIndex = 3
@@ -575,7 +578,7 @@ Partial Class FormMain
         tblDirFonts.Controls.Add(lblLocalFonts, 3, 0)
         tblDirFonts.Controls.Add(splitFont, 2, 0)
         tblDirFonts.Controls.Add(lblSystemFonts, 1, 0)
-        tblDirFonts.Location = New Point(12, 72)
+        tblDirFonts.Location = New Point(12, 0)
         tblDirFonts.Name = "tblDirFonts"
         tblDirFonts.RowCount = 1
         tblDirFonts.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
@@ -585,8 +588,8 @@ Partial Class FormMain
         ' splitCfg
         ' 
         splitCfg.ForeColor = Color.DarkGray
-        splitCfg.Location = New Point(12, 296)
-        splitCfg.Margin = New Padding(3, 6, 3, 3)
+        splitCfg.Location = New Point(12, 300)
+        splitCfg.Margin = New Padding(3, 6, 3, 6)
         splitCfg.Name = "splitCfg"
         splitCfg.Size = New Size(488, 18)
         splitCfg.TabIndex = 5
@@ -628,8 +631,7 @@ Partial Class FormMain
         tblConfigFonts.Controls.Add(btnRecoveryTC, 4, 5)
         tblConfigFonts.Controls.Add(tagLA, 0, 0)
         tblConfigFonts.Controls.Add(tagJP, 0, 2)
-        tblConfigFonts.Location = New Point(12, 320)
-        tblConfigFonts.Margin = New Padding(3, 3, 3, 6)
+        tblConfigFonts.Location = New Point(12, 327)
         tblConfigFonts.Name = "tblConfigFonts"
         tblConfigFonts.RowCount = 8
         tblConfigFonts.RowStyles.Add(New RowStyle())
@@ -640,7 +642,7 @@ Partial Class FormMain
         tblConfigFonts.RowStyles.Add(New RowStyle())
         tblConfigFonts.RowStyles.Add(New RowStyle())
         tblConfigFonts.RowStyles.Add(New RowStyle(SizeType.Absolute, 20F))
-        tblConfigFonts.Size = New Size(488, 329)
+        tblConfigFonts.Size = New Size(488, 328)
         tblConfigFonts.TabIndex = 6
         ' 
         ' btnRecoveryLA
@@ -658,7 +660,7 @@ Partial Class FormMain
         ' 
         tagKR.AutoSize = True
         tagKR.Dock = DockStyle.Left
-        tagKR.Location = New Point(0, 92)
+        tagKR.Location = New Point(0, 90)
         tagKR.Margin = New Padding(0, 0, 3, 0)
         tagKR.Name = "tagKR"
         tagKR.Size = New Size(36, 32)
@@ -672,10 +674,10 @@ Partial Class FormMain
         pnlFallbackFonts.Controls.Add(lstFallback)
         pnlFallbackFonts.Controls.Add(pnlFallback)
         pnlFallbackFonts.Dock = DockStyle.Top
-        pnlFallbackFonts.Location = New Point(0, 216)
+        pnlFallbackFonts.Location = New Point(0, 212)
         pnlFallbackFonts.Margin = New Padding(0)
         pnlFallbackFonts.Name = "pnlFallbackFonts"
-        pnlFallbackFonts.Size = New Size(488, 101)
+        pnlFallbackFonts.Size = New Size(488, 116)
         pnlFallbackFonts.TabIndex = 30
         ' 
         ' lstFallback
@@ -685,7 +687,8 @@ Partial Class FormMain
         lstFallback.FormattingEnabled = True
         lstFallback.IntegralHeight = False
         lstFallback.ItemHeight = 25
-        lstFallback.Location = New Point(0, 3)
+        lstFallback.Location = New Point(0, 2)
+        lstFallback.Margin = New Padding(3, 2, 3, 2)
         lstFallback.Name = "lstFallback"
         lstFallback.Size = New Size(260, 98)
         lstFallback.TabIndex = 7
@@ -698,9 +701,10 @@ Partial Class FormMain
         pnlFallback.Controls.Add(btnRecoveryFallback)
         pnlFallback.Controls.Add(btnRemove)
         pnlFallback.Controls.Add(btnDown)
-        pnlFallback.Location = New Point(266, 3)
+        pnlFallback.Location = New Point(266, 2)
+        pnlFallback.Margin = New Padding(3, 2, 3, 2)
         pnlFallback.Name = "pnlFallback"
-        pnlFallback.Size = New Size(222, 98)
+        pnlFallback.Size = New Size(222, 104)
         pnlFallback.TabIndex = 29
         ' 
         ' cmbFallback
@@ -710,6 +714,7 @@ Partial Class FormMain
         cmbFallback.ForeColor = Color.Black
         cmbFallback.FormattingEnabled = True
         cmbFallback.Location = New Point(0, 0)
+        cmbFallback.Margin = New Padding(3, 2, 3, 2)
         cmbFallback.Name = "cmbFallback"
         cmbFallback.Size = New Size(222, 26)
         cmbFallback.TabIndex = 24
@@ -718,6 +723,7 @@ Partial Class FormMain
         ' 
         btnUp.Image = CType(resources.GetObject("btnUp.Image"), Image)
         btnUp.Location = New Point(0, 32)
+        btnUp.Margin = New Padding(3, 2, 3, 2)
         btnUp.Name = "btnUp"
         btnUp.Size = New Size(30, 30)
         btnUp.TabIndex = 27
@@ -728,6 +734,7 @@ Partial Class FormMain
         ' 
         btnInsert.Image = CType(resources.GetObject("btnInsert.Image"), Image)
         btnInsert.Location = New Point(120, 32)
+        btnInsert.Margin = New Padding(3, 2, 3, 2)
         btnInsert.Name = "btnInsert"
         btnInsert.Size = New Size(30, 30)
         btnInsert.TabIndex = 26
@@ -738,7 +745,7 @@ Partial Class FormMain
         ' 
         btnRecoveryFallback.Image = CType(resources.GetObject("btnRecoveryFallback.Image"), Image)
         btnRecoveryFallback.Location = New Point(192, 32)
-        btnRecoveryFallback.Margin = New Padding(3, 3, 0, 3)
+        btnRecoveryFallback.Margin = New Padding(3, 2, 0, 2)
         btnRecoveryFallback.Name = "btnRecoveryFallback"
         btnRecoveryFallback.Size = New Size(30, 30)
         btnRecoveryFallback.TabIndex = 8
@@ -749,6 +756,7 @@ Partial Class FormMain
         ' 
         btnRemove.Image = CType(resources.GetObject("btnRemove.Image"), Image)
         btnRemove.Location = New Point(156, 32)
+        btnRemove.Margin = New Padding(3, 2, 3, 2)
         btnRemove.Name = "btnRemove"
         btnRemove.Size = New Size(30, 30)
         btnRemove.TabIndex = 25
@@ -759,7 +767,7 @@ Partial Class FormMain
         ' 
         btnDown.Image = CType(resources.GetObject("btnDown.Image"), Image)
         btnDown.Location = New Point(0, 68)
-        btnDown.Margin = New Padding(3, 0, 3, 3)
+        btnDown.Margin = New Padding(3, 2, 3, 2)
         btnDown.Name = "btnDown"
         btnDown.Size = New Size(30, 30)
         btnDown.TabIndex = 28
@@ -770,7 +778,7 @@ Partial Class FormMain
         ' 
         tagSC.AutoSize = True
         tagSC.Dock = DockStyle.Left
-        tagSC.Location = New Point(0, 124)
+        tagSC.Location = New Point(0, 122)
         tagSC.Margin = New Padding(0, 0, 3, 0)
         tagSC.Name = "tagSC"
         tagSC.Size = New Size(64, 32)
@@ -782,7 +790,7 @@ Partial Class FormMain
         ' 
         tagTC.AutoSize = True
         tagTC.Dock = DockStyle.Left
-        tagTC.Location = New Point(0, 156)
+        tagTC.Location = New Point(0, 154)
         tagTC.Margin = New Padding(0, 0, 3, 0)
         tagTC.Name = "tagTC"
         tagTC.Size = New Size(64, 32)
@@ -809,7 +817,7 @@ Partial Class FormMain
         lblTC.AutoEllipsis = True
         lblTC.AutoSize = True
         lblTC.Dock = DockStyle.Left
-        lblTC.Location = New Point(266, 156)
+        lblTC.Location = New Point(266, 154)
         lblTC.Name = "lblTC"
         lblTC.Size = New Size(106, 32)
         lblTC.TabIndex = 9
@@ -821,7 +829,7 @@ Partial Class FormMain
         lblSC.AutoEllipsis = True
         lblSC.AutoSize = True
         lblSC.Dock = DockStyle.Left
-        lblSC.Location = New Point(266, 124)
+        lblSC.Location = New Point(266, 122)
         lblSC.Name = "lblSC"
         lblSC.Size = New Size(106, 32)
         lblSC.TabIndex = 8
@@ -833,7 +841,7 @@ Partial Class FormMain
         lblKorean.AutoEllipsis = True
         lblKorean.AutoSize = True
         lblKorean.Dock = DockStyle.Left
-        lblKorean.Location = New Point(266, 92)
+        lblKorean.Location = New Point(266, 90)
         lblKorean.Name = "lblKorean"
         lblKorean.Size = New Size(114, 32)
         lblKorean.TabIndex = 7
@@ -845,7 +853,7 @@ Partial Class FormMain
         lblJP.AutoEllipsis = True
         lblJP.AutoSize = True
         lblJP.Dock = DockStyle.Left
-        lblJP.Location = New Point(266, 60)
+        lblJP.Location = New Point(266, 58)
         lblJP.Name = "lblJP"
         lblJP.Size = New Size(106, 32)
         lblJP.TabIndex = 6
@@ -856,8 +864,8 @@ Partial Class FormMain
         ' 
         chkLanguage.AutoSize = True
         tblConfigFonts.SetColumnSpan(chkLanguage, 2)
-        chkLanguage.Location = New Point(0, 35)
-        chkLanguage.Margin = New Padding(0, 3, 3, 3)
+        chkLanguage.Location = New Point(0, 34)
+        chkLanguage.Margin = New Padding(0, 2, 3, 2)
         chkLanguage.Name = "chkLanguage"
         chkLanguage.Size = New Size(128, 22)
         chkLanguage.TabIndex = 10
@@ -868,8 +876,8 @@ Partial Class FormMain
         ' 
         chkFallback.AutoSize = True
         tblConfigFonts.SetColumnSpan(chkFallback, 2)
-        chkFallback.Location = New Point(0, 191)
-        chkFallback.Margin = New Padding(0, 3, 3, 3)
+        chkFallback.Location = New Point(0, 188)
+        chkFallback.Margin = New Padding(0, 2, 3, 2)
         chkFallback.Name = "chkFallback"
         chkFallback.Size = New Size(114, 22)
         chkFallback.TabIndex = 11
@@ -894,7 +902,7 @@ Partial Class FormMain
         cmbJP.Dock = DockStyle.Left
         cmbJP.ForeColor = Color.Black
         cmbJP.FormattingEnabled = True
-        cmbJP.Location = New Point(70, 64)
+        cmbJP.Location = New Point(70, 62)
         cmbJP.Margin = New Padding(3, 4, 3, 2)
         cmbJP.Name = "cmbJP"
         cmbJP.Size = New Size(190, 26)
@@ -906,7 +914,7 @@ Partial Class FormMain
         cmbKR.Dock = DockStyle.Left
         cmbKR.ForeColor = Color.Black
         cmbKR.FormattingEnabled = True
-        cmbKR.Location = New Point(70, 96)
+        cmbKR.Location = New Point(70, 94)
         cmbKR.Margin = New Padding(3, 4, 3, 2)
         cmbKR.Name = "cmbKR"
         cmbKR.Size = New Size(190, 26)
@@ -918,7 +926,7 @@ Partial Class FormMain
         cmbSC.Dock = DockStyle.Left
         cmbSC.ForeColor = Color.Black
         cmbSC.FormattingEnabled = True
-        cmbSC.Location = New Point(70, 128)
+        cmbSC.Location = New Point(70, 126)
         cmbSC.Margin = New Padding(3, 4, 3, 2)
         cmbSC.Name = "cmbSC"
         cmbSC.Size = New Size(190, 26)
@@ -930,7 +938,7 @@ Partial Class FormMain
         cmbTC.Dock = DockStyle.Left
         cmbTC.ForeColor = Color.Black
         cmbTC.FormattingEnabled = True
-        cmbTC.Location = New Point(70, 160)
+        cmbTC.Location = New Point(70, 158)
         cmbTC.Margin = New Padding(3, 4, 3, 2)
         cmbTC.Name = "cmbTC"
         cmbTC.Size = New Size(190, 26)
@@ -939,7 +947,7 @@ Partial Class FormMain
         ' btnRecoveryJP
         ' 
         btnRecoveryJP.Image = CType(resources.GetObject("btnRecoveryJP.Image"), Image)
-        btnRecoveryJP.Location = New Point(458, 61)
+        btnRecoveryJP.Location = New Point(458, 59)
         btnRecoveryJP.Margin = New Padding(3, 1, 0, 0)
         btnRecoveryJP.Name = "btnRecoveryJP"
         btnRecoveryJP.Size = New Size(30, 30)
@@ -950,7 +958,7 @@ Partial Class FormMain
         ' btnFollowJP
         ' 
         btnFollowJP.Image = CType(resources.GetObject("btnFollowJP.Image"), Image)
-        btnFollowJP.Location = New Point(422, 61)
+        btnFollowJP.Location = New Point(422, 59)
         btnFollowJP.Margin = New Padding(3, 1, 3, 0)
         btnFollowJP.Name = "btnFollowJP"
         btnFollowJP.Size = New Size(30, 30)
@@ -961,7 +969,7 @@ Partial Class FormMain
         ' btnFollowKR
         ' 
         btnFollowKR.Image = CType(resources.GetObject("btnFollowKR.Image"), Image)
-        btnFollowKR.Location = New Point(422, 93)
+        btnFollowKR.Location = New Point(422, 91)
         btnFollowKR.Margin = New Padding(3, 1, 3, 0)
         btnFollowKR.Name = "btnFollowKR"
         btnFollowKR.Size = New Size(30, 30)
@@ -972,7 +980,7 @@ Partial Class FormMain
         ' btnRecoveryKR
         ' 
         btnRecoveryKR.Image = CType(resources.GetObject("btnRecoveryKR.Image"), Image)
-        btnRecoveryKR.Location = New Point(458, 93)
+        btnRecoveryKR.Location = New Point(458, 91)
         btnRecoveryKR.Margin = New Padding(3, 1, 0, 0)
         btnRecoveryKR.Name = "btnRecoveryKR"
         btnRecoveryKR.Size = New Size(30, 30)
@@ -983,7 +991,7 @@ Partial Class FormMain
         ' btnFollowSC
         ' 
         btnFollowSC.Image = CType(resources.GetObject("btnFollowSC.Image"), Image)
-        btnFollowSC.Location = New Point(422, 125)
+        btnFollowSC.Location = New Point(422, 123)
         btnFollowSC.Margin = New Padding(3, 1, 3, 0)
         btnFollowSC.Name = "btnFollowSC"
         btnFollowSC.Size = New Size(30, 30)
@@ -994,7 +1002,7 @@ Partial Class FormMain
         ' btnRecoverySC
         ' 
         btnRecoverySC.Image = CType(resources.GetObject("btnRecoverySC.Image"), Image)
-        btnRecoverySC.Location = New Point(458, 125)
+        btnRecoverySC.Location = New Point(458, 123)
         btnRecoverySC.Margin = New Padding(3, 1, 0, 0)
         btnRecoverySC.Name = "btnRecoverySC"
         btnRecoverySC.Size = New Size(30, 30)
@@ -1005,7 +1013,7 @@ Partial Class FormMain
         ' btnFollowTC
         ' 
         btnFollowTC.Image = CType(resources.GetObject("btnFollowTC.Image"), Image)
-        btnFollowTC.Location = New Point(422, 157)
+        btnFollowTC.Location = New Point(422, 155)
         btnFollowTC.Margin = New Padding(3, 1, 3, 0)
         btnFollowTC.Name = "btnFollowTC"
         btnFollowTC.Size = New Size(30, 30)
@@ -1016,7 +1024,7 @@ Partial Class FormMain
         ' btnRecoveryTC
         ' 
         btnRecoveryTC.Image = CType(resources.GetObject("btnRecoveryTC.Image"), Image)
-        btnRecoveryTC.Location = New Point(458, 157)
+        btnRecoveryTC.Location = New Point(458, 155)
         btnRecoveryTC.Margin = New Padding(3, 1, 0, 0)
         btnRecoveryTC.Name = "btnRecoveryTC"
         btnRecoveryTC.Size = New Size(30, 30)
@@ -1040,7 +1048,7 @@ Partial Class FormMain
         ' 
         tagJP.AutoSize = True
         tagJP.Dock = DockStyle.Left
-        tagJP.Location = New Point(0, 60)
+        tagJP.Location = New Point(0, 58)
         tagJP.Margin = New Padding(0, 0, 3, 0)
         tagJP.Name = "tagJP"
         tagJP.Size = New Size(36, 32)
@@ -1111,9 +1119,10 @@ Partial Class FormMain
         ' ProgressBar1
         ' 
         ProgressBar1.Dock = DockStyle.Fill
-        ProgressBar1.Location = New Point(108, 3)
+        ProgressBar1.Location = New Point(108, 2)
+        ProgressBar1.Margin = New Padding(3, 2, 3, 2)
         ProgressBar1.Name = "ProgressBar1"
-        ProgressBar1.Size = New Size(203, 24)
+        ProgressBar1.Size = New Size(206, 26)
         ProgressBar1.TabIndex = 9
         ProgressBar1.Visible = False
         ' 
@@ -1121,7 +1130,7 @@ Partial Class FormMain
         ' 
         btnBlade.AllowDrop = True
         btnBlade.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
-        btnBlade.Location = New Point(317, 0)
+        btnBlade.Location = New Point(320, 0)
         btnBlade.Margin = New Padding(3, 0, 3, 0)
         btnBlade.Name = "btnBlade"
         btnBlade.Padding = New Padding(3, 0, 3, 0)
@@ -1133,12 +1142,11 @@ Partial Class FormMain
         ' 
         ' btnOutput
         ' 
-        btnOutput.AutoSize = True
-        btnOutput.Location = New Point(375, 0)
+        btnOutput.Location = New Point(378, 0)
         btnOutput.Margin = New Padding(3, 0, 3, 0)
         btnOutput.Name = "btnOutput"
         btnOutput.Padding = New Padding(3, 0, 3, 0)
-        btnOutput.Size = New Size(55, 30)
+        btnOutput.Size = New Size(52, 30)
         btnOutput.TabIndex = 6
         btnOutput.Text = "导出"
         ToolTip1.SetToolTip(btnOutput, "保存字体包或配置(Ctrl+J)")
@@ -1162,9 +1170,11 @@ Partial Class FormMain
         pnlDirFonts.Controls.Add(lstDirFonts)
         pnlDirFonts.Controls.Add(pnlFontInfo)
         pnlDirFonts.Controls.Add(TableLayoutPanel4)
-        pnlDirFonts.Location = New Point(0, 75)
+        pnlDirFonts.Controls.Add(tblDirFonts)
+        pnlDirFonts.Location = New Point(0, 77)
+        pnlDirFonts.Margin = New Padding(3, 2, 3, 2)
         pnlDirFonts.Name = "pnlDirFonts"
-        pnlDirFonts.Size = New Size(518, 225)
+        pnlDirFonts.Size = New Size(518, 223)
         pnlDirFonts.TabIndex = 8
         ' 
         ' ImageList1
@@ -1178,6 +1188,10 @@ Partial Class FormMain
         ImageList1.Images.SetKeyName(3, "output.ico")
         ImageList1.Images.SetKeyName(4, "backup.ico")
         ImageList1.Images.SetKeyName(5, "help.ico")
+        ImageList1.Images.SetKeyName(6, "recovery_context.ico")
+        ImageList1.Images.SetKeyName(7, "dnfe.ico")
+        ImageList1.Images.SetKeyName(8, "link.ico")
+        ImageList1.Images.SetKeyName(9, "refresh.ico")
         ' 
         ' FormMain
         ' 
@@ -1189,7 +1203,6 @@ Partial Class FormMain
         Controls.Add(tblBottonBar)
         Controls.Add(tblConfigFonts)
         Controls.Add(splitCfg)
-        Controls.Add(tblDirFonts)
         Controls.Add(splitDirectory)
         Controls.Add(tblTopBar)
         Controls.Add(pnlDirFonts)
@@ -1198,6 +1211,7 @@ Partial Class FormMain
         ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         FormBorderStyle = FormBorderStyle.FixedSingle
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
+        Margin = New Padding(3, 2, 3, 2)
         MaximizeBox = False
         Name = "FormMain"
         StartPosition = FormStartPosition.CenterScreen
@@ -1209,6 +1223,7 @@ Partial Class FormMain
         tblFontInfo.ResumeLayout(False)
         tblFontInfo.PerformLayout()
         TableLayoutPanel4.ResumeLayout(False)
+        TableLayoutPanel4.PerformLayout()
         tblDirFonts.ResumeLayout(False)
         tblDirFonts.PerformLayout()
         tblConfigFonts.ResumeLayout(False)
@@ -1216,11 +1231,9 @@ Partial Class FormMain
         pnlFallbackFonts.ResumeLayout(False)
         pnlFallback.ResumeLayout(False)
         tblBottonBar.ResumeLayout(False)
-        tblBottonBar.PerformLayout()
         pnlDirFonts.ResumeLayout(False)
         pnlDirFonts.PerformLayout()
         ResumeLayout(False)
-        PerformLayout()
     End Sub
 
     Friend WithEvents tblTopBar As TableLayoutPanel

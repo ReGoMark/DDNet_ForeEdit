@@ -130,9 +130,6 @@
         YII=
 </value>
   </data>
-  <metadata name="ToolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
   <data name="btnHead.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAS
@@ -151,18 +148,18 @@
   </data>
   <data name="cmbCases.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAABeSURBVDhP1YzBDcAwCAMZnXm6ZNpUNjIJ+UVqepIfcJbt
-        HNy9VYFWj8+AFFKg00DPBAVKU5H3+A9E7h2QlMMBBUr7BsjqH1Cg9NMBFlKgu7+qf6BSA/3y3DGC1+eY
-        3fly9Rg6rYFbAAAAAElFTkSuQmCC
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAS
+        cwAAEnMBjCK5BwAAAHdJREFUOE/FjEEOgCAMBHk67/GTis0OKbT1RtxkEt1Z2o6l927s32XG4M6Qg9mF
+        IHfklgP8L6HUIB3RZc6L9AD/nplNhAOuC85CIcLIdcFZKEQ+GikdhUhHX85CqcE/B5ALcnDRv9hD4oVH
+        ztD3PGJFFR7BobT2AKhOG6PNUFy4AAAAAElFTkSuQmCC
 </value>
   </data>
   <data name="cmbAllwords.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAJcEhZcwAAEnQAABJ0Ad5mH3gAAABtSURBVDhP1Y8BCsAwCAN9uu/pJ7dYlKlVaGEwdhBY1ISO
-        XoOZp/y3eSH7EhwM6FKFUPYLWPhwKBDpTfABDMtgpwUMtwtKsLCCrijsNfaQD6AfFuyqLhDSYafzF+je
-        /8KYw4wdG+JtpsE+/BFEN3NYA4bFEvOdAAAAAElFTkSuQmCC
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAS
+        cQAAEnEB89x6jgAAAG1JREFUOE/VjwEKwDAIA3267+knt1iUqVVoYTB2EFjUhI5eg5mn/Ld5IfsSHAzo
+        UoVQ9gtY+HAoEOlN8AEMy2CnBQy3C0qwsIKuKOw19pAPoB8W7KouENJhp/MX6N7/wpjDjB0b4m2mwT78
+        EUQ3c1gDhsUS850AAAAASUVORK5CYII=
 </value>
   </data>
   <data name="cmbFormal.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

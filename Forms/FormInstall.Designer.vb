@@ -48,7 +48,7 @@ Partial Class FormInstall
         ' 
         btnOpen.BackColor = Color.Transparent
         btnOpen.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        btnOpen.Location = New Point(190, 345)
+        btnOpen.Location = New Point(190, 353)
         btnOpen.Name = "btnOpen"
         btnOpen.Size = New Size(52, 30)
         btnOpen.TabIndex = 28
@@ -59,7 +59,7 @@ Partial Class FormInstall
         ' 
         btnInstall.BackColor = Color.Transparent
         btnInstall.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        btnInstall.Location = New Point(248, 345)
+        btnInstall.Location = New Point(248, 353)
         btnInstall.Name = "btnInstall"
         btnInstall.Padding = New Padding(3, 0, 0, 0)
         btnInstall.Size = New Size(122, 30)
@@ -73,7 +73,7 @@ Partial Class FormInstall
         Panel1.BorderStyle = BorderStyle.FixedSingle
         Panel1.Controls.Add(tblPackInfo)
         Panel1.ForeColor = SystemColors.InfoText
-        Panel1.Location = New Point(12, 199)
+        Panel1.Location = New Point(12, 208)
         Panel1.Name = "Panel1"
         Panel1.Size = New Size(358, 122)
         Panel1.TabIndex = 36
@@ -256,7 +256,7 @@ Partial Class FormInstall
         lstbDNFP.ItemHeight = 25
         lstbDNFP.Location = New Point(12, 48)
         lstbDNFP.Name = "lstbDNFP"
-        lstbDNFP.Size = New Size(358, 145)
+        lstbDNFP.Size = New Size(358, 154)
         lstbDNFP.TabIndex = 47
         ' 
         ' lblDNFP
@@ -275,7 +275,7 @@ Partial Class FormInstall
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 387)
+        ClientSize = New Size(382, 395)
         Controls.Add(lblDNFP)
         Controls.Add(btnInstall)
         Controls.Add(btnOpen)

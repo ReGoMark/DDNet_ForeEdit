@@ -105,6 +105,7 @@ Public Class FormMain
     Private _originalSimplifiedChineseFont As String = ""
     Private _originalTraditionalChineseFont As String = ""
     Private _isLoading As Boolean = False
+
 #End Region
 
 #Region "── 状态字段：子窗体与共享资源 ────────────────────────────"
@@ -130,7 +131,7 @@ Public Class FormMain
 
 #Region "── 常量：版本与标题 ──────────────────────────────────────"
 
-    Public ReadOnly BuildVersion As String = "Build 1011.154"
+    Public ReadOnly BuildVersion As String = "Build 1016.131"
     Private ReadOnly TitleText As String = "DDNet ForeEdit"
 
 #End Region
@@ -158,6 +159,11 @@ Public Class FormMain
     Private ReadOnly ProtectedFontFiles() As String = {
         "Font_Awesome_6_Free-Solid-900.otf"
     }
+
+    ''' <summary>
+    ''' 允许操作的字体扩展名。用于对 pending 清单做安全校验，防止篡改后误删系统文件。
+    ''' </summary>
+    Private ReadOnly AllowedFontExts As String() = {".ttf", ".ttc", ".otf"}
 
 #End Region
 
@@ -233,59 +239,61 @@ Public Class FormMain
     New Win32ContextMenu.MenuItem() With {.Id = 1, .Text = "预览(&P)", .ShortcutText = "Ctrl+P", .Icon = ImageList1.Images(0), .OnClick = Sub() btnPreview.PerformClick()},
     New Win32ContextMenu.MenuItem() With {.Id = 2, .Text = "查找(&F)", .ShortcutText = "Ctrl+F", .Icon = ImageList1.Images(1), .OnClick = Sub() btnSearch.PerformClick()},
     New Win32ContextMenu.MenuItem() With {.Id = 3, .Text = "安装(&B)", .ShortcutText = "Ctrl+B", .Icon = ImageList1.Images(2), .OnClick = Sub() btnBlade.PerformClick()},
-    New Win32ContextMenu.MenuItem() With {.Id = 4, .Text = "导出(&R)", .ShortcutText = "Ctrl+R", .Icon = ImageList1.Images(3), .OnClick = Sub() btnOutput.PerformClick()},
+    New Win32ContextMenu.MenuItem() With {.Id = 4, .Text = "导出(&J)", .ShortcutText = "Ctrl+J", .Icon = ImageList1.Images(3), .OnClick = Sub() btnOutput.PerformClick()},
     Win32ContextMenu.MenuItem.Separator,
-    New Win32ContextMenu.MenuItem() With {.Id = 4, .Text = "管理(&M)",
+    New Win32ContextMenu.MenuItem() With {.Id = 5, .Text = "管理(&M)",
     .SubItems = New List(Of Win32ContextMenu.MenuItem) From {
-            New Win32ContextMenu.MenuItem() With {.Id = 41, .Text = "未使用字体(&U)", .ShortcutText = "Ctrl+Shift+U", .OnClick = Sub() CheckFontJsonMatch()},
-            New Win32ContextMenu.MenuItem() With {.Id = 42, .Text = "预装字体验证(&V)", .ShortcutText = "Ctrl+Shift+V", .OnClick = Sub() VerifyStandardFonts()},
+            New Win32ContextMenu.MenuItem() With {.Id = 51, .Text = "未使用字体(&U)", .ShortcutText = "Ctrl+Shift+U", .OnClick = Sub() CheckFontJsonMatch()},
+            New Win32ContextMenu.MenuItem() With {.Id = 52, .Text = "预装字体(&V)", .ShortcutText = "Ctrl+Shift+V", .OnClick = Sub() VerifyStandardFonts()},
             Win32ContextMenu.MenuItem.Separator,
-            New Win32ContextMenu.MenuItem() With {.Id = 43, .Text = "配置文件(&J)", .ShortcutText = "Ctrl+Shift+J", .OnClick = Sub() OpenJsonConfig()},
-            New Win32ContextMenu.MenuItem() With {.Id = 44, .Text = "字体目录(&D)", .ShortcutText = "Ctrl+L", .OnClick = Sub() OpenFontDirectory()},
+            New Win32ContextMenu.MenuItem() With {.Id = 53, .Text = "配置文件(&J)", .ShortcutText = "Ctrl+Shift+J", .OnClick = Sub() OpenJsonConfig()},
+            New Win32ContextMenu.MenuItem() With {.Id = 54, .Text = "字体目录(&D)", .ShortcutText = "Ctrl+L", .OnClick = Sub() OpenFontDirectory()},
             Win32ContextMenu.MenuItem.Separator,
-            New Win32ContextMenu.MenuItem() With {.Id = 47, .Text = "恢复默认(&R)", .ShortcutText = "F8", .OnClick = Sub() btnDefault.PerformClick()}
+            New Win32ContextMenu.MenuItem() With {.Id = 7, .Text = "备份数据(&K)", .ShortcutText = "Ctrl+K", .Icon = ImageList1.Images(4), .OnClick = Sub() ShowBackupDialog()},
+            Win32ContextMenu.MenuItem.Separator,
+            New Win32ContextMenu.MenuItem() With {.Id = 55, .Text = "恢复默认(&R)", .Icon = ImageList1.Images(6), .ShortcutText = "F8", .OnClick = Sub() btnDefault.PerformClick()}
         }},
-    New Win32ContextMenu.MenuItem() With {.Id = 5, .Text = "备份(&K)", .ShortcutText = "Ctrl+K", .Icon = ImageList1.Images(4), .OnClick = Sub() FormBackup.ShowDialog(Me)},
-    New Win32ContextMenu.MenuItem() With {.Id = 5, .Text = "刷新(&R)", .ShortcutText = "F5", .OnClick = Sub() btnRefresh.PerformClick()},
+    New Win32ContextMenu.MenuItem() With {.Id = 8, .Text = "刷新(&R)", .Icon = ImageList1.Images(9), .ShortcutText = "F5", .OnClick = Sub() btnRefresh.PerformClick()},
     Win32ContextMenu.MenuItem.Separator,
-    New Win32ContextMenu.MenuItem() With {.Id = 7, .Text = "帮助(&H)", .Icon = ImageList1.Images(5),
+    New Win32ContextMenu.MenuItem() With {.Id = 9, .Text = "帮助(&H)", .Icon = ImageList1.Images(5),
     .SubItems = New List(Of Win32ContextMenu.MenuItem) From {
-            New Win32ContextMenu.MenuItem() With {.Id = 74, .Text = "下载字体资源(&R)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://www.maoken.com/", .UseShellExecute = True})},
-            New Win32ContextMenu.MenuItem() With {.Id = 75, .Text = "下载游戏材质(&H)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://teedata.net/", .UseShellExecute = True})},
-            New Win32ContextMenu.MenuItem() With {.Id = 76, .Text = "访问中文社区(&T)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://teeworlds.cn/ddnet", .UseShellExecute = True})},
+            New Win32ContextMenu.MenuItem() With {.Id = 91, .Text = "下载字体资源(&R)", .Icon = ImageList1.Images(8), .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://www.maoken.com/", .UseShellExecute = True})},
+            New Win32ContextMenu.MenuItem() With {.Id = 92, .Text = "下载游戏材质(&H)", .Icon = ImageList1.Images(8), .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://teedata.net/", .UseShellExecute = True})},
+            New Win32ContextMenu.MenuItem() With {.Id = 93, .Text = "访问中文社区(&T)", .Icon = ImageList1.Images(8), .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://teeworlds.cn/ddnet", .UseShellExecute = True})},
             Win32ContextMenu.MenuItem.Separator,
-            New Win32ContextMenu.MenuItem() With {.Id = 71, .Text = "视频教程(&V)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://www.bilibili.com/video/BV1h7PezCE2i/?spm_id_from=333.1387.0.0&vd_source=c4099c355c2d06f10ac210fe7bae65a6", .UseShellExecute = True})},
-            New Win32ContextMenu.MenuItem() With {.Id = 72, .Text = "说明文档(&D)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\documents.pdf")},
-            New Win32ContextMenu.MenuItem() With {.Id = 73, .Text = "快捷键参考(&K)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\hotkeys.pdf")},
+            New Win32ContextMenu.MenuItem() With {.Id = 94, .Text = "视频教程(&V)", .Icon = ImageList1.Images(8), .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://www.bilibili.com/video/BV1h7PezCE2i/?spm_id_from=333.1387.0.0&vd_source=c4099c355c2d06f10ac210fe7bae65a6", .UseShellExecute = True})},
+            New Win32ContextMenu.MenuItem() With {.Id = 95, .Text = "说明文档(&D)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\DNFE_documents.pdf")},
+            New Win32ContextMenu.MenuItem() With {.Id = 96, .Text = "快捷键参考(&K)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\DNFE_hotkeys.pdf")},
             Win32ContextMenu.MenuItem.Separator,
-            New Win32ContextMenu.MenuItem() With {.Id = 77, .Text = "更新日志(&L)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\updates.txt")},
-            New Win32ContextMenu.MenuItem() With {.Id = 78, .Text = "获取更新(&U)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit/releases", .UseShellExecute = True})}
+            New Win32ContextMenu.MenuItem() With {.Id = 97, .Text = "更新日志(&L)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\updates.txt")},
+            New Win32ContextMenu.MenuItem() With {.Id = 98, .Text = "获取更新(&U)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit/releases", .UseShellExecute = True})}
         }},
-    New Win32ContextMenu.MenuItem() With {.Id = 8, .Text = "关于(&A)", .OnClick = Sub() FormAbout.ShowDialog(Me)}})
+    New Win32ContextMenu.MenuItem() With {.Id = 10, .Text = "关于(&A)", .Icon = ImageList1.Images(7), .OnClick = Sub() FormAbout.ShowDialog(Me)}})
 
         _listContextMenu.AddRange({
-        New Win32ContextMenu.MenuItem() With {.Id = 101, .Text = "查看(&V)", .ShortcutText = "Return", .OnClick = Sub() OpenSelectedFontFile()},
-        New Win32ContextMenu.MenuItem() With {.Id = 102, .Text = "保存(&S)", .OnClick = Sub() SaveSelectedFontAs()},
-        New Win32ContextMenu.MenuItem() With {.Id = 107, .Text = "卸载(&U)", .ShortcutText = "Delete", .OnClick = Sub() UninstallSelectedFont()},
+        New Win32ContextMenu.MenuItem() With {.Id = 1, .Text = "查看(&V)", .ShortcutText = "Return", .OnClick = Sub() OpenSelectedFontFile()},
+        New Win32ContextMenu.MenuItem() With {.Id = 2, .Text = "保存(&S)", .OnClick = Sub() SaveSelectedFontAs()},
+        New Win32ContextMenu.MenuItem() With {.Id = 3, .Text = "卸载(&U)", .ShortcutText = "Delete", .OnClick = Sub() UninstallSelectedFont()},
         Win32ContextMenu.MenuItem.Separator,
-        New Win32ContextMenu.MenuItem() With {.Id = 110, .Text = "设置为(&D)",
+        New Win32ContextMenu.MenuItem() With {.Id = 4, .Text = "设置为(&D)",
         .SubItems = New List(Of Win32ContextMenu.MenuItem) From {
-                New Win32ContextMenu.MenuItem() With {.Id = 111, .Text = "默认西文(&L)", .OnClick = Sub() SetSelectedFontAsLanguage("LA")},
+                New Win32ContextMenu.MenuItem() With {.Id = 41, .Text = "默认西文(&L)", .OnClick = Sub() SetSelectedFontAsLanguage("LA")},
                 Win32ContextMenu.MenuItem.Separator,
-                New Win32ContextMenu.MenuItem() With {.Id = 112, .Text = "日文(&J)", .OnClick = Sub() SetSelectedFontAsLanguage("JP")},
-                New Win32ContextMenu.MenuItem() With {.Id = 113, .Text = "韩文(&K)", .OnClick = Sub() SetSelectedFontAsLanguage("KR")},
-                New Win32ContextMenu.MenuItem() With {.Id = 114, .Text = "简体中文(&S)", .OnClick = Sub() SetSelectedFontAsLanguage("SC")},
-                New Win32ContextMenu.MenuItem() With {.Id = 115, .Text = "繁体中文(&T)", .OnClick = Sub() SetSelectedFontAsLanguage("TC")},
+                New Win32ContextMenu.MenuItem() With {.Id = 42, .Text = "日文(&J)", .OnClick = Sub() SetSelectedFontAsLanguage("JP")},
+                New Win32ContextMenu.MenuItem() With {.Id = 43, .Text = "韩文(&K)", .OnClick = Sub() SetSelectedFontAsLanguage("KR")},
+                New Win32ContextMenu.MenuItem() With {.Id = 44, .Text = "简体中文(&S)", .OnClick = Sub() SetSelectedFontAsLanguage("SC")},
+                New Win32ContextMenu.MenuItem() With {.Id = 45, .Text = "繁体中文(&T)", .OnClick = Sub() SetSelectedFontAsLanguage("TC")},
                 Win32ContextMenu.MenuItem.Separator,
-                New Win32ContextMenu.MenuItem() With {.Id = 108, .Text = "回退字体(&B)", .OnClick = Sub() InsertSelectedFontToFallbacks()}
+                New Win32ContextMenu.MenuItem() With {.Id = 46, .Text = "回退字体(&B)", .OnClick = Sub() InsertSelectedFontToFallbacks()}
             }
         },
         Win32ContextMenu.MenuItem.Separator,
-        New Win32ContextMenu.MenuItem() With {.Id = 105, .Text = "复制字体名称(&N)", .ShortcutText = "Ctrl+Shift+N", .OnClick = Sub() CopySelectedFontName()},
-        New Win32ContextMenu.MenuItem() With {.Id = 106, .Text = "复制家族名称(&F)", .ShortcutText = "Ctrl+Shift+F", .OnClick = Sub() CopySelectedFamilyName()},
-        New Win32ContextMenu.MenuItem() With {.Id = 104, .Text = "打开字体目录(&L)", .OnClick = Sub() OpenSelectedFontFolder()},
+        New Win32ContextMenu.MenuItem() With {.Id = 5, .Text = "复制字体名称(&N)", .ShortcutText = "Ctrl+Shift+N", .OnClick = Sub() CopySelectedFontName()},
+        New Win32ContextMenu.MenuItem() With {.Id = 6, .Text = "复制家族名称(&F)", .ShortcutText = "Ctrl+Shift+F", .OnClick = Sub() CopySelectedFamilyName()},
         Win32ContextMenu.MenuItem.Separator,
-        New Win32ContextMenu.MenuItem() With {.Id = 103, .Text = "属性(&I)", .ShortcutText = "Alt+Return", .OnClick = Sub() ShowFontPropertiesForSelected()}
+        New Win32ContextMenu.MenuItem() With {.Id = 7, .Text = "打开位置(&L)", .OnClick = Sub() OpenSelectedFontFolder()},
+        Win32ContextMenu.MenuItem.Separator,
+        New Win32ContextMenu.MenuItem() With {.Id = 8, .Text = "属性(&I)", .ShortcutText = "Alt+Return", .OnClick = Sub() ShowFontPropertiesForSelected()}
     })
     End Sub
 
@@ -416,6 +424,7 @@ Public Class FormMain
 #End Region
 
 #Region "── 核心加载逻辑 ──────────────────────────────────────────"
+
     Private Sub LoadFontDirectory(fdirectory As String,
                                   Optional sourceLabel As String = "",
                                   Optional skipLocalCheck As Boolean = False)
@@ -523,7 +532,7 @@ Public Class FormMain
                     Dim dirSizeBytes As Long = GetDirectorySize(fdirectory)
                     Dim sizeText As String = FormatBytes(dirSizeBytes)
                     Dim sourceText As String = If(String.IsNullOrEmpty(sourceLabel), "", sourceLabel & " ")
-                    Me.Text = $"{TitleText} - {sourceText} ({sizeText})"
+                    Me.Text = $"{TitleText} - {sourceText}, {sizeText}"
                 Else
                     Me.Text = TitleText
                 End If
@@ -538,7 +547,6 @@ Public Class FormMain
             If Not dirExists Then
                 MessageBox.Show($"未找到字体目录: {fdirectory}", "加载字体目录", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             End If
-
         Finally
             _isLoading = False
             btnDefault.Enabled = True
@@ -951,6 +959,7 @@ Public Class FormMain
 #End Region
 
 #Region "── 字体列表自绘与选中 ────────────────────────────────────"
+
     Private Sub lstbDirectoryFonts_DrawItem(sender As Object, e As DrawItemEventArgs) Handles lstDirFonts.DrawItem
         If e.Index < 0 OrElse e.Index >= lstDirFonts.Items.Count Then Return
         e.DrawBackground()
@@ -1635,8 +1644,8 @@ Public Class FormMain
 * 单击「确定」在资源管理器中打开该文件夹
 * 关闭本程序，注意不是关闭资源管理器
 * 清空配置和所有字体，或删除整个 fonts 文件夹",
-                                     "还原默认字体",
-                                     MessageBoxButtons.OKCancel, MessageBoxIcon.Information)
+                                         "还原默认字体",
+                                         MessageBoxButtons.OKCancel, MessageBoxIcon.Information)
             If result = DialogResult.OK Then
                 Process.Start("explorer.exe", $"""{_currentFontDirectory}""")
             End If
@@ -1761,6 +1770,25 @@ Public Class FormMain
                 LoadFontDirectory(_currentFontDirectory, GetSourceLabel(_lastFileExtension), skipLocalCheck:=True)
             End If
         End If
+    End Sub
+
+    ''' <summary>
+    ''' 打开备份对话框，并把当前 fonts 目录的父级（data 目录）传给 FormBackup。 若主窗体未加载字体目录，DataDirectory 保持空字符串，FormBackup
+    ''' 会自动禁用 chkExtra。
+    ''' </summary>
+    Private Sub ShowBackupDialog()
+        Using dlg As New FormBackup
+            If Not String.IsNullOrEmpty(_currentFontDirectory) Then
+                Try
+                    Dim parent = Directory.GetParent(_currentFontDirectory)
+                    If parent IsNot Nothing AndAlso Directory.Exists(parent.FullName) Then
+                        dlg.DataDirectory = parent.FullName
+                    End If
+                Catch
+                End Try
+            End If
+            dlg.ShowDialog(Me)
+        End Using
     End Sub
 
 #End Region
@@ -2589,6 +2617,60 @@ Public Class FormMain
         End Try
     End Sub
 
+    ''' <summary>
+    ''' btnBlade 拖入校验：仅接受单个 .dnfp 或 .json。
+    ''' </summary>
+    Private Sub btnBlade_DragEnter(sender As Object, e As DragEventArgs) Handles btnBlade.DragEnter
+        If e.Data.GetDataPresent(DataFormats.FileDrop) Then
+            Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
+            If files IsNot Nothing AndAlso files.Length = 1 Then
+                Dim ext = Path.GetExtension(files(0)).ToLower()
+                If ext = ".dnfp" OrElse ext = ".json" Then
+                    e.Effect = DragDropEffects.Copy
+                    Return
+                End If
+            End If
+        End If
+        e.Effect = DragDropEffects.None
+    End Sub
+
+    ''' <summary>
+    ''' btnBlade 拖入处理：直接执行安装流程（不打开 FormInstall 窗口）。
+    ''' </summary>
+    Private Sub btnBlade_DragDrop(sender As Object, e As DragEventArgs) Handles btnBlade.DragDrop
+        Dim files = CType(e.Data.GetData(DataFormats.FileDrop), String())
+        If files Is Nothing OrElse files.Length = 0 Then Return
+
+        Dim file0 = files(0)
+        Dim ext = Path.GetExtension(file0).ToLower()
+
+        If ext <> ".dnfp" AndAlso ext <> ".json" Then
+            MessageBox.Show("仅支持拖放 .dnfp 字体包或 index.json 配置文件。",
+                            "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        If Not File.Exists(file0) Then Return
+
+        If String.IsNullOrEmpty(_currentFontDirectory) OrElse Not Directory.Exists(_currentFontDirectory) Then
+            MessageBox.Show("字体目录未加载，无法安装。",
+                            "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Try
+            Select Case ext
+                Case ".dnfp"
+                    FormInstall.InstallDnfpDirect(file0, _currentFontDirectory, Me)
+                Case ".json"
+                    FormInstall.InstallJsonConfigDirect(file0, _currentFontDirectory, Me)
+            End Select
+        Catch ex As Exception
+            MessageBox.Show($"安装时出错：{ex.Message}", "安装",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
     Private Function GetUsedFontFiles() As List(Of String)
         Dim fontFiles As New List(Of String)
         Dim fileSet As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
@@ -2673,7 +2755,12 @@ Public Class FormMain
 
             For Each filePath In lines
                 If String.IsNullOrWhiteSpace(filePath) Then Continue For
+
+                ' ★ 安全校验：非字体文件 / 系统目录 / 非法路径 → 直接丢弃，不保留
+                If Not IsSafeFontPath(filePath) Then Continue For
+
                 If Not File.Exists(filePath) Then Continue For
+
                 Try
                     Microsoft.VisualBasic.FileIO.FileSystem.DeleteFile(
                         filePath,
@@ -2706,6 +2793,9 @@ Public Class FormMain
 
                 Dim src = parts(0).Trim()
                 Dim dest = parts(1).Trim()
+
+                ' ★ 安全校验：源与目标都必须是合法字体路径
+                If Not IsSafeFontPath(src) OrElse Not IsSafeFontPath(dest) Then Continue For
 
                 If Not File.Exists(src) Then Continue For
 
@@ -2794,6 +2884,42 @@ Public Class FormMain
         Return total
     End Function
 
+    ''' <summary>
+    ''' 判断路径是否是"安全"的字体路径：扩展名必须是字体，且不能落在系统 Windows 目录下。 用于防止 pendingdeletions.txt / pendingcopies.txt
+    ''' 被篡改后删除系统文件。 不检查文件是否存在——调用方自行判断。
+    ''' </summary>
+    Private Function IsSafeFontPath(filePath As String) As Boolean
+        If String.IsNullOrWhiteSpace(filePath) Then Return False
+        Try
+            ' 1. 扩展名必须是字体
+            Dim ext = Path.GetExtension(filePath).ToLower()
+            If Not AllowedFontExts.Contains(ext) Then Return False
+
+            ' 2. 不能落在系统 Windows 目录下（含系统字体目录 C:\Windows\Fonts）
+            Dim full = Path.GetFullPath(filePath)
+            Dim winDir = Environment.GetFolderPath(Environment.SpecialFolder.Windows)
+            If Not String.IsNullOrEmpty(winDir) Then
+                Dim winFull = Path.GetFullPath(winDir).TrimEnd("\"c) & "\"
+                If full.StartsWith(winFull, StringComparison.OrdinalIgnoreCase) Then Return False
+            End If
+
+            ' 3. 不能落在 Program Files / Program Files (x86)
+            For Each special In {Environment.SpecialFolder.ProgramFiles,
+                                 Environment.SpecialFolder.ProgramFilesX86}
+                Dim root = Environment.GetFolderPath(special)
+                If Not String.IsNullOrEmpty(root) Then
+                    Dim rootFull = Path.GetFullPath(root).TrimEnd("\"c) & "\"
+                    If full.StartsWith(rootFull, StringComparison.OrdinalIgnoreCase) Then Return False
+                End If
+            Next
+
+            Return True
+        Catch
+            ' 路径无效（含非法字符等）一律拒绝
+            Return False
+        End Try
+    End Function
+
 #End Region
 
 #Region "── JSON 解析辅助 ─────────────────────────────────────────"
@@ -2877,7 +3003,6 @@ Public Class FormMain
 
         If ctrl AndAlso Not shift Then
             Select Case key
-                Case Keys.I : btnOutput.PerformClick() : Return True
                 Case Keys.O : btnBrowse.PerformClick() : Return True
                 Case Keys.L : btnLocate.PerformClick() : Return True
                 Case Keys.R : btnRefresh.PerformClick() : Return True
@@ -2888,7 +3013,7 @@ Public Class FormMain
                 Case Keys.F : btnSearch.PerformClick() : Return True
                 Case Keys.B : btnBlade.PerformClick() : Return True
                 Case Keys.U : chkLocalDir.Checked = Not chkLocalDir.Checked : Return True
-                Case Keys.K : FormBackup.ShowDialog(Me)
+                Case Keys.K : ShowBackupDialog()
                 Case Keys.A
                     If lstDirFonts.Focused Then
                         SelectAllFonts()

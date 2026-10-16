@@ -59,7 +59,7 @@ Partial Class FormSearch
         btnNext.TabIndex = 2
         btnNext.Text = "查找下一个"
         btnNext.TextImageRelation = TextImageRelation.ImageBeforeText
-        ToolTip1.SetToolTip(btnNext, "下一个匹配 (F3)")
+        ToolTip1.SetToolTip(btnNext, "下一个匹配 (F3/Return)")
         btnNext.UseVisualStyleBackColor = True
         ' 
         ' btnTail

@@ -18,7 +18,7 @@ Public Class FormPreview
     ''' <summary>
     ''' 当前生效的字号（磅值）。
     ''' </summary>
-    Private _currentSize As Single = 10.0F
+    Private _currentSize As Single = 9.0F
 
     ' ─── 窗体生命周期 ──────────────────────────────────────────────────
 
@@ -26,11 +26,12 @@ Public Class FormPreview
     ''' 窗体加载时初始化字号映射、默认文本，并禁用"确认"按钮。
     ''' </summary>
     Private Sub FormPreview_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        _sizeMap(rdoFont9) = 9.0F
         _sizeMap(rdoFont10) = 10.0F
         _sizeMap(rdoFont12) = 12.0F
         _sizeMap(rdoFont16) = 16.0F
-        _sizeMap(rdoFont32) = 32.0F
-        rdoFont10.Checked = True
+        _sizeMap(rdoFont22) = 22.0F
+        rdoFont9.Checked = True
 
         ' 记录各标签的初始显示文本
         For Each lbl In GetPreviewLabels()
@@ -71,7 +72,7 @@ Public Class FormPreview
     ''' 字号单选按钮切换时更新所有预览标签的字号。
     ''' </summary>
     Private Sub rbFontSize_CheckedChanged(sender As Object, e As EventArgs) _
-        Handles rdoFont10.CheckedChanged, rdoFont12.CheckedChanged, rdoFont16.CheckedChanged, rdoFont32.CheckedChanged
+        Handles rdoFont9.CheckedChanged, rdoFont10.CheckedChanged, rdoFont12.CheckedChanged, rdoFont16.CheckedChanged, rdoFont22.CheckedChanged
 
         Dim rb = CType(sender, RadioButton)
         If Not rb.Checked Then Return
@@ -139,5 +140,26 @@ Public Class FormPreview
     Private Sub tbCustom_TextChanged(sender As Object, e As EventArgs) Handles tbCustom.TextChanged
         btnConfirm.Enabled = Not String.IsNullOrEmpty(tbCustom.Text)
     End Sub
+    ''' <summary>
+    ''' 点击分组标签：切换对应预览标签的显隐。
+    ''' tag 本身保留（用于再次点击切换回来），隐藏时 tag 变浅色作为视觉反馈。
+    ''' </summary>
+    Private Sub Tag_Click(sender As Object, e As EventArgs) _
+        Handles tagLA.Click, tagJP.Click, tagKR.Click, tagSC.Click, tagTC.Click
 
+        Dim tag = CType(sender, Label)
+        Dim lbl As Label = Nothing
+
+        Select Case tag.Name
+            Case "tagLA" : lbl = lblLA
+            Case "tagJP" : lbl = lblJP
+            Case "tagKR" : lbl = lblKR
+            Case "tagSC" : lbl = lblSC
+            Case "tagTC" : lbl = lblTC
+            Case Else : Return
+        End Select
+
+        Dim willShow As Boolean = Not lbl.Visible
+        lbl.Visible = willShow
+    End Sub
 End Class

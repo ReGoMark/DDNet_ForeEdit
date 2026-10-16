@@ -61,13 +61,14 @@ Partial Class DialogDirectory
         ' 
         TableLayoutPanel1.SetColumnSpan(lblTitle, 2)
         lblTitle.Dock = DockStyle.Fill
+        lblTitle.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
         lblTitle.ForeColor = SystemColors.Highlight
         lblTitle.Location = New Point(0, 0)
         lblTitle.Margin = New Padding(0, 0, 0, 3)
         lblTitle.Name = "lblTitle"
         lblTitle.Size = New Size(358, 18)
         lblTitle.TabIndex = 0
-        lblTitle.Text = "选择一个用户目录:"
+        lblTitle.Text = "切换用户目录"
         ' 
         ' rdoDDNet
         ' 

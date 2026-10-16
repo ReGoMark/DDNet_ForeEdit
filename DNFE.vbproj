@@ -10,7 +10,7 @@
     <AssemblyName>DDNet ForeEdit</AssemblyName>
     <AssemblyTitle>DDNet ForeEdit</AssemblyTitle>
     <RootNamespace>FontEditor</RootNamespace>
-    <Version>2602.1011.154</Version>
+    <Version>2602.1016.131</Version>
     <Authors>ReGoMark</Authors>
     <Company>Bilibili @ReGoMark</Company>
     <Product>DDNet ForeEdit</Product>
@@ -67,6 +67,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Data\DNFE_documents.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\DNFE_hotkeys.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Data\documents.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

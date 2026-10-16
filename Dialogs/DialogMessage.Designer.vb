@@ -56,13 +56,12 @@ Partial Class DialogMessage
         lstContent.Location = New Point(0, 24)
         lstContent.Margin = New Padding(0, 3, 0, 3)
         lstContent.Name = "lstContent"
-        lstContent.Size = New Size(358, 160)
+        lstContent.Size = New Size(358, 151)
         lstContent.TabIndex = 1
         ' 
         ' btnOK
         ' 
-        btnOK.Location = New Point(263, 271)
-        btnOK.Margin = New Padding(3, 3, 3, 0)
+        btnOK.Location = New Point(260, 268)
         btnOK.Name = "btnOK"
         btnOK.Size = New Size(52, 30)
         btnOK.TabIndex = 4
@@ -71,8 +70,7 @@ Partial Class DialogMessage
         ' 
         ' btnCancel
         ' 
-        btnCancel.Location = New Point(321, 271)
-        btnCancel.Margin = New Padding(3, 3, 0, 0)
+        btnCancel.Location = New Point(318, 268)
         btnCancel.Name = "btnCancel"
         btnCancel.Size = New Size(52, 30)
         btnCancel.TabIndex = 5
@@ -83,7 +81,7 @@ Partial Class DialogMessage
         ' 
         split1.Dock = DockStyle.Fill
         split1.ForeColor = Color.DarkGray
-        split1.Location = New Point(3, 190)
+        split1.Location = New Point(3, 181)
         split1.Margin = New Padding(3)
         split1.Name = "split1"
         split1.Size = New Size(352, 18)
@@ -118,10 +116,10 @@ Partial Class DialogMessage
         lblNote.AutoSize = True
         lblNote.Dock = DockStyle.Fill
         lblNote.ForeColor = Color.DarkGray
-        lblNote.Location = New Point(0, 214)
+        lblNote.Location = New Point(0, 205)
         lblNote.Margin = New Padding(0, 3, 0, 3)
         lblNote.Name = "lblNote"
-        lblNote.Size = New Size(358, 18)
+        lblNote.Size = New Size(358, 27)
         lblNote.TabIndex = 7
         lblNote.Text = "Line 1"
         ' 

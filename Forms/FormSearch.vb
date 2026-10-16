@@ -67,7 +67,7 @@ Public Class FormSearch
                 Dim pattern As String = keyword
                 If cmbAllwords.Checked Then pattern = "^(?:" & pattern & ")$"
 
-                Dim rx As New Regex(pattern, opts)
+                Dim rx As New Regex(pattern, opts, TimeSpan.FromSeconds(2))
                 For i As Integer = 0 To total - 1
                     If rx.IsMatch(TargetList.Items(i).ToString()) Then
                         _matches.Add(i)
@@ -280,20 +280,6 @@ Public Class FormSearch
         lblStatus.Text = $"已跳转到第 {idx} 项"
     End Sub
 
-    ''' <summary>
-    ''' 回车触发查找下一个；Esc 关闭。
-    ''' </summary>
-    Private Sub txtKeywords_KeyDown(sender As Object, e As KeyEventArgs) Handles txtKeywords.KeyDown
-        Select Case e.KeyCode
-            Case Keys.Enter
-                e.SuppressKeyPress = True
-                btnNext.PerformClick()
-            Case Keys.Escape
-                e.SuppressKeyPress = True
-                Me.Close()
-        End Select
-    End Sub
-
     Protected Overrides Sub OnShown(e As EventArgs)
         MyBase.OnShown(e)
         CenterOnOwner()
@@ -329,4 +315,70 @@ Public Class FormSearch
 
         UpdateStatus($"全选 {_matches.Count} 项结果")
     End Sub
+
+    ' ─── 快捷键分发 ────────────────────────────────────────────────
+
+    ''' <summary>
+    ''' 全局快捷键（FormSearch 为活动窗口时生效）：
+    '''   Enter       → 查找下一个
+    '''   Esc         → 关闭
+    '''   Ctrl+G      → 按输入框的序号跳转
+    '''   F2          → 首个匹配
+    '''   F3          → 下一个匹配
+    '''   Shift+F3    → 上一个匹配
+    '''   F4          → 末尾匹配
+    ''' 所有按键统一在此处理，控件级事件不再重复拦截，避免冗余。
+    ''' </summary>
+    Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
+        Dim ctrl As Boolean = (keyData And Keys.Control) = Keys.Control
+        Dim shift As Boolean = (keyData And Keys.Shift) = Keys.Shift
+        Dim alt As Boolean = (keyData And Keys.Alt) = Keys.Alt
+        Dim key As Keys = keyData And Keys.KeyCode
+
+        ' ── 无修饰键：Enter / Esc / F2 / F3 / F4 ──
+        If Not ctrl AndAlso Not alt Then
+            Select Case key
+                Case Keys.Enter
+                    If Not shift Then
+                        btnNext.PerformClick()
+                        Return True
+                    End If
+
+                Case Keys.Escape
+                    If Not shift Then
+                        Me.Close()
+                        Return True
+                    End If
+
+                Case Keys.F2
+                    If Not shift Then
+                        btnHead.PerformClick()
+                        Return True
+                    End If
+
+                Case Keys.F3
+                    If shift Then
+                        btnPrior.PerformClick()
+                    Else
+                        btnNext.PerformClick()
+                    End If
+                    Return True
+
+                Case Keys.F4
+                    If Not shift Then
+                        btnTail.PerformClick()
+                        Return True
+                    End If
+            End Select
+        End If
+
+        ' ── Ctrl+G：按输入框序号跳转 ──
+        If ctrl AndAlso Not shift AndAlso key = Keys.G Then
+            btnTurn.PerformClick()
+            Return True
+        End If
+
+        Return MyBase.ProcessCmdKey(msg, keyData)
+    End Function
+
 End Class

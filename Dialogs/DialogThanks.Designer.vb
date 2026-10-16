@@ -32,6 +32,8 @@ Partial Class DialogThanks
         Label1 = New Label()
         Label6 = New Label()
         split1 = New Label()
+        Label2 = New Label()
+        Label7 = New Label()
         SuspendLayout()
         ' 
         ' lbl1
@@ -42,16 +44,16 @@ Partial Class DialogThanks
         lbl1.Location = New Point(12, 12)
         lbl1.Margin = New Padding(3)
         lbl1.Name = "lbl1"
-        lbl1.Size = New Size(170, 18)
+        lbl1.Size = New Size(162, 18)
         lbl1.TabIndex = 11
-        lbl1.Text = "感谢以下参与测试的朋友:"
+        lbl1.Text = "感谢以下用户参与测试："
         ' 
         ' lbl2
         ' 
         lbl2.AutoEllipsis = True
         lbl2.AutoSize = True
         lbl2.ForeColor = Color.DarkGray
-        lbl2.Location = New Point(12, 210)
+        lbl2.Location = New Point(12, 186)
         lbl2.Margin = New Padding(3)
         lbl2.Name = "lbl2"
         lbl2.Size = New Size(296, 18)
@@ -75,7 +77,7 @@ Partial Class DialogThanks
         Label4.AutoEllipsis = True
         Label4.AutoSize = True
         Label4.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        Label4.Location = New Point(12, 60)
+        Label4.Location = New Point(135, 60)
         Label4.Margin = New Padding(3)
         Label4.Name = "Label4"
         Label4.Size = New Size(52, 18)
@@ -87,7 +89,7 @@ Partial Class DialogThanks
         Label5.AutoEllipsis = True
         Label5.AutoSize = True
         Label5.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        Label5.Location = New Point(12, 84)
+        Label5.Location = New Point(135, 36)
         Label5.Margin = New Padding(3)
         Label5.Name = "Label5"
         Label5.Size = New Size(80, 18)
@@ -99,7 +101,7 @@ Partial Class DialogThanks
         Label8.AutoEllipsis = True
         Label8.AutoSize = True
         Label8.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        Label8.Location = New Point(12, 132)
+        Label8.Location = New Point(12, 60)
         Label8.Margin = New Padding(3)
         Label8.Name = "Label8"
         Label8.Size = New Size(88, 18)
@@ -111,7 +113,7 @@ Partial Class DialogThanks
         Label1.AutoEllipsis = True
         Label1.AutoSize = True
         Label1.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        Label1.Location = New Point(12, 156)
+        Label1.Location = New Point(12, 84)
         Label1.Margin = New Padding(3)
         Label1.Name = "Label1"
         Label1.Size = New Size(104, 18)
@@ -123,7 +125,7 @@ Partial Class DialogThanks
         Label6.AutoEllipsis = True
         Label6.AutoSize = True
         Label6.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        Label6.Location = New Point(12, 108)
+        Label6.Location = New Point(135, 84)
         Label6.Margin = New Padding(3)
         Label6.Name = "Label6"
         Label6.Size = New Size(94, 18)
@@ -134,7 +136,7 @@ Partial Class DialogThanks
         ' 
         split1.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         split1.ForeColor = Color.DarkGray
-        split1.Location = New Point(12, 183)
+        split1.Location = New Point(12, 159)
         split1.Margin = New Padding(3, 6, 3, 6)
         split1.Name = "split1"
         split1.Size = New Size(358, 18)
@@ -142,12 +144,38 @@ Partial Class DialogThanks
         split1.Text = "───────────────────────────────────────────────────────"
         split1.TextAlign = ContentAlignment.MiddleLeft
         ' 
+        ' Label2
+        ' 
+        Label2.AutoEllipsis = True
+        Label2.AutoSize = True
+        Label2.ForeColor = SystemColors.Highlight
+        Label2.Location = New Point(12, 108)
+        Label2.Margin = New Padding(3)
+        Label2.Name = "Label2"
+        Label2.Size = New Size(78, 18)
+        Label2.TabIndex = 24
+        Label2.Text = "特别感谢："
+        ' 
+        ' Label7
+        ' 
+        Label7.AutoEllipsis = True
+        Label7.AutoSize = True
+        Label7.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        Label7.Location = New Point(12, 132)
+        Label7.Margin = New Padding(3)
+        Label7.Name = "Label7"
+        Label7.Size = New Size(272, 18)
+        Label7.TabIndex = 25
+        Label7.Text = "@ 番茄牛腩锅 (提供材质武器的教程文档)"
+        ' 
         ' DialogThanks
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 243)
+        ClientSize = New Size(382, 216)
+        Controls.Add(Label7)
+        Controls.Add(Label2)
         Controls.Add(split1)
         Controls.Add(Label6)
         Controls.Add(Label1)
@@ -180,4 +208,6 @@ Partial Class DialogThanks
     Friend WithEvents Label1 As Label
     Friend WithEvents Label6 As Label
     Friend WithEvents split1 As Label
+    Friend WithEvents Label2 As Label
+    Friend WithEvents Label7 As Label
 End Class

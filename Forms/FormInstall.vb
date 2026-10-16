@@ -42,6 +42,12 @@ Public Class FormInstall
     ''' </summary>
     Private _loadedFileType As String = ""
 
+    ''' <summary>
+    ''' 拖放安装模式：设置此属性后，窗口 Shown 时会自动加载该文件并触发安装流程。
+    ''' 由 FormMain 的 btnBlade 拖放触发。为 Nothing / 空时行为与手动打开窗口一致。
+    ''' </summary>
+    <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
+    Public Property AutoInstallFile As String = ""
     ' ─── 窗体生命周期 ──────────────────────────────────────────────────
 
     Private Sub FormBlade_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -60,6 +66,38 @@ Public Class FormInstall
         End If
     End Sub
 
+    ''' <summary>
+    ''' 自动安装模式：Shown 时加载 AutoInstallFile 并触发 btnInstall.Click。
+    ''' 只触发一次，之后清空 AutoInstallFile。
+    ''' </summary>
+    Private Sub FormBlade_Shown(sender As Object, e As EventArgs) Handles MyBase.Shown
+        If String.IsNullOrEmpty(AutoInstallFile) Then Return
+
+        Dim f = AutoInstallFile
+        AutoInstallFile = ""   ' 只触发一次
+
+        If Not File.Exists(f) Then Return
+
+        Dim ext = Path.GetExtension(f).ToLower()
+        Try
+            If ext = ".dnfp" Then
+                LoadPackage(f)
+            ElseIf ext = ".json" Then
+                ImportJsonConfig(f)
+            Else
+                Return
+            End If
+
+            ' 加载成功且安装按钮可用 → 自动触发（会弹出安装确认对话框）
+            If btnInstall.Enabled Then
+                btnInstall.PerformClick()
+            End If
+        Catch ex As Exception
+            MessageBox.Show($"自动加载安装文件失败：{ex.Message}", "安装",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
     Private Sub EnsureDirectoriesExist()
         For Each dir As String In {ManifestDir, CacheDir}
             If Not Directory.Exists(dir) Then
@@ -73,7 +111,7 @@ Public Class FormInstall
 
     ' ─── 通用辅助 ────────────────────────────────────────────────────
 
-    Private Sub AppendPendingLines(path As String, lines As IEnumerable(Of String))
+    Private Shared Sub AppendPendingLines(path As String, lines As IEnumerable(Of String))
         If lines Is Nothing Then Return
         Dim arr = lines.Where(Function(l) Not String.IsNullOrWhiteSpace(l)).ToList()
         If arr.Count = 0 Then Return
@@ -288,42 +326,57 @@ Public Class FormInstall
     End Sub
 
     ' ─── 安装 ────────────────────────────────────────────────────────
+#Region "── 静态安装方法（供 FormMain 拖放复用） ────────────"
 
     ''' <summary>
-    ''' 安装按钮：
-    ''' - .json → 直接覆盖 fonts\index.json。
-    ''' - .dnfp → 解压 → 分类（新增/覆盖/删除）→ 立即复制或挂起 → 写 index.json。
+    ''' 直接安装 .json 配置到目标字体目录（不打开 FormInstall 窗体）。
+    ''' 弹确认对话框，用户确认后覆盖 fontDir\index.json。
+    ''' 返回 True 表示已写入，False 表示用户取消或失败。
     ''' </summary>
-    Private Sub btnInstall_Click(sender As Object, e As EventArgs) Handles btnInstall.Click
-        ' ── JSON 分支 ──
-        If Not String.IsNullOrEmpty(_loadedJsonPath) AndAlso File.Exists(_loadedJsonPath) Then
-            If String.IsNullOrEmpty(FontDir) OrElse Not Directory.Exists(FontDir) Then
-                MessageBox.Show("字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                Return
-            End If
-
-            Dim confirm = MessageBox.Show("确认要覆盖当前配置吗？", "确认安装", MessageBoxButtons.OKCancel, MessageBoxIcon.Question)
-            If confirm <> DialogResult.OK Then Return
-
-            Try
-                File.Copy(_loadedJsonPath, Path.Combine(FontDir, "index.json"), True)
-                MessageBox.Show("配置写入成功。", "安装配置", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                ResetLoadState()
-            Catch ex As Exception
-                MessageBox.Show($"写入配置失败：{ex.Message}", "安装配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            End Try
-            Return
+    Public Shared Function InstallJsonConfigDirect(jsonPath As String,
+                                                   fontDir As String,
+                                                   owner As IWin32Window) As Boolean
+        If String.IsNullOrEmpty(jsonPath) OrElse Not File.Exists(jsonPath) Then Return False
+        If String.IsNullOrEmpty(fontDir) OrElse Not Directory.Exists(fontDir) Then
+            MessageBox.Show(owner, "字体目录未加载。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return False
         End If
 
-        ' ── DNF P 分支 ──
-        If String.IsNullOrEmpty(_loadedDnfpPath) OrElse Not File.Exists(_loadedDnfpPath) Then
-            MessageBox.Show("未加载字体包。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return
+        Dim confirm = MessageBox.Show(owner, "确认要覆盖当前配置吗？", "确认安装",
+                                      MessageBoxButtons.OKCancel, MessageBoxIcon.Question)
+        If confirm <> DialogResult.OK Then Return False
+
+        Try
+            File.Copy(jsonPath, Path.Combine(fontDir, "index.json"), True)
+            MessageBox.Show(owner, "配置写入成功。", "安装配置",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Return True
+        Catch ex As Exception
+            MessageBox.Show(owner, $"写入配置失败：{ex.Message}", "安装配置",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return False
+        End Try
+    End Function
+
+    ''' <summary>
+    ''' 直接安装 .dnfp 字体包到目标字体目录（不打开 FormInstall 窗体）。
+    ''' 弹确认对话框，用户确认后执行完整安装流程。
+    ''' 返回 True 表示已执行安装，False 表示用户取消或失败。
+    ''' </summary>
+    Public Shared Function InstallDnfpDirect(packagePath As String,
+                                             fontDir As String,
+                                             owner As IWin32Window) As Boolean
+        If String.IsNullOrEmpty(packagePath) OrElse Not File.Exists(packagePath) Then Return False
+        If String.IsNullOrEmpty(fontDir) OrElse Not Directory.Exists(fontDir) Then
+            MessageBox.Show(owner, "字体目录无效或不存在，拒绝安装。", "安装字体包",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return False
         End If
-        If String.IsNullOrEmpty(FontDir) OrElse Not Directory.Exists(FontDir) Then
-            MessageBox.Show("字体目录无效或不存在，拒绝安装。", "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return
-        End If
+
+        Dim cacheDir As String = Path.Combine(Application.StartupPath, "cache")
+        Dim manifestDir As String = Path.Combine(Application.StartupPath, "manifest")
+        Dim pendingDeletionsPath As String = Path.Combine(manifestDir, "pendingdeletions.txt")
+        Dim pendingCopiesPath As String = Path.Combine(manifestDir, "pendingcopies.txt")
 
         Dim tempDir = Path.Combine(Path.GetTempPath(), "dnfe_import_" & Guid.NewGuid.ToString("N").Substring(0, 8))
 
@@ -331,7 +384,7 @@ Public Class FormInstall
             ' 1. 解压
             If Directory.Exists(tempDir) Then Directory.Delete(tempDir, True)
             Directory.CreateDirectory(tempDir)
-            ZipFile.ExtractToDirectory(_loadedDnfpPath, tempDir)
+            ZipFile.ExtractToDirectory(packagePath, tempDir)
 
             Dim srcDir = Path.Combine(tempDir, "fonts")
             If Not Directory.Exists(srcDir) Then srcDir = tempDir
@@ -340,8 +393,9 @@ Public Class FormInstall
             Dim jsonSrc = Path.Combine(srcDir, "index.json")
             If Not File.Exists(jsonSrc) Then jsonSrc = Path.Combine(srcDir, "index.JSON")
             If Not File.Exists(jsonSrc) Then
-                MessageBox.Show("字体包内未找到配置文件。", "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                Return
+                MessageBox.Show(owner, "字体包内未找到配置文件。", "安装字体包",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Return False
             End If
 
             Dim newJson = File.ReadAllText(jsonSrc, Encoding.UTF8)
@@ -364,9 +418,9 @@ Public Class FormInstall
 
             ' 5. 收集当前目录字体
             Dim currentFonts As New List(Of String)
-            currentFonts.AddRange(Directory.GetFiles(FontDir, "*.ttf"))
-            currentFonts.AddRange(Directory.GetFiles(FontDir, "*.ttc"))
-            currentFonts.AddRange(Directory.GetFiles(FontDir, "*.otf"))
+            currentFonts.AddRange(Directory.GetFiles(fontDir, "*.ttf"))
+            currentFonts.AddRange(Directory.GetFiles(fontDir, "*.ttc"))
+            currentFonts.AddRange(Directory.GetFiles(fontDir, "*.otf"))
 
             ' 6. 分类
             Dim toAdd As New List(Of String)
@@ -374,7 +428,7 @@ Public Class FormInstall
             Dim toDelete As New List(Of String)
 
             For Each f In zipFonts
-                If File.Exists(Path.Combine(FontDir, Path.GetFileName(f))) Then
+                If File.Exists(Path.Combine(fontDir, Path.GetFileName(f))) Then
                     toReplace.Add(f)
                 Else
                     toAdd.Add(f)
@@ -394,13 +448,13 @@ Public Class FormInstall
             ' 7. 确认对话框
             Dim packSize As Long = 0
             Try
-                packSize = New FileInfo(_loadedDnfpPath).Length
+                packSize = New FileInfo(packagePath).Length
             Catch
             End Try
 
             Using dlg As New DialogMessage()
                 dlg.Text = "确认安装"
-                dlg.TitleText = $"确认要安装「{Path.GetFileName(_loadedDnfpPath)}」吗？"
+                dlg.TitleText = $"确认要安装「{Path.GetFileName(packagePath)}」吗？"
                 dlg.DescriptionText = $"字体包大小: {FormatBytes(packSize)}"
                 dlg.ConfirmText = "安装"
                 dlg.CancelText = "取消"
@@ -419,15 +473,15 @@ Public Class FormInstall
                     dlg.Items.Add("(没有需要操作的文件)")
                 End If
 
-                If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
+                If dlg.ShowDialog(owner) <> DialogResult.OK Then Return False
             End Using
 
             ' 8. 执行安装
-            Directory.CreateDirectory(CacheDir)
+            Directory.CreateDirectory(cacheDir)
 
             ' 清理旧缓存
             For Each ext In {"*.ttf", "*.ttc", "*.otf"}
-                For Each old In Directory.GetFiles(CacheDir, ext)
+                For Each old In Directory.GetFiles(cacheDir, ext)
                     Try
                         File.Delete(old)
                     Catch
@@ -435,16 +489,16 @@ Public Class FormInstall
                 Next
             Next
 
-            Directory.CreateDirectory(ManifestDir)
+            Directory.CreateDirectory(manifestDir)
 
             ' ── toAdd：直接复制；失败则缓存后挂起 ──
             Dim addCopyLines As New List(Of String)
             For Each f In toAdd
-                Dim destPath = Path.Combine(FontDir, Path.GetFileName(f))
+                Dim destPath = Path.Combine(fontDir, Path.GetFileName(f))
                 Try
                     File.Copy(f, destPath, False)
                 Catch
-                    Dim cached = Path.Combine(CacheDir, Path.GetFileName(f))
+                    Dim cached = Path.Combine(cacheDir, Path.GetFileName(f))
                     Try
                         File.Copy(f, cached, True)
                         addCopyLines.Add($"{cached}|{destPath}")
@@ -452,51 +506,82 @@ Public Class FormInstall
                     End Try
                 End Try
             Next
-            AppendPendingLines(PendingCopiesPath, addCopyLines)
+            AppendPendingLines(pendingCopiesPath, addCopyLines)
 
             ' ── toReplace：缓存新文件，标记旧文件删除，标记新文件待复制 ──
             Dim replaceDeleteLines As New List(Of String)
             Dim replaceCopyLines As New List(Of String)
             For Each f In toReplace
-                Dim destPath = Path.Combine(FontDir, Path.GetFileName(f))
-                Dim cached = Path.Combine(CacheDir, Path.GetFileName(f))
+                Dim destPath = Path.Combine(fontDir, Path.GetFileName(f))
+                Dim cached = Path.Combine(cacheDir, Path.GetFileName(f))
                 Try
                     File.Copy(f, cached, True)
                     replaceDeleteLines.Add(destPath)
                     replaceCopyLines.Add($"{cached}|{destPath}")
                 Catch ex As Exception
-                    MessageBox.Show("缓存字体时出错，已跳过该文件。" & vbCrLf &
+                    MessageBox.Show(owner, "缓存字体时出错，已跳过该文件。" & vbCrLf &
                                     $"· {Path.GetFileName(f)}" & vbCrLf &
                                     $"· {ex.Message}",
                                     "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 End Try
             Next
-            AppendPendingLines(PendingDeletionsPath, replaceDeleteLines)
-            AppendPendingLines(PendingCopiesPath, replaceCopyLines)
+            AppendPendingLines(pendingDeletionsPath, replaceDeleteLines)
+            AppendPendingLines(pendingCopiesPath, replaceCopyLines)
 
             ' ── toDelete：标记删除 ──
-            AppendPendingLines(PendingDeletionsPath, toDelete)
+            AppendPendingLines(pendingDeletionsPath, toDelete)
 
             ' 写入 index.json
-            File.WriteAllText(Path.Combine(FontDir, "index.json"), newJson, Encoding.UTF8)
+            File.WriteAllText(Path.Combine(fontDir, "index.json"), newJson, Encoding.UTF8)
 
             ' 提示
             Dim hasPending As Boolean = (addCopyLines.Count > 0) OrElse
                                         (replaceDeleteLines.Count > 0) OrElse
                                         (toDelete.Count > 0)
             If hasPending Then
-                MessageBox.Show("字体包安装成功，下次启动时生效。", "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                MessageBox.Show(owner, "字体包安装成功，下次启动时生效。", "安装字体包",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information)
             Else
-                MessageBox.Show("字体包安装成功。", "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                MessageBox.Show(owner, "字体包安装成功。", "安装字体包",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information)
             End If
+
+            Return True
         Catch ex As Exception
-            MessageBox.Show("安装字体包时发生错误：" & ex.Message, "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show(owner, "安装字体包时发生错误：" & ex.Message, "安装字体包",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Return False
         Finally
             Try
                 If Directory.Exists(tempDir) Then Directory.Delete(tempDir, True)
             Catch
             End Try
         End Try
+    End Function
+
+#End Region
+
+    ''' <summary>
+    ''' 安装按钮：
+    ''' - .json → 直接覆盖 fonts\index.json。
+    ''' - .dnfp → 解压 → 分类（新增/覆盖/删除）→ 立即复制或挂起 → 写 index.json。
+    ''' </summary>
+    Private Sub btnInstall_Click(sender As Object, e As EventArgs) Handles btnInstall.Click
+        ' ── JSON 分支 ──
+        If Not String.IsNullOrEmpty(_loadedJsonPath) AndAlso File.Exists(_loadedJsonPath) Then
+            If InstallJsonConfigDirect(_loadedJsonPath, FontDir, Me) Then
+                ResetLoadState()
+            End If
+            Return
+        End If
+
+        ' ── DNFP 分支 ──
+        If String.IsNullOrEmpty(_loadedDnfpPath) OrElse Not File.Exists(_loadedDnfpPath) Then
+            MessageBox.Show(Me, "未加载字体包。", "提示", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        InstallDnfpDirect(_loadedDnfpPath, FontDir, Me)
     End Sub
 
     ' ─── 打开 ────────────────────────────────────────────────────────
@@ -550,7 +635,7 @@ Public Class FormInstall
 
     ' ─── 通用辅助 ────────────────────────────────────────────────────
 
-    Private Function FormatBytes(bytes As Long) As String
+    Private Shared Function FormatBytes(bytes As Long) As String
         If bytes >= 1024L * 1024 * 1024 Then Return (bytes / 1024 / 1024 / 1024).ToString("F2") & " GB"
         If bytes >= 1024L * 1024 Then Return (bytes / 1024 / 1024).ToString("F2") & " MB"
         If bytes >= 1024 Then Return (bytes / 1024).ToString("F0") & " KB"

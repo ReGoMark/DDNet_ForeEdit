@@ -52,8 +52,9 @@ Partial Class FormBackup
         splitExport = New Label()
         btnSelectAll = New Button()
         tblExport = New TableLayoutPanel()
-        btnSnapshot = New Button()
+        chkExtra = New CheckBox()
         ProgressBar2 = New ProgressBar()
+        btnSnapshot = New Button()
         ToolTip1 = New ToolTip(components)
         TableLayoutPanel1.SuspendLayout()
         tblExport.SuspendLayout()
@@ -167,7 +168,6 @@ Partial Class FormBackup
         chkVideos.Size = New Size(170, 22)
         chkVideos.TabIndex = 51
         chkVideos.Text = "渲染 (...\videos\)"
-        ToolTip1.SetToolTip(chkVideos, "videos 文件夹")
         chkVideos.UseVisualStyleBackColor = True
         ' 
         ' chkSaves
@@ -180,7 +180,6 @@ Partial Class FormBackup
         chkSaves.Size = New Size(182, 22)
         chkSaves.TabIndex = 9
         chkSaves.Text = "存档密码 (saves.txt)"
-        ToolTip1.SetToolTip(chkSaves, "ddnet-saves.txt")
         chkSaves.UseVisualStyleBackColor = True
         ' 
         ' chkGhosts
@@ -193,7 +192,6 @@ Partial Class FormBackup
         chkGhosts.Size = New Size(170, 22)
         chkGhosts.TabIndex = 13
         chkGhosts.Text = "影子 (...\ghosts\)"
-        ToolTip1.SetToolTip(chkGhosts, "ghosts 文件夹")
         chkGhosts.UseVisualStyleBackColor = True
         ' 
         ' chkDemos
@@ -206,7 +204,6 @@ Partial Class FormBackup
         chkDemos.Size = New Size(162, 22)
         chkDemos.TabIndex = 12
         chkDemos.Text = "回放 (...\demos\)"
-        ToolTip1.SetToolTip(chkDemos, "demos 文件夹")
         chkDemos.UseVisualStyleBackColor = True
         ' 
         ' chkAssets
@@ -219,7 +216,6 @@ Partial Class FormBackup
         chkAssets.Size = New Size(170, 22)
         chkAssets.TabIndex = 11
         chkAssets.Text = "材质 (...\assets\)"
-        ToolTip1.SetToolTip(chkAssets, "assets 文件夹")
         chkAssets.UseVisualStyleBackColor = True
         ' 
         ' lblSizeSettings
@@ -316,7 +312,6 @@ Partial Class FormBackup
         chkSettings.Size = New Size(206, 22)
         chkSettings.TabIndex = 10
         chkSettings.Text = "设置文件 (settings.cfg)"
-        ToolTip1.SetToolTip(chkSettings, "settings_ddnet.cfg")
         chkSettings.UseVisualStyleBackColor = True
         ' 
         ' chkCfg
@@ -329,7 +324,6 @@ Partial Class FormBackup
         chkCfg.Size = New Size(150, 22)
         chkCfg.TabIndex = 8
         chkCfg.Text = "配置文件 (*.cfg)"
-        ToolTip1.SetToolTip(chkCfg, "遍历所有 .cfg 文件")
         chkCfg.UseVisualStyleBackColor = True
         ' 
         ' lblCountCfg
@@ -430,15 +424,16 @@ Partial Class FormBackup
         ' tblExport
         ' 
         tblExport.BackColor = Color.Transparent
-        tblExport.ColumnCount = 4
+        tblExport.ColumnCount = 5
+        tblExport.ColumnStyles.Add(New ColumnStyle())
+        tblExport.ColumnStyles.Add(New ColumnStyle())
         tblExport.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         tblExport.ColumnStyles.Add(New ColumnStyle())
         tblExport.ColumnStyles.Add(New ColumnStyle())
-        tblExport.ColumnStyles.Add(New ColumnStyle())
-        tblExport.Controls.Add(btnSnapshot, 1, 0)
-        tblExport.Controls.Add(btnSelectAll, 2, 0)
-        tblExport.Controls.Add(ProgressBar2, 0, 0)
-        tblExport.Controls.Add(btnBackup, 3, 0)
+        tblExport.Controls.Add(btnBackup, 4, 0)
+        tblExport.Controls.Add(ProgressBar2, 2, 0)
+        tblExport.Controls.Add(btnSelectAll, 3, 0)
+        tblExport.Controls.Add(chkExtra, 0, 0)
         tblExport.Location = New Point(12, 275)
         tblExport.Name = "tblExport"
         tblExport.RowCount = 1
@@ -446,9 +441,31 @@ Partial Class FormBackup
         tblExport.Size = New Size(358, 30)
         tblExport.TabIndex = 50
         ' 
+        ' chkExtra
+        ' 
+        chkExtra.Appearance = Appearance.Button
+        chkExtra.Location = New Point(0, 0)
+        chkExtra.Margin = New Padding(0, 0, 3, 0)
+        chkExtra.Name = "chkExtra"
+        chkExtra.Size = New Size(108, 30)
+        chkExtra.TabIndex = 24
+        chkExtra.Text = "包含安装目录"
+        chkExtra.TextAlign = ContentAlignment.MiddleCenter
+        chkExtra.UseVisualStyleBackColor = True
+        ' 
+        ' ProgressBar2
+        ' 
+        ProgressBar2.BackColor = Color.WhiteSmoke
+        ProgressBar2.Dock = DockStyle.Fill
+        ProgressBar2.Location = New Point(114, 3)
+        ProgressBar2.Name = "ProgressBar2"
+        ProgressBar2.Size = New Size(100, 24)
+        ProgressBar2.TabIndex = 7
+        ProgressBar2.Visible = False
+        ' 
         ' btnSnapshot
         ' 
-        btnSnapshot.Location = New Point(162, 0)
+        btnSnapshot.Location = New Point(351, 224)
         btnSnapshot.Margin = New Padding(3, 0, 3, 0)
         btnSnapshot.Name = "btnSnapshot"
         btnSnapshot.Padding = New Padding(3, 0, 3, 0)
@@ -459,22 +476,13 @@ Partial Class FormBackup
         btnSnapshot.UseVisualStyleBackColor = True
         btnSnapshot.Visible = False
         ' 
-        ' ProgressBar2
-        ' 
-        ProgressBar2.BackColor = Color.WhiteSmoke
-        ProgressBar2.Dock = DockStyle.Fill
-        ProgressBar2.Location = New Point(3, 3)
-        ProgressBar2.Name = "ProgressBar2"
-        ProgressBar2.Size = New Size(153, 24)
-        ProgressBar2.TabIndex = 7
-        ProgressBar2.Visible = False
-        ' 
         ' FormBackup
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(382, 317)
+        Controls.Add(btnSnapshot)
         Controls.Add(tblExport)
         Controls.Add(btnCancel)
         Controls.Add(TableLayoutPanel1)
@@ -523,4 +531,5 @@ Partial Class FormBackup
     Friend WithEvents splitExport As Label
     Friend WithEvents lblSizeTotal As Label
     Friend WithEvents btnSnapshot As Button
+    Friend WithEvents chkExtra As CheckBox
 End Class

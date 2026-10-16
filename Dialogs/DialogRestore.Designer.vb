@@ -84,7 +84,7 @@ Partial Class DialogRestore
         lblTitle.Name = "lblTitle"
         lblTitle.Size = New Size(358, 18)
         lblTitle.TabIndex = 0
-        lblTitle.Text = "选择恢复模式: "
+        lblTitle.Text = "选择恢复模式"
         ' 
         ' rdoFontCfg
         ' 
