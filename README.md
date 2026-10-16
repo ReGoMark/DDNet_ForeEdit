@@ -132,19 +132,6 @@ DDNet 字体可能位于游戏安装目录或用户目录中。用户目录又�
 | 跳转到末尾匹配项 | `F4` |
 | 转到指定行 | `Ctrl + G` |
 
-## 相关资源
-
-### 字体资源下载
-
-- [猫啃网](https://www.maoken.com/)
-- [方正字库](https://www.foundertype.com/)
-- [汉仪字库](https://hanyi.com.cn/)
-- [仓耳字库](https://tsanger.cn/)
-
-### 游戏材质下载
-
-- [TeeData](https://teedata.net/)
-
 ## 注意事项
 
 - `index.json` 中的字体引用需要与实际字体文件相匹配，否则可能出现字体显示异常。
