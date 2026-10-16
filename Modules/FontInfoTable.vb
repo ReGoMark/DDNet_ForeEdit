@@ -81,33 +81,33 @@ Public Class FontInfoTable
         End Get
     End Property
 
-    ''' <summary>
-    ''' 尝试用 AllRawNames 中的 GDI 族名创建 Font 对象。
-    ''' GDI+ 只认 Name ID=1 的家族名；此方法逐一尝试直到成功。
-    ''' 调用方负责 Dispose 返回的 Font。
-    ''' </summary>
-    Public Function TryCreateFont(size As Single) As Font
-        Dim style As FontStyle = GdiFontStyle
-        For Each name In AllRawNames
-            Try
-                Dim installed As New InstalledFontCollection()
-                Dim found = installed.Families.Any(
-                    Function(f) String.Equals(f.Name, name, StringComparison.OrdinalIgnoreCase))
-                If found Then
-                    Dim ff As New FontFamily(name)
-                    If Not ff.IsStyleAvailable(style) Then style = FontStyle.Regular
-                    Return New Font(ff, size, style)
-                End If
-            Catch
-            End Try
-        Next
-        ' 兜底：用排版族名（适用于已加载到 PrivateFontCollection 的情况）
-        Try
-            Return New Font(FamilyName, size, style)
-        Catch
-            Return Nothing
-        End Try
-    End Function
+    '''' <summary>
+    '''' 尝试用 AllRawNames 中的 GDI 族名创建 Font 对象。
+    '''' GDI+ 只认 Name ID=1 的家族名；此方法逐一尝试直到成功。
+    '''' 调用方负责 Dispose 返回的 Font。
+    '''' </summary>
+    'Public Function TryCreateFont(size As Single) As Font
+    '    Dim style As FontStyle = GdiFontStyle
+    '    For Each name In AllRawNames
+    '        Try
+    '            Dim installed As New InstalledFontCollection()
+    '            Dim found = installed.Families.Any(
+    '                Function(f) String.Equals(f.Name, name, StringComparison.OrdinalIgnoreCase))
+    '            If found Then
+    '                Dim ff As New FontFamily(name)
+    '                If Not ff.IsStyleAvailable(style) Then style = FontStyle.Regular
+    '                Return New Font(ff, size, style)
+    '            End If
+    '        Catch
+    '        End Try
+    '    Next
+    '    ' 兜底：用排版族名（适用于已加载到 PrivateFontCollection 的情况）
+    '    Try
+    '        Return New Font(FamilyName, size, style)
+    '    Catch
+    '        Return Nothing
+    '    End Try
+    'End Function
 
     ''' <summary>字重的中文名称。</summary>
     Public ReadOnly Property WeightName As String

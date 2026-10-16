@@ -90,20 +90,20 @@ Public Class FormPreview
     ''' <summary>
     ''' 由主窗体调用，更新指定语言的预览标签字体。
     ''' </summary>
-    ''' <param name="langKey">语言键（"LA","JP","KR","SC","TC"）。</param>
-    ''' <param name="info">已解析的 FontInfoTable，包含 AllRawNames / GdiFontStyle 等信息； 传 Nothing 或空名称时恢复为窗体默认字体。</param>
-    Public Sub UpdatePreview(langKey As String, info As FontInfoTable)
+    ''' <param name="family">主窗体 PrivateFontCollection 中的 FontFamily；Nothing 时恢复为窗体默认字体。</param>
+    ''' <param name="style">已确认该 family 可用的 FontStyle。</param>
+    Public Sub UpdatePreview(langKey As String, family As FontFamily, style As FontStyle)
         Dim lbl As Label = GetLabelByLang(langKey)
         If lbl Is Nothing Then Return
 
         Dim oldFont = lbl.Font
-        If info IsNot Nothing Then
-            Dim f As Font = info.TryCreateFont(_currentSize)
-            If f IsNot Nothing Then
-                lbl.Font = f
+        If family IsNot Nothing Then
+            Try
+                lbl.Font = New Font(family, _currentSize, style, GraphicsUnit.Point)
                 oldFont?.Dispose()
                 Return
-            End If
+            Catch
+            End Try
         End If
 
         ' 兜底：恢复窗体默认字体（当前字号）

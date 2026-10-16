@@ -248,7 +248,6 @@ Public Class FormMain
             Win32ContextMenu.MenuItem.Separator,
             New Win32ContextMenu.MenuItem() With {.Id = 53, .Text = "配置文件(&J)", .ShortcutText = "Ctrl+Shift+J", .OnClick = Sub() OpenJsonConfig()},
             New Win32ContextMenu.MenuItem() With {.Id = 54, .Text = "字体目录(&D)", .ShortcutText = "Ctrl+L", .OnClick = Sub() OpenFontDirectory()},
-            Win32ContextMenu.MenuItem.Separator,
             New Win32ContextMenu.MenuItem() With {.Id = 7, .Text = "备份数据(&K)", .ShortcutText = "Ctrl+K", .Icon = ImageList1.Images(4), .OnClick = Sub() ShowBackupDialog()},
             Win32ContextMenu.MenuItem.Separator,
             New Win32ContextMenu.MenuItem() With {.Id = 55, .Text = "恢复默认(&R)", .Icon = ImageList1.Images(6), .ShortcutText = "F8", .OnClick = Sub() btnDefault.PerformClick()}
@@ -929,25 +928,36 @@ Public Class FormMain
     End Sub
 
     ''' <summary>
-    ''' 根据列表项键获取 Font 实例（优先从缓存加载）。
+    ''' 根据列表项键取得 PrivateFontCollection 中对应的 FontFamily 与可用 FontStyle。
     ''' </summary>
-    Private Function GetFontForKey(key As String, size As Single) As Font
-        Dim pfc As PrivateFontCollection = Nothing
-        If _fontCache.TryGetValue(key, pfc) AndAlso pfc.Families.Length > 0 Then
-            Dim gdiFamily As String = ""
-            If Not _keyToGdiFamily.TryGetValue(key, gdiFamily) Then gdiFamily = ""
-            Dim fam As FontFamily = Nothing
-            If Not String.IsNullOrEmpty(gdiFamily) Then
-                For Each f As FontFamily In pfc.Families
-                    If f.Name.ToLower() = gdiFamily.ToLower() Then fam = f : Exit For
-                Next
-            End If
-            If fam Is Nothing Then fam = pfc.Families(0)
+    Private Function TryGetFamilyForKey(key As String,
+                                    ByRef family As FontFamily,
+                                    ByRef style As FontStyle) As Boolean
+        family = Nothing
+        style = FontStyle.Regular
 
-            Dim style As FontStyle = FontStyle.Regular
-            Dim ni As FontInfoTable = Nothing
-            If _gdiToFontInfo.TryGetValue(key, ni) Then style = ni.GdiFontStyle
-            If Not fam.IsStyleAvailable(style) Then style = FontStyle.Regular
+        Dim pfc As PrivateFontCollection = Nothing
+        If Not _fontCache.TryGetValue(key, pfc) OrElse pfc.Families.Length = 0 Then Return False
+
+        Dim gdiFamily As String = ""
+        If Not _keyToGdiFamily.TryGetValue(key, gdiFamily) Then gdiFamily = ""
+        If Not String.IsNullOrEmpty(gdiFamily) Then
+            For Each f As FontFamily In pfc.Families
+                If f.Name.ToLower() = gdiFamily.ToLower() Then family = f : Exit For
+            Next
+        End If
+        If family Is Nothing Then family = pfc.Families(0)
+
+        Dim fi As FontInfoTable = Nothing
+        If _gdiToFontInfo.TryGetValue(key, fi) Then style = fi.GdiFontStyle
+        If Not family.IsStyleAvailable(style) Then style = FontStyle.Regular
+        Return True
+    End Function
+
+    Private Function GetFontForKey(key As String, size As Single) As Font
+        Dim fam As FontFamily = Nothing
+        Dim style As FontStyle
+        If TryGetFamilyForKey(key, fam, style) Then
             Try
                 Return New Font(fam, size, style, GraphicsUnit.Point)
             Catch ex As Exception
@@ -1160,11 +1170,11 @@ Public Class FormMain
         End If
 
         If _previewWindow IsNot Nothing AndAlso _previewWindow.Visible Then
-            ' ★ 修正：ComboBox 名称前缀由 "cb" 改为 "cmb"
             Dim langKey = cb.Name.Replace("cmb", "").ToUpper()
-            Dim curNi As FontInfoTable = Nothing
-            If Not String.IsNullOrEmpty(key) Then _gdiToFontInfo.TryGetValue(key, curNi)
-            _previewWindow.UpdatePreview(langKey, curNi)
+            Dim fam As FontFamily = Nothing
+            Dim style As FontStyle = FontStyle.Regular
+            If Not String.IsNullOrEmpty(key) Then TryGetFamilyForKey(key, fam, style)
+            _previewWindow.UpdatePreview(langKey, fam, style)
         End If
     End Sub
 
@@ -2263,13 +2273,14 @@ Public Class FormMain
     Private Sub SynchronizePreviewWindow()
         If _previewWindow Is Nothing OrElse _previewWindow.IsDisposed Then Return
         Dim configs As New Dictionary(Of String, ComboBox) From {
-            {"LA", cmbLA}, {"JP", cmbJP}, {"KR", cmbKR}, {"SC", cmbSC}, {"TC", cmbTC}
-        }
+        {"LA", cmbLA}, {"JP", cmbJP}, {"KR", cmbKR}, {"SC", cmbSC}, {"TC", cmbTC}
+    }
         For Each kvp In configs
-            Dim curNi As FontInfoTable = Nothing
+            Dim fam As FontFamily = Nothing
+            Dim style As FontStyle = FontStyle.Regular
             Dim key As String = ComboKey(kvp.Value)
-            If Not String.IsNullOrEmpty(key) Then _gdiToFontInfo.TryGetValue(key, curNi)
-            _previewWindow.UpdatePreview(kvp.Key, curNi)
+            If Not String.IsNullOrEmpty(key) Then TryGetFamilyForKey(key, fam, style)
+            _previewWindow.UpdatePreview(kvp.Key, fam, style)
         Next
     End Sub
 

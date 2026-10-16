@@ -164,16 +164,16 @@ Partial Class DialogThanks
         Label7.Location = New Point(12, 132)
         Label7.Margin = New Padding(3)
         Label7.Name = "Label7"
-        Label7.Size = New Size(272, 18)
+        Label7.Size = New Size(202, 18)
         Label7.TabIndex = 25
-        Label7.Text = "@ 番茄牛腩锅 (提供材质武器的教程文档)"
+        Label7.Text = "@ 番茄牛腩锅 (提供部分教程)"
         ' 
         ' DialogThanks
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 216)
+        ClientSize = New Size(382, 218)
         Controls.Add(Label7)
         Controls.Add(Label2)
         Controls.Add(split1)

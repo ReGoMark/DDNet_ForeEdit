@@ -79,7 +79,7 @@ Partial Class FormAbout
         lblTeeworlds.AutoSize = True
         lblTeeworlds.Cursor = Cursors.Hand
         lblTeeworlds.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblTeeworlds.Location = New Point(194, 168)
+        lblTeeworlds.Location = New Point(212, 168)
         lblTeeworlds.Margin = New Padding(3)
         lblTeeworlds.Name = "lblTeeworlds"
         lblTeeworlds.Size = New Size(80, 18)
@@ -116,7 +116,7 @@ Partial Class FormAbout
         lblSponsor.AutoSize = True
         lblSponsor.Cursor = Cursors.Hand
         lblSponsor.ForeColor = SystemColors.Highlight
-        lblSponsor.Location = New Point(186, 222)
+        lblSponsor.Location = New Point(124, 222)
         lblSponsor.Margin = New Padding(3)
         lblSponsor.Name = "lblSponsor"
         lblSponsor.Size = New Size(36, 18)
@@ -161,7 +161,7 @@ Partial Class FormAbout
         lblDDNet.Name = "lblDDNet"
         lblDDNet.Size = New Size(176, 18)
         lblDDNet.TabIndex = 37
-        lblDDNet.Text = "DDRaceNetwork (DDNet)"
+        lblDDNet.Text = "DDNet (DDraceNetwork)"
         ToolTip1.SetToolTip(lblDDNet, "访问「DDNet」官方仓库")
         ' 
         ' lblThanks
@@ -169,7 +169,7 @@ Partial Class FormAbout
         lblThanks.AutoSize = True
         lblThanks.Cursor = Cursors.Hand
         lblThanks.ForeColor = SystemColors.Highlight
-        lblThanks.Location = New Point(144, 222)
+        lblThanks.Location = New Point(82, 222)
         lblThanks.Margin = New Padding(3)
         lblThanks.Name = "lblThanks"
         lblThanks.Size = New Size(36, 18)
@@ -191,7 +191,7 @@ Partial Class FormAbout
         lblGithub.AutoSize = True
         lblGithub.Cursor = Cursors.Hand
         lblGithub.ForeColor = SystemColors.Highlight
-        lblGithub.Location = New Point(82, 222)
+        lblGithub.Location = New Point(166, 222)
         lblGithub.Margin = New Padding(3)
         lblGithub.Name = "lblGithub"
         lblGithub.Size = New Size(56, 18)
@@ -205,14 +205,12 @@ Partial Class FormAbout
         lbldotNET10.Cursor = Cursors.Hand
         lbldotNET10.ForeColor = Color.DarkGray
         lbldotNET10.ImageAlign = ContentAlignment.MiddleRight
-        lbldotNET10.Location = New Point(145, 270)
-        lbldotNET10.Margin = New Padding(3, 0, 6, 0)
+        lbldotNET10.Location = New Point(12, 270)
         lbldotNET10.Name = "lbldotNET10"
-        lbldotNET10.Size = New Size(164, 18)
+        lbldotNET10.Size = New Size(254, 18)
         lbldotNET10.TabIndex = 41
-        lbldotNET10.Text = "基于 .NET 10 技术呈现"
+        lbldotNET10.Text = "基于 .NET 10，单击此处了解最新动态"
         lbldotNET10.TextAlign = ContentAlignment.MiddleRight
-        ToolTip1.SetToolTip(lbldotNET10, "了解有关「.NET 10」的最新资讯动态")
         ' 
         ' Label1
         ' 
