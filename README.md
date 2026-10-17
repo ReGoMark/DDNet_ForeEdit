@@ -42,9 +42,6 @@ DDNet ForeEdit 是一款面向 DDNet 的字体管理工具，旨在简化游戏�
 
 ## 界面预览
 
-
-## 界面预览
-
 <table>
   <tr>
     <td>
