@@ -24,46 +24,46 @@ Partial Class FormOutput
     Private Sub InitializeComponent()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormOutput))
         tblExportMode = New TableLayoutPanel()
-        lblCountFull = New Label()
-        lblCountStandard = New Label()
-        lblCountDefault = New Label()
         chkNote = New CheckBox()
         rdoStandard = New RadioButton()
         rdoFull = New RadioButton()
-        lblSizeDefault = New Label()
+        lblUserName = New Label()
         txtNote = New TextBox()
-        lblSizeStandard = New Label()
-        lblSizeFull = New Label()
         rdoDefault = New RadioButton()
+        lblDate = New Label()
+        lblTime = New Label()
+        Label1 = New Label()
+        Label2 = New Label()
         tblExport = New TableLayoutPanel()
         btnCfg = New Button()
         ProgressBar1 = New ProgressBar()
         btnDNFP = New Button()
-        tagInsert = New Label()
-        lblDate = New Label()
-        lblTime = New Label()
-        lblUserName = New Label()
+        lblSizeTotal = New Label()
+        splitExport = New Label()
         tblExportMode.SuspendLayout()
         tblExport.SuspendLayout()
         SuspendLayout()
         ' 
         ' tblExportMode
         ' 
-        tblExportMode.ColumnCount = 3
+        tblExportMode.ColumnCount = 7
+        tblExportMode.ColumnStyles.Add(New ColumnStyle())
         tblExportMode.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         tblExportMode.ColumnStyles.Add(New ColumnStyle())
         tblExportMode.ColumnStyles.Add(New ColumnStyle())
-        tblExportMode.Controls.Add(lblCountFull, 1, 2)
-        tblExportMode.Controls.Add(lblCountStandard, 1, 1)
-        tblExportMode.Controls.Add(lblCountDefault, 1, 0)
+        tblExportMode.ColumnStyles.Add(New ColumnStyle())
+        tblExportMode.ColumnStyles.Add(New ColumnStyle())
+        tblExportMode.ColumnStyles.Add(New ColumnStyle())
         tblExportMode.Controls.Add(chkNote, 0, 4)
         tblExportMode.Controls.Add(rdoStandard, 0, 1)
         tblExportMode.Controls.Add(rdoFull, 0, 2)
-        tblExportMode.Controls.Add(lblSizeDefault, 2, 0)
+        tblExportMode.Controls.Add(lblUserName, 2, 4)
         tblExportMode.Controls.Add(txtNote, 0, 5)
-        tblExportMode.Controls.Add(lblSizeStandard, 2, 1)
-        tblExportMode.Controls.Add(lblSizeFull, 2, 2)
         tblExportMode.Controls.Add(rdoDefault, 0, 0)
+        tblExportMode.Controls.Add(lblDate, 6, 4)
+        tblExportMode.Controls.Add(lblTime, 4, 4)
+        tblExportMode.Controls.Add(Label1, 3, 4)
+        tblExportMode.Controls.Add(Label2, 5, 4)
         tblExportMode.Location = New Point(12, 12)
         tblExportMode.Margin = New Padding(3, 3, 3, 6)
         tblExportMode.Name = "tblExportMode"
@@ -74,50 +74,8 @@ Partial Class FormOutput
         tblExportMode.RowStyles.Add(New RowStyle())
         tblExportMode.RowStyles.Add(New RowStyle())
         tblExportMode.RowStyles.Add(New RowStyle())
-        tblExportMode.Size = New Size(358, 266)
+        tblExportMode.Size = New Size(358, 250)
         tblExportMode.TabIndex = 39
-        ' 
-        ' lblCountFull
-        ' 
-        lblCountFull.AutoEllipsis = True
-        lblCountFull.AutoSize = True
-        lblCountFull.Dock = DockStyle.Right
-        lblCountFull.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblCountFull.Location = New Point(238, 104)
-        lblCountFull.Margin = New Padding(3, 3, 3, 0)
-        lblCountFull.Name = "lblCountFull"
-        lblCountFull.Size = New Size(74, 46)
-        lblCountFull.TabIndex = 18
-        lblCountFull.Text = "字体 - 项"
-        lblCountFull.TextAlign = ContentAlignment.MiddleRight
-        ' 
-        ' lblCountStandard
-        ' 
-        lblCountStandard.AutoEllipsis = True
-        lblCountStandard.AutoSize = True
-        lblCountStandard.Dock = DockStyle.Right
-        lblCountStandard.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblCountStandard.Location = New Point(238, 52)
-        lblCountStandard.Margin = New Padding(3)
-        lblCountStandard.Name = "lblCountStandard"
-        lblCountStandard.Size = New Size(74, 46)
-        lblCountStandard.TabIndex = 17
-        lblCountStandard.Text = "字体 - 项"
-        lblCountStandard.TextAlign = ContentAlignment.MiddleRight
-        ' 
-        ' lblCountDefault
-        ' 
-        lblCountDefault.AutoEllipsis = True
-        lblCountDefault.AutoSize = True
-        lblCountDefault.Dock = DockStyle.Right
-        lblCountDefault.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblCountDefault.Location = New Point(238, 0)
-        lblCountDefault.Margin = New Padding(3, 0, 3, 3)
-        lblCountDefault.Name = "lblCountDefault"
-        lblCountDefault.Size = New Size(74, 46)
-        lblCountDefault.TabIndex = 16
-        lblCountDefault.Text = "字体 - 项"
-        lblCountDefault.TextAlign = ContentAlignment.MiddleRight
         ' 
         ' chkNote
         ' 
@@ -126,7 +84,7 @@ Partial Class FormOutput
         chkNote.CheckState = CheckState.Checked
         chkNote.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         chkNote.Location = New Point(0, 156)
-        chkNote.Margin = New Padding(0, 6, 3, 3)
+        chkNote.Margin = New Padding(0, 3, 3, 3)
         chkNote.Name = "chkNote"
         chkNote.Size = New Size(86, 22)
         chkNote.TabIndex = 11
@@ -138,17 +96,18 @@ Partial Class FormOutput
         rdoStandard.Appearance = Appearance.Button
         rdoStandard.AutoSize = True
         rdoStandard.BackColor = Color.Transparent
-        rdoStandard.Dock = DockStyle.Left
+        rdoStandard.Dock = DockStyle.Fill
         rdoStandard.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         rdoStandard.Image = CType(resources.GetObject("rdoStandard.Image"), Image)
+        rdoStandard.ImageAlign = ContentAlignment.MiddleLeft
         rdoStandard.Location = New Point(0, 52)
-        rdoStandard.Margin = New Padding(0, 3, 3, 3)
+        rdoStandard.Margin = New Padding(0, 3, 0, 3)
         rdoStandard.Name = "rdoStandard"
         rdoStandard.Padding = New Padding(3, 0, 3, 0)
-        rdoStandard.Size = New Size(142, 46)
+        rdoStandard.Size = New Size(358, 46)
         rdoStandard.TabIndex = 5
         rdoStandard.TabStop = True
-        rdoStandard.Text = "标准" & vbCrLf & "(含预装字体)"
+        rdoStandard.Text = "标准" & vbCrLf & "(也包含预装字体)"
         rdoStandard.TextImageRelation = TextImageRelation.ImageBeforeText
         rdoStandard.UseVisualStyleBackColor = False
         ' 
@@ -157,37 +116,37 @@ Partial Class FormOutput
         rdoFull.Appearance = Appearance.Button
         rdoFull.AutoSize = True
         rdoFull.BackColor = Color.Transparent
-        rdoFull.Dock = DockStyle.Left
+        rdoFull.Dock = DockStyle.Fill
         rdoFull.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         rdoFull.Image = CType(resources.GetObject("rdoFull.Image"), Image)
+        rdoFull.ImageAlign = ContentAlignment.MiddleLeft
         rdoFull.Location = New Point(0, 104)
-        rdoFull.Margin = New Padding(0, 3, 3, 0)
+        rdoFull.Margin = New Padding(0, 3, 0, 3)
         rdoFull.Name = "rdoFull"
         rdoFull.Padding = New Padding(3, 0, 3, 0)
-        rdoFull.Size = New Size(142, 46)
+        rdoFull.Size = New Size(358, 46)
         rdoFull.TabIndex = 14
         rdoFull.TabStop = True
-        rdoFull.Text = "完整" & vbCrLf & "(未使用字体)"
+        rdoFull.Text = "完整" & vbCrLf & "(附加未使用字体)"
         rdoFull.TextImageRelation = TextImageRelation.ImageBeforeText
         rdoFull.UseVisualStyleBackColor = False
         ' 
-        ' lblSizeDefault
+        ' lblUserName
         ' 
-        lblSizeDefault.AutoEllipsis = True
-        lblSizeDefault.AutoSize = True
-        lblSizeDefault.Dock = DockStyle.Right
-        lblSizeDefault.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblSizeDefault.Location = New Point(318, 0)
-        lblSizeDefault.Margin = New Padding(3, 0, 0, 3)
-        lblSizeDefault.Name = "lblSizeDefault"
-        lblSizeDefault.Size = New Size(40, 46)
-        lblSizeDefault.TabIndex = 12
-        lblSizeDefault.Text = "- MB"
-        lblSizeDefault.TextAlign = ContentAlignment.MiddleLeft
+        lblUserName.AutoSize = True
+        lblUserName.Cursor = Cursors.Hand
+        lblUserName.Dock = DockStyle.Fill
+        lblUserName.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        lblUserName.Location = New Point(148, 156)
+        lblUserName.Margin = New Padding(0, 3, 0, 3)
+        lblUserName.Name = "lblUserName"
+        lblUserName.Size = New Size(50, 22)
+        lblUserName.TabIndex = 46
+        lblUserName.Text = "用户名"
+        lblUserName.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' txtNote
         ' 
-        tblExportMode.SetColumnSpan(txtNote, 3)
         txtNote.Dock = DockStyle.Top
         txtNote.ForeColor = Color.Black
         txtNote.Location = New Point(0, 184)
@@ -195,54 +154,84 @@ Partial Class FormOutput
         txtNote.Multiline = True
         txtNote.Name = "txtNote"
         txtNote.PlaceholderText = "最多 40 个字符"
-        txtNote.Size = New Size(358, 73)
+        txtNote.Size = New Size(358, 66)
         txtNote.TabIndex = 10
-        ' 
-        ' lblSizeStandard
-        ' 
-        lblSizeStandard.AutoEllipsis = True
-        lblSizeStandard.AutoSize = True
-        lblSizeStandard.Dock = DockStyle.Right
-        lblSizeStandard.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblSizeStandard.Location = New Point(318, 52)
-        lblSizeStandard.Margin = New Padding(3, 3, 0, 3)
-        lblSizeStandard.Name = "lblSizeStandard"
-        lblSizeStandard.Size = New Size(40, 46)
-        lblSizeStandard.TabIndex = 13
-        lblSizeStandard.Text = "- MB"
-        lblSizeStandard.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' lblSizeFull
-        ' 
-        lblSizeFull.AutoEllipsis = True
-        lblSizeFull.AutoSize = True
-        lblSizeFull.Dock = DockStyle.Right
-        lblSizeFull.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblSizeFull.Location = New Point(318, 104)
-        lblSizeFull.Margin = New Padding(3, 3, 0, 0)
-        lblSizeFull.Name = "lblSizeFull"
-        lblSizeFull.Size = New Size(40, 46)
-        lblSizeFull.TabIndex = 15
-        lblSizeFull.Text = "- MB"
-        lblSizeFull.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' rdoDefault
         ' 
         rdoDefault.Appearance = Appearance.Button
         rdoDefault.AutoSize = True
         rdoDefault.BackColor = Color.Transparent
+        rdoDefault.Dock = DockStyle.Fill
         rdoDefault.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         rdoDefault.Image = CType(resources.GetObject("rdoDefault.Image"), Image)
+        rdoDefault.ImageAlign = ContentAlignment.MiddleLeft
         rdoDefault.Location = New Point(0, 0)
-        rdoDefault.Margin = New Padding(0, 0, 3, 3)
+        rdoDefault.Margin = New Padding(0, 0, 0, 3)
         rdoDefault.Name = "rdoDefault"
         rdoDefault.Padding = New Padding(3, 0, 3, 0)
-        rdoDefault.Size = New Size(142, 46)
+        rdoDefault.Size = New Size(358, 46)
         rdoDefault.TabIndex = 4
         rdoDefault.TabStop = True
-        rdoDefault.Text = "默认" & vbCrLf & "(已使用字体)"
+        rdoDefault.Text = "默认" & vbCrLf & "(仅限已使用字体)"
         rdoDefault.TextImageRelation = TextImageRelation.ImageBeforeText
         rdoDefault.UseVisualStyleBackColor = False
+        ' 
+        ' lblDate
+        ' 
+        lblDate.AutoSize = True
+        lblDate.Cursor = Cursors.Hand
+        lblDate.Dock = DockStyle.Fill
+        lblDate.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        lblDate.Location = New Point(294, 156)
+        lblDate.Margin = New Padding(0, 3, 0, 3)
+        lblDate.Name = "lblDate"
+        lblDate.Size = New Size(64, 22)
+        lblDate.TabIndex = 48
+        lblDate.Text = "当前日期"
+        lblDate.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' lblTime
+        ' 
+        lblTime.AutoSize = True
+        lblTime.Cursor = Cursors.Hand
+        lblTime.Dock = DockStyle.Fill
+        lblTime.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        lblTime.Location = New Point(214, 156)
+        lblTime.Margin = New Padding(0, 3, 0, 3)
+        lblTime.Name = "lblTime"
+        lblTime.Size = New Size(64, 22)
+        lblTime.TabIndex = 47
+        lblTime.Text = "当前时间"
+        lblTime.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' Label1
+        ' 
+        Label1.AutoSize = True
+        Label1.Cursor = Cursors.Hand
+        Label1.Dock = DockStyle.Fill
+        Label1.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        Label1.Location = New Point(198, 156)
+        Label1.Margin = New Padding(0, 3, 0, 3)
+        Label1.Name = "Label1"
+        Label1.Size = New Size(16, 22)
+        Label1.TabIndex = 49
+        Label1.Text = "/"
+        Label1.TextAlign = ContentAlignment.MiddleLeft
+        ' 
+        ' Label2
+        ' 
+        Label2.AutoSize = True
+        Label2.Cursor = Cursors.Hand
+        Label2.Dock = DockStyle.Fill
+        Label2.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        Label2.Location = New Point(278, 156)
+        Label2.Margin = New Padding(0, 3, 0, 3)
+        Label2.Name = "Label2"
+        Label2.Size = New Size(16, 22)
+        Label2.TabIndex = 50
+        Label2.Text = "/"
+        Label2.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' tblExport
         ' 
@@ -254,7 +243,7 @@ Partial Class FormOutput
         tblExport.Controls.Add(btnCfg, 1, 0)
         tblExport.Controls.Add(ProgressBar1, 0, 0)
         tblExport.Controls.Add(btnDNFP, 2, 0)
-        tblExport.Location = New Point(12, 314)
+        tblExport.Location = New Point(12, 335)
         tblExport.Name = "tblExport"
         tblExport.RowCount = 1
         tblExport.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
@@ -296,67 +285,35 @@ Partial Class FormOutput
         btnDNFP.Text = "导出字体包"
         btnDNFP.UseVisualStyleBackColor = False
         ' 
-        ' tagInsert
+        ' lblSizeTotal
         ' 
-        tagInsert.AutoSize = True
-        tagInsert.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        tagInsert.Location = New Point(82, 272)
-        tagInsert.Margin = New Padding(3)
-        tagInsert.Name = "tagInsert"
-        tagInsert.Size = New Size(72, 18)
-        tagInsert.TabIndex = 49
-        tagInsert.Text = "快速插入:"
-        tagInsert.TextAlign = ContentAlignment.MiddleLeft
+        lblSizeTotal.AutoSize = True
+        lblSizeTotal.ForeColor = Color.DarkGray
+        lblSizeTotal.Location = New Point(12, 293)
+        lblSizeTotal.Margin = New Padding(3)
+        lblSizeTotal.Name = "lblSizeTotal"
+        lblSizeTotal.Size = New Size(72, 18)
+        lblSizeTotal.TabIndex = 72
+        lblSizeTotal.Text = "备份大小:"
         ' 
-        ' lblDate
+        ' splitExport
         ' 
-        lblDate.AutoSize = True
-        lblDate.Cursor = Cursors.Hand
-        lblDate.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblDate.Location = New Point(306, 272)
-        lblDate.Margin = New Padding(0, 3, 3, 3)
-        lblDate.Name = "lblDate"
-        lblDate.Size = New Size(64, 18)
-        lblDate.TabIndex = 48
-        lblDate.Text = "当前日期"
-        lblDate.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' lblTime
-        ' 
-        lblTime.AutoSize = True
-        lblTime.Cursor = Cursors.Hand
-        lblTime.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblTime.Location = New Point(226, 272)
-        lblTime.Margin = New Padding(0, 3, 0, 3)
-        lblTime.Name = "lblTime"
-        lblTime.Size = New Size(80, 18)
-        lblTime.TabIndex = 47
-        lblTime.Text = "当前时间 /"
-        lblTime.TextAlign = ContentAlignment.MiddleLeft
-        ' 
-        ' lblUserName
-        ' 
-        lblUserName.AutoSize = True
-        lblUserName.Cursor = Cursors.Hand
-        lblUserName.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblUserName.Location = New Point(160, 272)
-        lblUserName.Margin = New Padding(3, 3, 0, 3)
-        lblUserName.Name = "lblUserName"
-        lblUserName.Size = New Size(66, 18)
-        lblUserName.TabIndex = 46
-        lblUserName.Text = "用户名 /"
-        lblUserName.TextAlign = ContentAlignment.MiddleLeft
+        splitExport.ForeColor = Color.DarkGray
+        splitExport.Location = New Point(12, 271)
+        splitExport.Margin = New Padding(3)
+        splitExport.Name = "splitExport"
+        splitExport.Size = New Size(358, 16)
+        splitExport.TabIndex = 71
+        splitExport.Text = "─────────────────────────────────────────────────────────"
         ' 
         ' FormOutput
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 356)
-        Controls.Add(tagInsert)
-        Controls.Add(lblDate)
-        Controls.Add(lblTime)
-        Controls.Add(lblUserName)
+        ClientSize = New Size(382, 377)
+        Controls.Add(lblSizeTotal)
+        Controls.Add(splitExport)
         Controls.Add(tblExport)
         Controls.Add(tblExportMode)
         Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
@@ -378,20 +335,17 @@ Partial Class FormOutput
     Friend WithEvents chkNote As CheckBox
     Friend WithEvents rdoStandard As RadioButton
     Friend WithEvents rdoFull As RadioButton
-    Friend WithEvents lblSizeDefault As Label
     Friend WithEvents txtNote As TextBox
-    Friend WithEvents lblSizeStandard As Label
-    Friend WithEvents lblSizeFull As Label
     Friend WithEvents rdoDefault As RadioButton
     Friend WithEvents tblExport As TableLayoutPanel
     Friend WithEvents btnDNFP As Button
     Friend WithEvents ProgressBar1 As ProgressBar
     Friend WithEvents btnCfg As Button
-    Friend WithEvents tagInsert As Label
     Friend WithEvents lblDate As Label
     Friend WithEvents lblTime As Label
     Friend WithEvents lblUserName As Label
-    Friend WithEvents lblCountFull As Label
-    Friend WithEvents lblCountStandard As Label
-    Friend WithEvents lblCountDefault As Label
+    Friend WithEvents lblSizeTotal As Label
+    Friend WithEvents splitExport As Label
+    Friend WithEvents Label1 As Label
+    Friend WithEvents Label2 As Label
 End Class

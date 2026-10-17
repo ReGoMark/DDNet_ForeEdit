@@ -131,7 +131,7 @@ Public Class FormMain
 
 #Region "── 常量：版本与标题 ──────────────────────────────────────"
 
-    Public ReadOnly BuildVersion As String = "Build 1016.131"
+    Public ReadOnly BuildVersion As String = "Build 1017.108"
     Private ReadOnly TitleText As String = "DDNet ForeEdit"
 
 #End Region

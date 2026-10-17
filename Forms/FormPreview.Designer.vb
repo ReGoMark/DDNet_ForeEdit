@@ -59,7 +59,7 @@ Partial Class FormPreview
         lblTC.Location = New Point(0, 606)
         lblTC.Margin = New Padding(0, 3, 0, 3)
         lblTC.Name = "lblTC"
-        lblTC.Size = New Size(389, 90)
+        lblTC.Size = New Size(403, 90)
         lblTC.TabIndex = 4
         lblTC.Text = "幾次相忘於世，總在山窮水盡相見。" & vbCrLf & "0123456789 ~！@#￥%……&*（）—+「」" & vbCrLf & "：『』《》？·-=【】；‘，。、" & vbCrLf & "😀😁😂" & ChrW(55358) & ChrW(56611) & "😊😎😍🤔😴" & ChrW(55358) & ChrW(56623) & ChrW(55358) & ChrW(56691) & "😭" & vbCrLf & "╭ ─ │╰ ─ ᴄᴜʀʀᴇɴᴛ ᴍᴀᴘ ★★★✰✰"
         lblTC.TextAlign = ContentAlignment.MiddleLeft
@@ -157,7 +157,7 @@ Partial Class FormPreview
         lblSC.Location = New Point(0, 480)
         lblSC.Margin = New Padding(0, 3, 0, 3)
         lblSC.Name = "lblSC"
-        lblSC.Size = New Size(389, 90)
+        lblSC.Size = New Size(403, 90)
         lblSC.TabIndex = 3
         lblSC.Text = "弱水三千、巫山十二，指点虚无归路。" & vbCrLf & "0123456789 ~！@#￥%……&*（）—+「」" & vbCrLf & "：" & ChrW(8220) & ChrW(8221) & "《》？·-=【】；‘，。、" & vbCrLf & "😀😁😂" & ChrW(55358) & ChrW(56611) & "😊😎😍🤔😴" & ChrW(55358) & ChrW(56623) & ChrW(55358) & ChrW(56691) & "😭" & vbCrLf & "╭ ─ │╰ ─ ᴄᴜʀʀᴇɴᴛ ᴍᴀᴘ ★★★✰✰"
         lblSC.TextAlign = ContentAlignment.MiddleLeft
@@ -172,7 +172,7 @@ Partial Class FormPreview
         lblKR.Location = New Point(0, 372)
         lblKR.Margin = New Padding(0, 3, 0, 3)
         lblKR.Name = "lblKR"
-        lblKR.Size = New Size(389, 72)
+        lblKR.Size = New Size(403, 72)
         lblKR.TabIndex = 2
         lblKR.Text = "나의 죽음을 헛되이 말라. " & vbCrLf & "0123456789 ~!@#$%^&*()_+{}:""<>?`-=[];',./" & vbCrLf & "😀😁😂" & ChrW(55358) & ChrW(56611) & "😊😎😍🤔😴" & ChrW(55358) & ChrW(56623) & ChrW(55358) & ChrW(56691) & "😭" & vbCrLf & "╭ ─ │╰ ─ ᴄᴜʀʀᴇɴᴛ ᴍᴀᴘ ★★★✰✰"
         lblKR.TextAlign = ContentAlignment.MiddleLeft
@@ -186,7 +186,7 @@ Partial Class FormPreview
         lblJP.Location = New Point(0, 246)
         lblJP.Margin = New Padding(0, 3, 0, 3)
         lblJP.Name = "lblJP"
-        lblJP.Size = New Size(389, 90)
+        lblJP.Size = New Size(403, 90)
         lblJP.TabIndex = 1
         lblJP.Text = "恥の多い生涯を送って来ました。" & vbCrLf & "0123456789 ~！@#￥%……&*（）—+「」" & vbCrLf & "：『』《》？·-=【】；‘，。、" & vbCrLf & "😀😁😂" & ChrW(55358) & ChrW(56611) & "😊😎😍🤔😴" & ChrW(55358) & ChrW(56623) & ChrW(55358) & ChrW(56691) & "😭" & vbCrLf & "╭ ─ │╰ ─ ᴄᴜʀʀᴇɴᴛ ᴍᴀᴘ ★★★✰✰"
         lblJP.TextAlign = ContentAlignment.MiddleLeft
@@ -201,7 +201,7 @@ Partial Class FormPreview
         lblLA.Location = New Point(0, 138)
         lblLA.Margin = New Padding(0, 3, 0, 3)
         lblLA.Name = "lblLA"
-        lblLA.Size = New Size(389, 72)
+        lblLA.Size = New Size(403, 72)
         lblLA.TabIndex = 0
         lblLA.Text = "Once we dreamt that we were strangers." & vbCrLf & "0123456789 ~!@#$%^&*()_+{}:""<>?`-=[];',./" & vbCrLf & "😀😁😂" & ChrW(55358) & ChrW(56611) & "😊😎😍🤔😴" & ChrW(55358) & ChrW(56623) & ChrW(55358) & ChrW(56691) & "😭" & vbCrLf & "╭ ─ │╰ ─ ᴄᴜʀʀᴇɴᴛ ᴍᴀᴘ ★★★✰✰"
         lblLA.TextAlign = ContentAlignment.MiddleLeft
@@ -283,7 +283,7 @@ Partial Class FormPreview
         ' 
         TableLayoutPanel4.AutoSize = True
         TableLayoutPanel4.ColumnCount = 1
-        TableLayoutPanel4.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
+        TableLayoutPanel4.ColumnStyles.Add(New ColumnStyle())
         TableLayoutPanel4.Controls.Add(TableLayoutPanel1, 0, 0)
         TableLayoutPanel4.Controls.Add(lblTC, 0, 10)
         TableLayoutPanel4.Controls.Add(lblSC, 0, 8)
@@ -311,7 +311,7 @@ Partial Class FormPreview
         TableLayoutPanel4.RowStyles.Add(New RowStyle())
         TableLayoutPanel4.RowStyles.Add(New RowStyle())
         TableLayoutPanel4.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
-        TableLayoutPanel4.Size = New Size(389, 669)
+        TableLayoutPanel4.Size = New Size(403, 669)
         TableLayoutPanel4.TabIndex = 3
         ' 
         ' TableLayoutPanel1
@@ -338,7 +338,7 @@ Partial Class FormPreview
         TableLayoutPanel1.RowCount = 2
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
-        TableLayoutPanel1.Size = New Size(389, 105)
+        TableLayoutPanel1.Size = New Size(403, 105)
         TableLayoutPanel1.TabIndex = 6
         ' 
         ' rdoFont9
@@ -366,14 +366,14 @@ Partial Class FormPreview
         TableLayoutPanel2.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 20F))
         TableLayoutPanel2.Controls.Add(btnRecovery, 0, 1)
         TableLayoutPanel2.Controls.Add(btnConfirm, 0, 0)
-        TableLayoutPanel2.Dock = DockStyle.Left
+        TableLayoutPanel2.Dock = DockStyle.Fill
         TableLayoutPanel2.Location = New Point(331, 33)
         TableLayoutPanel2.Margin = New Padding(0)
         TableLayoutPanel2.Name = "TableLayoutPanel2"
         TableLayoutPanel2.RowCount = 2
         TableLayoutPanel2.RowStyles.Add(New RowStyle())
         TableLayoutPanel2.RowStyles.Add(New RowStyle())
-        TableLayoutPanel2.Size = New Size(58, 72)
+        TableLayoutPanel2.Size = New Size(72, 72)
         TableLayoutPanel2.TabIndex = 6
         ' 
         ' rdoFont22
@@ -400,7 +400,7 @@ Partial Class FormPreview
         AutoSize = True
         AutoSizeMode = AutoSizeMode.GrowAndShrink
         BackColor = Color.White
-        ClientSize = New Size(413, 693)
+        ClientSize = New Size(427, 693)
         Controls.Add(TableLayoutPanel4)
         Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
         ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))

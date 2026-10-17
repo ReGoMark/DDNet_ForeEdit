@@ -533,8 +533,8 @@ Partial Class FormMain
         ' 
         lblLocalFonts.AutoSize = True
         lblLocalFonts.Cursor = Cursors.Hand
-        lblLocalFonts.Location = New Point(452, 2)
-        lblLocalFonts.Margin = New Padding(0, 2, 0, 2)
+        lblLocalFonts.Location = New Point(452, 3)
+        lblLocalFonts.Margin = New Padding(0, 3, 0, 3)
         lblLocalFonts.Name = "lblLocalFonts"
         lblLocalFonts.Size = New Size(36, 18)
         lblLocalFonts.TabIndex = 1
@@ -545,8 +545,8 @@ Partial Class FormMain
         ' splitFont
         ' 
         splitFont.AutoSize = True
-        splitFont.Location = New Point(436, 2)
-        splitFont.Margin = New Padding(0, 2, 0, 2)
+        splitFont.Location = New Point(436, 3)
+        splitFont.Margin = New Padding(0, 3, 0, 3)
         splitFont.Name = "splitFont"
         splitFont.Size = New Size(16, 18)
         splitFont.TabIndex = 2
@@ -557,8 +557,8 @@ Partial Class FormMain
         ' 
         lblSystemFonts.AutoSize = True
         lblSystemFonts.Cursor = Cursors.Hand
-        lblSystemFonts.Location = New Point(400, 2)
-        lblSystemFonts.Margin = New Padding(3, 2, 0, 2)
+        lblSystemFonts.Location = New Point(400, 3)
+        lblSystemFonts.Margin = New Padding(3, 3, 0, 3)
         lblSystemFonts.Name = "lblSystemFonts"
         lblSystemFonts.Size = New Size(36, 18)
         lblSystemFonts.TabIndex = 3

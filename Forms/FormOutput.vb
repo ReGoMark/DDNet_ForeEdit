@@ -51,6 +51,11 @@ Public Class FormOutput
         Public Message As String
     End Class
 
+    ' 三种模式的预估体积（字节），在 Load 时算一次，切换模式只读缓存
+    Private _sizeDefault As Long = 0
+    Private _sizeStandard As Long = 0
+    Private _sizeFull As Long = 0
+
     ' ─── 窗体生命周期 ──────────────────────────────────────────────────
 
     ''' <summary>窗体加载事件：初始化控件状态。</summary>
@@ -74,8 +79,9 @@ Public Class FormOutput
             btnDNFP.Enabled = False
             btnCfg.Enabled = False
             tblExportMode.Enabled = False
-            tagInsert.Enabled = False
             lblUserName.Enabled = False
+            Label1.Enabled = False
+            Label2.Enabled = False
             lblTime.Enabled = False
             lblDate.Enabled = False
         End If
@@ -86,21 +92,23 @@ Public Class FormOutput
 
     ' ─── 估算包体积 ──────────────────────────────────────────────────
 
-    ''' <summary>刷新三种打包模式的预估体积标签和字体数量标签。</summary>
+    ''' <summary>计算三种打包模式的预估体积并缓存，然后刷新 lblSizeTotal。</summary>
     Private Sub RefreshPackSizeLabels()
-        lblSizeDefault.Text = FormatBytes(EstimatePackedSize(NormFontFiles))
-        lblSizeStandard.Text = FormatBytes(EstimatePackedSize(StdFontFiles))
-        lblSizeFull.Text = FormatBytes(EstimatePackedSize(FullFontFiles))
+        _sizeDefault = EstimatePackedSize(NormFontFiles)
+        _sizeStandard = EstimatePackedSize(StdFontFiles)
+        _sizeFull = EstimatePackedSize(FullFontFiles)
 
-        lblCountDefault.Text = FormatCount(NormFontFiles)
-        lblCountStandard.Text = FormatCount(StdFontFiles)
-        lblCountFull.Text = FormatCount(FullFontFiles)
+        'lblCountDefault.Text = FormatCount(NormFontFiles)
+        'lblCountStandard.Text = FormatCount(StdFontFiles)
+        'lblCountFull.Text = FormatCount(FullFontFiles)
+
+        UpdateRadioButtonLabels()
     End Sub
 
-    ''' <summary>把字体列表格式化为 "共 N 项"。</summary>
+    ''' <summary>把字体列表格式化为 "N 项"。</summary>
     Private Function FormatCount(files As List(Of String)) As String
         Dim count As Integer = If(files IsNot Nothing, files.Count, 0)
-        Return $"字体 {count} 项"
+        Return $"{count} 项"
     End Function
 
     ''' <summary>估算字体列表压缩后的体积（字节）。</summary>
@@ -145,10 +153,11 @@ Public Class FormOutput
     ''' <summary>备注复选框状态改变时启用/禁用备注文本框。</summary>
     Private Sub chkNote_CheckedChanged(sender As Object, e As EventArgs) Handles chkNote.CheckedChanged
         txtNote.Enabled = chkNote.Checked
-        tagInsert.Enabled = chkNote.Checked
         lblDate.Enabled = chkNote.Checked
         lblTime.Enabled = chkNote.Checked
         lblUserName.Enabled = chkNote.Checked
+        Label1.Enabled = chkNote.Checked
+        Label2.Enabled = chkNote.Checked
     End Sub
 
     ' ─── 打包模式切换 ─────────────────────────────────────────────────
@@ -168,33 +177,18 @@ Public Class FormOutput
         UpdateRadioButtonLabels()
     End Sub
 
-    ''' <summary>更新打包模式 RadioButton 的标签颜色（体积标签 + 数量标签同步）。</summary>
+    ''' <summary>按当前选中的打包模式，刷新 lblSizeTotal：预计大小 (项目数)。</summary>
     Private Sub UpdateRadioButtonLabels()
-        Dim activeColor As Color = Color.FromArgb(64, 64, 64)
-        Dim inactiveColor As Color = Color.DarkGray
-
+        Dim bytes As Long
+        Dim files As List(Of String)
         If rdoDefault.Checked Then
-            lblSizeDefault.ForeColor = activeColor
-            lblCountDefault.ForeColor = activeColor
-            lblSizeStandard.ForeColor = inactiveColor
-            lblCountStandard.ForeColor = inactiveColor
-            lblSizeFull.ForeColor = inactiveColor
-            lblCountFull.ForeColor = inactiveColor
+            bytes = _sizeDefault : files = NormFontFiles
         ElseIf rdoStandard.Checked Then
-            lblSizeDefault.ForeColor = inactiveColor
-            lblCountDefault.ForeColor = inactiveColor
-            lblSizeStandard.ForeColor = activeColor
-            lblCountStandard.ForeColor = activeColor
-            lblSizeFull.ForeColor = inactiveColor
-            lblCountFull.ForeColor = inactiveColor
+            bytes = _sizeStandard : files = StdFontFiles
         Else
-            lblSizeDefault.ForeColor = inactiveColor
-            lblCountDefault.ForeColor = inactiveColor
-            lblSizeStandard.ForeColor = inactiveColor
-            lblCountStandard.ForeColor = inactiveColor
-            lblSizeFull.ForeColor = activeColor
-            lblCountFull.ForeColor = activeColor
+            bytes = _sizeFull : files = FullFontFiles
         End If
+        lblSizeTotal.Text = $"字体包大小: {FormatBytes(bytes)} (字体 {FormatCount(files)})"
     End Sub
 
     ' ─── 快速插入：用户名 / 日期 / 时间 ──────────────────────────────
