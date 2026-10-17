@@ -5,8 +5,7 @@
 
 **DDNet 字体管理与配置编辑工具**
 
-
-![Stars](https://img.shields.io/github/stars/ReGoMark/DDNet_ForeEdit?style=flat-square&utm_source=chatgpt.com)
+[![Stars](https://img.shields.io/github/stars/ReGoMark/DDNet_ForeEdit?style=flat-square)](https://github.com/ReGoMark/DDNet_ForeEdit/stargazers)
 [![Last Commit](https://img.shields.io/github/last-commit/ReGoMark/DDNet_ForeEdit?style=flat-square)](https://github.com/ReGoMark/DDNet_ForeEdit/commits/main)
 [![License](https://img.shields.io/badge/License-Custom-blue?style=flat-square)](https://github.com/ReGoMark/DDNet_ForeEdit/blob/main/LICENSE)
 [![Release](https://img.shields.io/github/v/release/ReGoMark/DDNet_ForeEdit?style=flat-square)](https://github.com/ReGoMark/DDNet_ForeEdit/releases)
