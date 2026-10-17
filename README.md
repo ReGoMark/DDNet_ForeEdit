@@ -12,9 +12,6 @@
 
 DDNet ForeEdit 是一款面向 DDNet 的字体管理工具，旨在简化游戏字体的安装、管理与配置过程。通过图形化界面，用户可以管理字体文件、修改默认字体及多语言字体配置、调整字体回退顺序，并通过字体包实现配置与字体资源的分享和迁移。
 
-  <img src="https://github.com/user-attachments/assets/e29d5807-c20a-4017-a8ff-69bf24f13c4e" width="450">
-</p>
-
 ## 功能特性
 
 ### 字体管理
@@ -36,12 +33,43 @@ DDNet ForeEdit 是一款面向 DDNet 的字体管理工具，旨在简化游戏�
 - **配置导出**：单独导出 `index.json` 配置文件。
 - **字体包安装**：导入字体包或配置文件，并在确认操作前查看相关字体的安装、覆盖及删除情况。
 - **恢复默认**：支持仅恢复默认配置，或同时恢复预装字体与默认配置。
-
+- 
 ### 预览与辅助功能
 - **字体预览**：自定义预览文本、调整预览字号，查看字体的实际显示效果。
 - **拖放操作**：通过拖入 DDNet 快捷方式、`DDNet.exe` 或 `index.json` 快速定位字体目录；支持拖入字体文件进行批量导入。
 - **目录切换**：支持在不同字体目录之间切换。
 - **数据备份**：按需备份游戏设置、配置文件、存档密码、渲染视频及材质资源。
+
+## 界面预览
+
+
+## 界面预览
+
+<table>
+  <tr>
+    <td><a href="./Resources/screenshots/main.png"><img src="./Resources/screenshots/main.png" width="400" alt="主界面"></a><br>主界面</td>
+    <td><a href="./Resources/screenshots/install.png"><img src="./Resources/screenshots/install.png" width="400" alt="字体安装"></a><br>字体安装</td>
+    <td><a href="./Resources/screenshots/loaded.png"><img src="./Resources/screenshots/loaded.png" width="400" alt="字体加载"></a><br>字体加载</td>
+  </tr>
+  <tr>
+    <td><a href="./Resources/screenshots/preview.png"><img src="./Resources/screenshots/preview.png" width="400" alt="字体预览"></a><br>字体预览</td>
+    <td><a href="./Resources/screenshots/backup.png"><img src="./Resources/screenshots/backup.png" width="400" alt="备份"></a><br>备份</td>
+    <td><a href="./Resources/screenshots/restore.png"><img src="./Resources/screenshots/restore.png" width="400" alt="恢复默认"></a><br>恢复</td>
+    <td><a href="./Resources/screenshots/output.png"><img src="./Resources/screenshots/output.png" width="400" alt="导出"></a><br>导出</td>
+  </tr>
+  <tr>
+    <td><a href="./Resources/screenshots/search.png"><img src="./Resources/screenshots/search.png" width="400" alt="搜索"></a><br>搜索</td>
+    <td><a href="./Resources/screenshots/menu.png"><img src="./Resources/screenshots/menu.png" width="400" alt="菜单"></a><br>菜单</td>
+    <td><a href="./Resources/screenshots/listmenu.png"><img src="./Resources/screenshots/listmenu.png" width="400" alt="列表菜单"></a><br>列表菜单</td>
+    <td><a href="./Resources/screenshots/localdir.png"><img src="./Resources/screenshots/localdir.png" width="400" alt="目录切换"></a><br>本地字体目录</td>
+  </tr>
+  <tr>
+    <td><a href="./Resources/screenshots/font_uninstall.png"><img src="./Resources/screenshots/font_uninstall.png" width="400" alt="字体卸载"></a><br>字体卸载</td>
+    <td><a href="./Resources/screenshots/font_verification.png"><img src="./Resources/screenshots/font_verification.png" width="400" alt="字体验证"></a><br>字体验证</td>
+    <td><a href="./Resources/screenshots/unused_fonts.png"><img src="./Resources/screenshots/unused_fonts.png" width="400" alt="未使用字体"></a><br>未使用字体</td>
+  </tr>
+</table>
+
 
 ## 使用指南
 
@@ -140,10 +168,12 @@ DDNet 字体可能位于游戏安装目录或用户目录中。用户目录又�
 | 转到指定行 | `Ctrl + G` |
 
 ## 联络
+
 📺︎ 哔哩哔哩 https://space.bilibili.com/220248940?spm_id_from=333.1007.0.0
 
 📩 邮箱 regmvks@outlook.com
 
 ## 赞助
+
 <img width="200" src="https://github.com/ReGoMark/DDNet_ForeEdit/blob/main/Resources/.pictures/sponsorships.png" />
 
