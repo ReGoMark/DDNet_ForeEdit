@@ -187,7 +187,7 @@ DDNet 字体可能位于游戏安装目录或用户目录中。用户目录又�
 
 ## 联络
 
-📺︎ 哔哩哔哩 https://space.bilibili.com/220248940?spm_id_from=333.1007.0.0
+📺︎ [哔哩哔哩](https://space.bilibili.com/220248940?spm_id_from=333.1007.0.0)
 
 📩 邮箱 regmvks@outlook.com
 
