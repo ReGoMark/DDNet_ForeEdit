@@ -192,5 +192,5 @@ DDNet 字体可能位于游戏安装目录或用户目录中。用户目录又�
 
 ## 赞助
 
-<img width="200" src="https://github.com/ReGoMark/DDNet_ForeEdit/blob/main/Resources/.images/sponsorships.png" />
+<img width="200" src="Resources/.images/sponsorships.png" />
 
