@@ -45,7 +45,7 @@ DDNet ForeEdit 是一款面向 DDNet 的字体管理工具，旨在简化游戏�
 
 ## 使用指南
 
-📕[使用说明.pdf](./Data/DNFE_documents.pdf)
+📕 [说明文档](./Data/DNFE_documents.pdf)
 
 ### 1. 加载字体目录
 
@@ -139,11 +139,11 @@ DDNet 字体可能位于游戏安装目录或用户目录中。用户目录又�
 | 跳转到末尾匹配项 | `F4` |
 | 转到指定行 | `Ctrl + G` |
 
-## 注意事项
+## 联络
+📺︎ 哔哩哔哩 https://space.bilibili.com/220248940?spm_id_from=333.1007.0.0
 
-- 执行字体安装、卸载或恢复操作前，建议确认当前字体目录，并妥善备份重要配置。
+📩 邮箱 regmvks@outlook.com
 
----
+## 赞助
+<img width="200" src="https://github.com/ReGoMark/DDNet_ForeEdit/blob/main/Resources/.pictures/sponsorships.png" />
 
-**DDNet ForeEdit**  
-让 DDNet 字体管理与配置编辑更加直观、便捷。
