@@ -5,10 +5,10 @@
 
 **DDNet 字体管理与配置编辑工具**
 
-[![Stars](https://img.shields.io/github/stars/ReGoMark/DDNet_ForeEdit?style=flat-square)](https://github.com/ReGoMark/DDNet_ForeEdit/stargazers)
-[![Forks](https://img.shields.io/github/forks/ReGoMark/DDNet_ForeEdit?style=flat-square)](https://github.com/ReGoMark/DDNet_ForeEdit/forks)
+
+![Stars](https://img.shields.io/github/stars/ReGoMark/DDNet_ForeEdit?style=flat-square&utm_source=chatgpt.com)
 [![Last Commit](https://img.shields.io/github/last-commit/ReGoMark/DDNet_ForeEdit?style=flat-square)](https://github.com/ReGoMark/DDNet_ForeEdit/commits/main)
-[![License](https://img.shields.io/github/license/ReGoMark/DDNet_ForeEdit?style=flat-square)](https://github.com/ReGoMark/DDNet_ForeEdit/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/License-Custom-blue?style=flat-square)](https://github.com/ReGoMark/DDNet_ForeEdit/blob/main/LICENSE)
 [![Release](https://img.shields.io/github/v/release/ReGoMark/DDNet_ForeEdit?style=flat-square)](https://github.com/ReGoMark/DDNet_ForeEdit/releases)
 
 DDNet ForeEdit 是一款面向 DDNet 的字体管理工具，旨在简化游戏字体的安装、管理与配置过程。通过图形化界面，用户可以管理字体文件、修改默认字体及多语言字体配置、调整字体回退顺序，并通过字体包实现配置与字体资源的分享和迁移。
@@ -46,7 +46,7 @@ DDNet ForeEdit 是一款面向 DDNet 的字体管理工具，旨在简化游戏�
 
 ## 使用指南
 
-📕[完整版使用说明](./Data/DNFE_documents.pdf)
+📕[使用说明.pdf](./Data/DNFE_documents.pdf)
 
 ### 1. 加载字体目录
 
@@ -142,9 +142,6 @@ DDNet 字体可能位于游戏安装目录或用户目录中。用户目录又�
 
 ## 注意事项
 
-- `index.json` 中的字体引用需要与实际字体文件相匹配，否则可能出现字体显示异常。
-- `Font Awesome 6 Free Solid` 是 DDNet 的基础显示字体，不支持通过本程序卸载。
-- 程序目录下的 `data/standard` 文件夹存放预装字体，供恢复默认字体及制作字体包等功能使用。非必要情况下请勿重命名、删除或移动其中的字体文件。
 - 执行字体安装、卸载或恢复操作前，建议确认当前字体目录，并妥善备份重要配置。
 
 ---
