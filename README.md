@@ -1,4 +1,4 @@
-<img width="128" height="128" alt="DNFE_modern" src="https://github.com/user-attachments/assets/d1053a0a-faab-49b6-a782-bc51ae57f5cf" />
+<img width="96" height="96" alt="DNFE_modern" src="https://github.com/user-attachments/assets/d1053a0a-faab-49b6-a782-bc51ae57f5cf" />
 
 
 # DDNet ForeEdit
