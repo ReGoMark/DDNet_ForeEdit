@@ -47,28 +47,49 @@ DDNet ForeEdit 是一款面向 DDNet 的字体管理工具，旨在简化游戏�
 
 <table>
   <tr>
-    <td><a href="./Resources/screenshots/main.png"><img src="./Resources/screenshots/main.png" width="400" alt="主界面"></a><br>主界面</td>
-    <td><a href="./Resources/screenshots/install.png"><img src="./Resources/screenshots/install.png" width="400" alt="字体安装"></a><br>字体安装</td>
-    <td><a href="./Resources/screenshots/loaded.png"><img src="./Resources/screenshots/loaded.png" width="400" alt="字体加载"></a><br>字体加载</td>
+    <td>
+      <a href="./Resources/screenshots/main.png">
+        <img src="./Resources/screenshots/main.png" width="600" alt="主界面">
+      </a>
+      <br>主界面
+    </td>
+    <td>
+      <a href="./Resources/screenshots/install.png">
+        <img src="./Resources/screenshots/install.png" width="600" alt="字体安装">
+      </a>
+      <br>字体包/配置安装
+    </td>
   </tr>
   <tr>
-    <td><a href="./Resources/screenshots/preview.png"><img src="./Resources/screenshots/preview.png" width="400" alt="字体预览"></a><br>字体预览</td>
-    <td><a href="./Resources/screenshots/backup.png"><img src="./Resources/screenshots/backup.png" width="400" alt="备份"></a><br>备份</td>
-    <td><a href="./Resources/screenshots/restore.png"><img src="./Resources/screenshots/restore.png" width="400" alt="恢复默认"></a><br>恢复</td>
-    <td><a href="./Resources/screenshots/output.png"><img src="./Resources/screenshots/output.png" width="400" alt="导出"></a><br>导出</td>
+    <td>
+      <a href="./Resources/screenshots/backup.png">
+        <img src="./Resources/screenshots/backup.png" width="600" alt="备份">
+      </a>
+      <br>游戏数据备份
+    </td>
+    <td>
+      <a href="./Resources/screenshots/search.png">
+        <img src="./Resources/screenshots/search.png" width="600" alt="查找">
+      </a>
+      <br>字体查找
+    </td>
   </tr>
   <tr>
-    <td><a href="./Resources/screenshots/search.png"><img src="./Resources/screenshots/search.png" width="400" alt="搜索"></a><br>搜索</td>
-    <td><a href="./Resources/screenshots/menu.png"><img src="./Resources/screenshots/menu.png" width="400" alt="菜单"></a><br>菜单</td>
-    <td><a href="./Resources/screenshots/listmenu.png"><img src="./Resources/screenshots/listmenu.png" width="400" alt="列表菜单"></a><br>列表菜单</td>
-    <td><a href="./Resources/screenshots/localdir.png"><img src="./Resources/screenshots/localdir.png" width="400" alt="目录切换"></a><br>本地字体目录</td>
-  </tr>
-  <tr>
-    <td><a href="./Resources/screenshots/font_uninstall.png"><img src="./Resources/screenshots/font_uninstall.png" width="400" alt="字体卸载"></a><br>字体卸载</td>
-    <td><a href="./Resources/screenshots/font_verification.png"><img src="./Resources/screenshots/font_verification.png" width="400" alt="字体验证"></a><br>字体验证</td>
-    <td><a href="./Resources/screenshots/unused_fonts.png"><img src="./Resources/screenshots/unused_fonts.png" width="400" alt="未使用字体"></a><br>未使用字体</td>
+    <td>
+      <a href="./Resources/screenshots/output.png">
+        <img src="./Resources/screenshots/output.png" width="600" alt="导出">
+      </a>
+      <br>字体包/配置导出
+    </td>
+    <td>
+      <a href="./Resources/screenshots/preview.png">
+        <img src="./Resources/screenshots/preview.png" width="600" alt="预览">
+      </a>
+      <br>字体预览
+    </td>
   </tr>
 </table>
+
 
 
 ## 使用指南
