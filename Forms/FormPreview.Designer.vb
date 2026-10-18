@@ -44,6 +44,7 @@ Partial Class FormPreview
         rdoFont9 = New RadioButton()
         TableLayoutPanel2 = New TableLayoutPanel()
         rdoFont22 = New RadioButton()
+        chkDock = New CheckBox()
         TableLayoutPanel4.SuspendLayout()
         TableLayoutPanel1.SuspendLayout()
         TableLayoutPanel2.SuspendLayout()
@@ -114,8 +115,8 @@ Partial Class FormPreview
         ' 
         ' btnConfirm
         ' 
-        btnConfirm.Location = New Point(6, 3)
-        btnConfirm.Margin = New Padding(6, 3, 0, 3)
+        btnConfirm.Location = New Point(3, 3)
+        btnConfirm.Margin = New Padding(3, 3, 0, 3)
         btnConfirm.Name = "btnConfirm"
         btnConfirm.Padding = New Padding(3, 0, 3, 0)
         btnConfirm.Size = New Size(52, 30)
@@ -125,8 +126,8 @@ Partial Class FormPreview
         ' 
         ' btnRecovery
         ' 
-        btnRecovery.Location = New Point(6, 39)
-        btnRecovery.Margin = New Padding(6, 3, 0, 3)
+        btnRecovery.Location = New Point(3, 39)
+        btnRecovery.Margin = New Padding(3, 3, 0, 3)
         btnRecovery.Name = "btnRecovery"
         btnRecovery.Padding = New Padding(3, 0, 3, 0)
         btnRecovery.Size = New Size(52, 30)
@@ -140,7 +141,7 @@ Partial Class FormPreview
         tbCustom.Dock = DockStyle.Fill
         tbCustom.ForeColor = Color.Black
         tbCustom.Location = New Point(0, 36)
-        tbCustom.Margin = New Padding(0, 3, 0, 3)
+        tbCustom.Margin = New Padding(0, 3, 3, 3)
         tbCustom.Multiline = True
         tbCustom.Name = "tbCustom"
         tbCustom.PlaceholderText = "输入要预览的文本"
@@ -331,6 +332,7 @@ Partial Class FormPreview
         TableLayoutPanel1.Controls.Add(rdoFont12, 2, 0)
         TableLayoutPanel1.Controls.Add(rdoFont10, 1, 0)
         TableLayoutPanel1.Controls.Add(rdoFont22, 4, 0)
+        TableLayoutPanel1.Controls.Add(chkDock, 5, 0)
         TableLayoutPanel1.Dock = DockStyle.Top
         TableLayoutPanel1.Location = New Point(0, 0)
         TableLayoutPanel1.Margin = New Padding(0)
@@ -367,13 +369,13 @@ Partial Class FormPreview
         TableLayoutPanel2.Controls.Add(btnRecovery, 0, 1)
         TableLayoutPanel2.Controls.Add(btnConfirm, 0, 0)
         TableLayoutPanel2.Dock = DockStyle.Fill
-        TableLayoutPanel2.Location = New Point(331, 33)
+        TableLayoutPanel2.Location = New Point(334, 33)
         TableLayoutPanel2.Margin = New Padding(0)
         TableLayoutPanel2.Name = "TableLayoutPanel2"
         TableLayoutPanel2.RowCount = 2
         TableLayoutPanel2.RowStyles.Add(New RowStyle())
         TableLayoutPanel2.RowStyles.Add(New RowStyle())
-        TableLayoutPanel2.Size = New Size(72, 72)
+        TableLayoutPanel2.Size = New Size(69, 72)
         TableLayoutPanel2.TabIndex = 6
         ' 
         ' rdoFont22
@@ -382,7 +384,7 @@ Partial Class FormPreview
         rdoFont22.FlatAppearance.BorderSize = 0
         rdoFont22.FlatAppearance.CheckedBackColor = Color.Silver
         rdoFont22.Location = New Point(269, 0)
-        rdoFont22.Margin = New Padding(3, 0, 0, 3)
+        rdoFont22.Margin = New Padding(3, 0, 3, 3)
         rdoFont22.Name = "rdoFont22"
         rdoFont22.Padding = New Padding(3, 0, 3, 0)
         rdoFont22.Size = New Size(62, 30)
@@ -391,6 +393,18 @@ Partial Class FormPreview
         rdoFont22.Text = "22 点"
         rdoFont22.TextAlign = ContentAlignment.MiddleCenter
         rdoFont22.UseVisualStyleBackColor = True
+        ' 
+        ' chkDock
+        ' 
+        chkDock.Appearance = Appearance.Button
+        chkDock.Location = New Point(337, 0)
+        chkDock.Margin = New Padding(3, 0, 3, 3)
+        chkDock.Name = "chkDock"
+        chkDock.Size = New Size(52, 30)
+        chkDock.TabIndex = 10
+        chkDock.Text = "吸附"
+        chkDock.TextAlign = ContentAlignment.MiddleCenter
+        chkDock.UseVisualStyleBackColor = True
         ' 
         ' FormPreview
         ' 
@@ -440,4 +454,5 @@ Partial Class FormPreview
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
     Friend WithEvents rdoFont22 As RadioButton
     Friend WithEvents rdoFont9 As RadioButton
+    Friend WithEvents chkDock As CheckBox
 End Class

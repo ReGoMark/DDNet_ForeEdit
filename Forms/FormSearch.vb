@@ -319,15 +319,8 @@ Public Class FormSearch
     ' ─── 快捷键分发 ────────────────────────────────────────────────
 
     ''' <summary>
-    ''' 全局快捷键（FormSearch 为活动窗口时生效）：
-    '''   Enter       → 查找下一个
-    '''   Esc         → 关闭
-    '''   Ctrl+G      → 按输入框的序号跳转
-    '''   F2          → 首个匹配
-    '''   F3          → 下一个匹配
-    '''   Shift+F3    → 上一个匹配
-    '''   F4          → 末尾匹配
-    ''' 所有按键统一在此处理，控件级事件不再重复拦截，避免冗余。
+    ''' 全局快捷键（FormSearch 为活动窗口时生效）： Enter → 查找下一个 Esc → 关闭 Ctrl+G → 按输入框的序号跳转 F2 → 首个匹配 F3 → 下一个匹配
+    ''' Shift+F3 → 上一个匹配 F4 → 末尾匹配 所有按键统一在此处理，控件级事件不再重复拦截，避免冗余。
     ''' </summary>
     Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
         Dim ctrl As Boolean = (keyData And Keys.Control) = Keys.Control

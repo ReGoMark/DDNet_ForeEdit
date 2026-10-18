@@ -1,5 +1,6 @@
 ﻿''' <summary>
-''' 字体预览窗体，用于实时显示五种语言（西文、日文、韩文、简中、繁中）的字体效果。 支持自定义预览文本、字号切换（10/12/16/32 点），并可通过 UpdatePreview 方法由主窗体动态更新各语言字体。
+''' 字体预览窗体，用于实时显示五种语言（西文、日文、韩文、简中、繁中）的字体效果。 支持自定义预览文本、字号切换（9/10/12/16/22 点）、吸附到主窗体左侧， 并可通过
+''' UpdatePreview 方法由主窗体动态更新各语言字体。
 ''' </summary>
 Public Class FormPreview
 
@@ -20,10 +21,15 @@ Public Class FormPreview
     ''' </summary>
     Private _currentSize As Single = 9.0F
 
+    ''' <summary>
+    ''' 是否处于吸附状态（由 chkDock.Checked 驱动）。
+    ''' </summary>
+    Private _isDocked As Boolean = False
+
     ' ─── 窗体生命周期 ──────────────────────────────────────────────────
 
     ''' <summary>
-    ''' 窗体加载时初始化字号映射、默认文本，并禁用"确认"按钮。
+    ''' 窗体加载时初始化字号映射、默认文本，禁用"确认"按钮，恢复吸附状态。
     ''' </summary>
     Private Sub FormPreview_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         _sizeMap(rdoFont9) = 9.0F
@@ -38,6 +44,90 @@ Public Class FormPreview
             _defaultTexts(lbl) = lbl.Text
         Next
         btnConfirm.Enabled = False
+
+        ' 若设计器中 chkDock 默认勾选，Load 阶段先生效
+        _isDocked = chkDock.Checked
+        If _isDocked Then
+            AttachOwnerEvents()
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' 首次显示时按吸附状态定位（此时 Owner 已知、窗口尺寸已知）。
+    ''' </summary>
+    Protected Overrides Sub OnShown(e As EventArgs)
+        MyBase.OnShown(e)
+        If _isDocked Then ApplyDockPosition()
+    End Sub
+
+    ''' <summary>
+    ''' 窗体关闭时解绑 Owner 事件，避免内存泄漏。
+    ''' </summary>
+    Protected Overrides Sub OnFormClosed(e As FormClosedEventArgs)
+        DetachOwnerEvents()
+        MyBase.OnFormClosed(e)
+    End Sub
+
+    ' ─── 吸附主窗体 ──────────────────────────────────────────────────
+
+    ''' <summary>
+    ''' 勾选/取消勾选时切换吸附状态。
+    ''' </summary>
+    Private Sub chkDock_CheckedChanged(sender As Object, e As EventArgs) Handles chkDock.CheckedChanged
+        _isDocked = chkDock.Checked
+        If _isDocked Then
+            ApplyDockPosition()
+            AttachOwnerEvents()
+        Else
+            DetachOwnerEvents()
+        End If
+    End Sub
+
+    ''' <summary>
+    ''' 订阅 Owner（主窗体）的位置/大小变化事件。
+    ''' </summary>
+    Private Sub AttachOwnerEvents()
+        If Me.Owner Is Nothing Then Return
+        RemoveHandler Me.Owner.Move, AddressOf OwnerPositionChanged
+        RemoveHandler Me.Owner.Resize, AddressOf OwnerPositionChanged
+        AddHandler Me.Owner.Move, AddressOf OwnerPositionChanged
+        AddHandler Me.Owner.Resize, AddressOf OwnerPositionChanged
+    End Sub
+
+    ''' <summary>
+    ''' 取消订阅 Owner 事件。
+    ''' </summary>
+    Private Sub DetachOwnerEvents()
+        If Me.Owner Is Nothing Then Return
+        RemoveHandler Me.Owner.Move, AddressOf OwnerPositionChanged
+        RemoveHandler Me.Owner.Resize, AddressOf OwnerPositionChanged
+    End Sub
+
+    ''' <summary>
+    ''' Owner 移动或改变大小时跟随吸附。
+    ''' </summary>
+    Private Sub OwnerPositionChanged(sender As Object, e As EventArgs)
+        ApplyDockPosition()
+    End Sub
+
+    ''' <summary>
+    ''' 将本窗体对齐到 Owner 左侧（顶部对齐），并做屏幕边界保护。
+    ''' </summary>
+    Private Sub ApplyDockPosition()
+        If Not _isDocked Then Return
+        If Me.Owner Is Nothing Then Return
+        If Me.Owner.WindowState = FormWindowState.Minimized Then Return
+        If Not Me.Visible Then Return
+
+        Dim newLeft As Integer = Me.Owner.Left - Me.Width
+        Dim newTop As Integer = Me.Owner.Top
+
+        ' 屏幕工作区左边界保护，避免预览窗被推出屏幕
+        Dim wa As Rectangle = Screen.FromControl(Me.Owner).WorkingArea
+        If newLeft < wa.Left Then newLeft = wa.Left
+        If newTop < wa.Top Then newTop = wa.Top
+
+        Me.Location = New Point(newLeft, newTop)
     End Sub
 
     ' ─── 自定义文本控制 ──────────────────────────────────────────────
@@ -140,9 +230,9 @@ Public Class FormPreview
     Private Sub tbCustom_TextChanged(sender As Object, e As EventArgs) Handles tbCustom.TextChanged
         btnConfirm.Enabled = Not String.IsNullOrEmpty(tbCustom.Text)
     End Sub
+
     ''' <summary>
-    ''' 点击分组标签：切换对应预览标签的显隐。
-    ''' tag 本身保留（用于再次点击切换回来），隐藏时 tag 变浅色作为视觉反馈。
+    ''' 点击分组标签：切换对应预览标签的显隐。 tag 本身保留（用于再次点击切换回来），隐藏时 tag 变浅色作为视觉反馈。
     ''' </summary>
     Private Sub Tag_Click(sender As Object, e As EventArgs) _
         Handles tagLA.Click, tagJP.Click, tagKR.Click, tagSC.Click, tagTC.Click
@@ -162,4 +252,5 @@ Public Class FormPreview
         Dim willShow As Boolean = Not lbl.Visible
         lbl.Visible = willShow
     End Sub
+
 End Class

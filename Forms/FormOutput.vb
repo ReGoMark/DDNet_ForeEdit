@@ -5,47 +5,64 @@ Imports System.Text
 Imports System.Threading
 
 ''' <summary>
-''' 导出窗体：负责将当前字体目录的字体和配置导出为 .dnfp 字体包或 index.json 配置文件。
-''' 打包为异步操作，支持用户取消。
+''' 导出窗体：负责将当前字体目录的字体和配置导出为 .dnfp 字体包或 index.json 配置文件。 打包为异步操作，支持用户取消。
 ''' </summary>
 Public Class FormOutput
 
     ' ─── 由 FormMain 传入的属性 ──────────────────────────────────────
 
-    ''' <summary>当前正在操作的字体目录路径。</summary>
+    ''' <summary>
+    ''' 当前正在操作的字体目录路径。
+    ''' </summary>
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property FontDir As String = ""
 
-    ''' <summary>当前已使用的字体文件列表（用于默认打包）。</summary>
+    ''' <summary>
+    ''' 当前已使用的字体文件列表（用于默认打包）。
+    ''' </summary>
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property NormFontFiles As List(Of String) = Nothing
 
-    ''' <summary>包含预装字体的标准字体列表（用于标准打包）。</summary>
+    ''' <summary>
+    ''' 包含预装字体的标准字体列表（用于标准打包）。
+    ''' </summary>
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property StdFontFiles As List(Of String) = Nothing
 
-    ''' <summary>目录中所有字体文件列表（用于完整打包）。</summary>
+    ''' <summary>
+    ''' 目录中所有字体文件列表（用于完整打包）。
+    ''' </summary>
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property FullFontFiles As List(Of String) = Nothing
 
-    ''' <summary>当前生成的 index.json 内容。</summary>
+    ''' <summary>
+    ''' 当前生成的 index.json 内容。
+    ''' </summary>
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property JsonContent As String = ""
 
-    ''' <summary>应用程序版本号。</summary>
+    ''' <summary>
+    ''' 应用程序版本号。
+    ''' </summary>
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property AppVersion As String = ""
 
-    ''' <summary>目录类型（Local/Compatible/Install）。</summary>
+    ''' <summary>
+    ''' 目录类型（Local/Compatible/Install）。
+    ''' </summary>
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property DirectoryType As String = ""
 
     ' ─── 状态字段 ──────────────────────────────────────────────────────
 
-    ''' <summary>当前打包操作的取消令牌源。为 Nothing 表示无操作进行中。</summary>
+    ''' <summary>
+    ''' 当前打包操作的取消令牌源。为 Nothing 表示无操作进行中。
+    ''' </summary>
     Private _cts As CancellationTokenSource = Nothing
 
-    ''' <summary>后台打包的进度载体。</summary>
+    ''' <summary>
+    ''' 后台打包的进度载体。
+    ''' </summary>
     Private Class PackProgress
         Public Current As Integer
         Public Message As String
@@ -53,12 +70,15 @@ Public Class FormOutput
 
     ' 三种模式的预估体积（字节），在 Load 时算一次，切换模式只读缓存
     Private _sizeDefault As Long = 0
+
     Private _sizeStandard As Long = 0
     Private _sizeFull As Long = 0
 
     ' ─── 窗体生命周期 ──────────────────────────────────────────────────
 
-    ''' <summary>窗体加载事件：初始化控件状态。</summary>
+    ''' <summary>
+    ''' 窗体加载事件：初始化控件状态。
+    ''' </summary>
     Private Sub FormOutput_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         ' 防御：确保列表不为 Nothing
         If NormFontFiles Is Nothing Then NormFontFiles = New List(Of String)
@@ -92,7 +112,9 @@ Public Class FormOutput
 
     ' ─── 估算包体积 ──────────────────────────────────────────────────
 
-    ''' <summary>计算三种打包模式的预估体积并缓存，然后刷新 lblSizeTotal。</summary>
+    ''' <summary>
+    ''' 计算三种打包模式的预估体积并缓存，然后刷新 lblSizeTotal。
+    ''' </summary>
     Private Sub RefreshPackSizeLabels()
         _sizeDefault = EstimatePackedSize(NormFontFiles)
         _sizeStandard = EstimatePackedSize(StdFontFiles)
@@ -105,13 +127,17 @@ Public Class FormOutput
         UpdateRadioButtonLabels()
     End Sub
 
-    ''' <summary>把字体列表格式化为 "N 项"。</summary>
+    ''' <summary>
+    ''' 把字体列表格式化为 "N 项"。
+    ''' </summary>
     Private Function FormatCount(files As List(Of String)) As String
         Dim count As Integer = If(files IsNot Nothing, files.Count, 0)
         Return $"{count} 项"
     End Function
 
-    ''' <summary>估算字体列表压缩后的体积（字节）。</summary>
+    ''' <summary>
+    ''' 估算字体列表压缩后的体积（字节）。
+    ''' </summary>
     Private Function EstimatePackedSize(files As List(Of String)) As Long
         If files Is Nothing OrElse files.Count = 0 Then Return 0
 
@@ -140,7 +166,9 @@ Public Class FormOutput
         Return total
     End Function
 
-    ''' <summary>将字节数格式化为 B / KB / MB / GB 字符串。</summary>
+    ''' <summary>
+    ''' 将字节数格式化为 B / KB / MB / GB 字符串。
+    ''' </summary>
     Private Function FormatBytes(bytes As Long) As String
         If bytes >= 1024 * 1024 * 1024 Then Return $"{bytes / 1024 / 1024 / 1024:F2} GB"
         If bytes >= 1024 * 1024 Then Return $"{bytes / 1024 / 1024:F2} MB"
@@ -150,7 +178,9 @@ Public Class FormOutput
 
     ' ─── 备注复选框 ──────────────────────────────────────────────────
 
-    ''' <summary>备注复选框状态改变时启用/禁用备注文本框。</summary>
+    ''' <summary>
+    ''' 备注复选框状态改变时启用/禁用备注文本框。
+    ''' </summary>
     Private Sub chkNote_CheckedChanged(sender As Object, e As EventArgs) Handles chkNote.CheckedChanged
         txtNote.Enabled = chkNote.Checked
         lblDate.Enabled = chkNote.Checked
@@ -162,22 +192,30 @@ Public Class FormOutput
 
     ' ─── 打包模式切换 ─────────────────────────────────────────────────
 
-    ''' <summary>默认打包模式选中时更新标签颜色。</summary>
+    ''' <summary>
+    ''' 默认打包模式选中时更新标签颜色。
+    ''' </summary>
     Private Sub rbNormal_CheckedChanged(sender As Object, e As EventArgs) Handles rdoDefault.CheckedChanged
         UpdateRadioButtonLabels()
     End Sub
 
-    ''' <summary>标准打包模式选中时更新标签颜色。</summary>
+    ''' <summary>
+    ''' 标准打包模式选中时更新标签颜色。
+    ''' </summary>
     Private Sub rbStandard_CheckedChanged(sender As Object, e As EventArgs) Handles rdoStandard.CheckedChanged
         UpdateRadioButtonLabels()
     End Sub
 
-    ''' <summary>完整打包模式选中时更新标签颜色。</summary>
+    ''' <summary>
+    ''' 完整打包模式选中时更新标签颜色。
+    ''' </summary>
     Private Sub rbFull_CheckedChanged(sender As Object, e As EventArgs) Handles rdoFull.CheckedChanged
         UpdateRadioButtonLabels()
     End Sub
 
-    ''' <summary>按当前选中的打包模式，刷新 lblSizeTotal：预计大小 (项目数)。</summary>
+    ''' <summary>
+    ''' 按当前选中的打包模式，刷新 lblSizeTotal：预计大小 (项目数)。
+    ''' </summary>
     Private Sub UpdateRadioButtonLabels()
         Dim bytes As Long
         Dim files As List(Of String)
@@ -193,22 +231,30 @@ Public Class FormOutput
 
     ' ─── 快速插入：用户名 / 日期 / 时间 ──────────────────────────────
 
-    ''' <summary>点击「用户名」标签：在备注框光标处插入 "@" + 当前 Windows 用户名。</summary>
+    ''' <summary>
+    ''' 点击「用户名」标签：在备注框光标处插入 "@" + 当前 Windows 用户名。
+    ''' </summary>
     Private Sub lblUsername_Click(sender As Object, e As EventArgs) Handles lblUserName.Click
         InsertTextIntoNote("@" & Environment.UserName)
     End Sub
 
-    ''' <summary>点击「日期」标签：在备注框光标处插入当前日期（yyyy/MM/dd）。</summary>
+    ''' <summary>
+    ''' 点击「日期」标签：在备注框光标处插入当前日期（yyyy/MM/dd）。
+    ''' </summary>
     Private Sub lblDate_Click(sender As Object, e As EventArgs) Handles lblDate.Click
         InsertTextIntoNote(DateTime.Now.ToString("yyyy/MM/dd"))
     End Sub
 
-    ''' <summary>点击「时间」标签：在备注框光标处插入当前时间（HH:mm:ss）。</summary>
+    ''' <summary>
+    ''' 点击「时间」标签：在备注框光标处插入当前时间（HH:mm:ss）。
+    ''' </summary>
     Private Sub lblTime_Click(sender As Object, e As EventArgs) Handles lblTime.Click
         InsertTextIntoNote(DateTime.Now.ToString("HH:mm:ss"))
     End Sub
 
-    ''' <summary>在 tbNote 的光标位置插入文本，超出 MaxLength 时截断。</summary>
+    ''' <summary>
+    ''' 在 tbNote 的光标位置插入文本，超出 MaxLength 时截断。
+    ''' </summary>
     Private Sub InsertTextIntoNote(text As String)
         If String.IsNullOrEmpty(text) Then Return
 
@@ -231,7 +277,9 @@ Public Class FormOutput
 
     ' ─── 窗体关闭：打包中弹确认 ──────────────────────────────────────
 
-    ''' <summary>窗体关闭时若正在打包，询问用户是否中断。</summary>
+    ''' <summary>
+    ''' 窗体关闭时若正在打包，询问用户是否中断。
+    ''' </summary>
     Private Sub FormOutput_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         If _cts IsNot Nothing AndAlso Not _cts.IsCancellationRequested Then
             If e.CloseReason = CloseReason.UserClosing Then
@@ -251,7 +299,9 @@ Public Class FormOutput
 
     ' ─── 保存字体包（.dnfp）─────────────────────────────────────────────
 
-    ''' <summary>保存字体包按钮点击事件：异步将选中模式的字体打包为 .dnfp 文件，支持取消。</summary>
+    ''' <summary>
+    ''' 保存字体包按钮点击事件：异步将选中模式的字体打包为 .dnfp 文件，支持取消。
+    ''' </summary>
     Private Async Sub btnSaveDNFP_Click(sender As Object, e As EventArgs) Handles btnDNFP.Click
         ' ── 选择要打包的文件 ──
         Dim filesToPack As List(Of String)
@@ -363,7 +413,9 @@ Public Class FormOutput
         End Try
     End Sub
 
-    ''' <summary>后台线程：打包所有字体到 .dnfp 文件。支持取消。</summary>
+    ''' <summary>
+    ''' 后台线程：打包所有字体到 .dnfp 文件。支持取消。
+    ''' </summary>
     Private Sub DoPackZip(outputPath As String,
                           filesToPack As List(Of String),
                           jsonContent As String,
@@ -424,7 +476,9 @@ Public Class FormOutput
 
     ' ─── 保存配置（.json）─────────────────────────────────────────────
 
-    ''' <summary>保存配置按钮点击事件：将当前 index.json 内容保存为独立文件。</summary>
+    ''' <summary>
+    ''' 保存配置按钮点击事件：将当前 index.json 内容保存为独立文件。
+    ''' </summary>
     Private Sub btnSaveJson_Click(sender As Object, e As EventArgs) Handles btnCfg.Click
         If String.IsNullOrEmpty(JsonContent) Then
             MessageBox.Show("配置内容为空，拒绝导出。", "保存配置", MessageBoxButtons.OK, MessageBoxIcon.Warning)

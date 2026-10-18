@@ -5,30 +5,32 @@ Imports System.Threading
 Imports System.Threading.Tasks
 
 ''' <summary>
-''' 备份对话框：选择要备份的数据范围，打包为 zip。
-''' 主来源：%AppData%\DDNet\（Local）。
-''' 附加来源：由 FormMain 传入的当前加载 data 目录（Install，可选）。
-''' 勾选「也包含当前目录」时，两组数据分别放入 local/ 和 install/ 子文件夹。
-''' 打包在后台线程执行，支持关闭窗体取消。
+''' 备份对话框：选择要备份的数据范围，打包为 zip。 主来源：%AppData%\DDNet\（Local）。 附加来源：由 FormMain 传入的当前加载 data
+''' 目录（Install，可选）。 勾选「也包含当前目录」时，两组数据分别放入 local/ 和 install/ 子文件夹。 打包在后台线程执行，支持关闭窗体取消。
 ''' </summary>
 Public Class FormBackup
 
-    ''' <summary>DDNet 用户数据根目录（主来源，可能不存在）。</summary>
+    ''' <summary>
+    ''' DDNet 用户数据根目录（主来源，可能不存在）。
+    ''' </summary>
     Private ReadOnly DdnetDir As String = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DDNet")
 
     ''' <summary>
-    ''' 由 FormMain 传入的附加数据目录（当前加载的 fonts 目录的父级）。
-    ''' 为空表示主窗体未加载字体目录，chkExtra 会被禁用。
+    ''' 由 FormMain 传入的附加数据目录（当前加载的 fonts 目录的父级）。 为空表示主窗体未加载字体目录，chkExtra 会被禁用。
     ''' </summary>
     <System.ComponentModel.Browsable(False),
      System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)>
     Public Property DataDirectory As String = ""
 
-    ''' <summary>各项大小的缓存（键：category；值：字节数）。RefreshSizes 时更新。</summary>
+    ''' <summary>
+    ''' 各项大小的缓存（键：category；值：字节数）。RefreshSizes 时更新。
+    ''' </summary>
     Private ReadOnly _sizeCache As New Dictionary(Of String, Long)
 
-    ''' <summary>当前备份操作的取消令牌源。为 Nothing 表示无操作进行中。</summary>
+    ''' <summary>
+    ''' 当前备份操作的取消令牌源。为 Nothing 表示无操作进行中。
+    ''' </summary>
     Private _cts As CancellationTokenSource = Nothing
 
     ' ─── 后台备份辅助类型 ────────────────────────────────────────────
@@ -66,7 +68,9 @@ Public Class FormBackup
         End If
     End Sub
 
-    ''' <summary>DataDirectory 是否可用：非空、存在、且与 DdnetDir 不同。</summary>
+    ''' <summary>
+    ''' DataDirectory 是否可用：非空、存在、且与 DdnetDir 不同。
+    ''' </summary>
     Private Function IsExtraAvailable() As Boolean
         If String.IsNullOrEmpty(DataDirectory) OrElse Not Directory.Exists(DataDirectory) Then Return False
         Try
@@ -78,21 +82,27 @@ Public Class FormBackup
         End Try
     End Function
 
-    ''' <summary>当前是否要包含附加目录。</summary>
+    ''' <summary>
+    ''' 当前是否要包含附加目录。
+    ''' </summary>
     Private ReadOnly Property IncludeExtraNow As Boolean
         Get
             Return chkExtra.Checked AndAlso chkExtra.Enabled
         End Get
     End Property
 
-    ''' <summary>主目录是否可用。</summary>
+    ''' <summary>
+    ''' 主目录是否可用。
+    ''' </summary>
     Private ReadOnly Property PrimaryAvailable As Boolean
         Get
             Return Directory.Exists(DdnetDir)
         End Get
     End Property
 
-    ''' <summary>刷新 chkExtra 的可用性状态。</summary>
+    ''' <summary>
+    ''' 刷新 chkExtra 的可用性状态。
+    ''' </summary>
     Private Sub UpdateExtraCheckBoxState()
         If IsExtraAvailable() Then
             chkExtra.Enabled = True
@@ -103,7 +113,9 @@ Public Class FormBackup
         End If
     End Sub
 
-    ''' <summary>窗体关闭时若正在备份，询问用户是否中断。</summary>
+    ''' <summary>
+    ''' 窗体关闭时若正在备份，询问用户是否中断。
+    ''' </summary>
     Private Sub FormBackup_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         If _cts IsNot Nothing AndAlso Not _cts.IsCancellationRequested Then
             If e.CloseReason = CloseReason.UserClosing Then
@@ -124,8 +136,7 @@ Public Class FormBackup
     ' ─── 大小与数量显示 ──────────────────────────────────────────────
 
     ''' <summary>
-    ''' 刷新 7 组大小 + 数量。勾选 chkExtra 时按"分区"统计：
-    ''' 每组显示 local + install 两项之和（若来源不同文件不计重复）。
+    ''' 刷新 7 组大小 + 数量。勾选 chkExtra 时按"分区"统计： 每组显示 local + install 两项之和（若来源不同文件不计重复）。
     ''' </summary>
     Private Sub RefreshSizes()
         Dim incExtra As Boolean = IncludeExtraNow
@@ -211,8 +222,7 @@ Public Class FormBackup
     End Function
 
     ''' <summary>
-    ''' 其他 *.cfg：勾选时 local + install 都计入（不去重，分别进 local/ 和 install/）。
-    ''' 附加目录的 autoexec_server.cfg 排除。
+    ''' 其他 *.cfg：勾选时 local + install 都计入（不去重，分别进 local/ 和 install/）。 附加目录的 autoexec_server.cfg 排除。
     ''' </summary>
     Private Function GetOtherCfgInfo(includeExtra As Boolean) As (count As Integer, size As Long)
         Dim total As Long = 0
@@ -256,7 +266,9 @@ Public Class FormBackup
         Return (count, total)
     End Function
 
-    ''' <summary>文件夹统计：勾选时 local + install 都计入（按各自分区去重，不跨分区去重）。</summary>
+    ''' <summary>
+    ''' 文件夹统计：勾选时 local + install 都计入（按各自分区去重，不跨分区去重）。
+    ''' </summary>
     Private Function GetFolderInfo(subFolder As String, includeExtra As Boolean) As (count As Integer, size As Long)
         Dim total As Long = 0
         Dim count As Integer = 0
@@ -491,8 +503,7 @@ Public Class FormBackup
     End Sub
 
     ''' <summary>
-    ''' 后台：收集 + 写 zip + verification.txt。
-    ''' IncludeExtra 时：主目录 → local/，附加目录 → install/；否则主目录放根。
+    ''' 后台：收集 + 写 zip + verification.txt。 IncludeExtra 时：主目录 → local/，附加目录 → install/；否则主目录放根。
     ''' </summary>
     Private Function DoBackupCore(zipPath As String,
                                   rootDir As String,
@@ -582,8 +593,8 @@ Public Class FormBackup
     End Function
 
     ''' <summary>
-    ''' 从 rootDir 收集备份文件。isExtra = True 时排除 autoexec_server.cfg。
-    ''' folderPrefix 为压缩包内相对路径前缀（如 "local/" 或 "install/"）。
+    ''' 从 rootDir 收集备份文件。isExtra = True 时排除 autoexec_server.cfg。 folderPrefix 为压缩包内相对路径前缀（如 "local/"
+    ''' 或 "install/"）。
     ''' </summary>
     Private Function CollectEntries(rootDir As String,
                                     seen As HashSet(Of String),
@@ -728,4 +739,5 @@ Public Class FormBackup
         sizeLbl.ForeColor = c
         countLbl.ForeColor = c
     End Sub
+
 End Class

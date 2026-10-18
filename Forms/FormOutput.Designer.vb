@@ -39,7 +39,6 @@ Partial Class FormOutput
         ProgressBar1 = New ProgressBar()
         btnDNFP = New Button()
         lblSizeTotal = New Label()
-        splitExport = New Label()
         tblExportMode.SuspendLayout()
         tblExport.SuspendLayout()
         SuspendLayout()
@@ -107,7 +106,7 @@ Partial Class FormOutput
         rdoStandard.Size = New Size(358, 46)
         rdoStandard.TabIndex = 5
         rdoStandard.TabStop = True
-        rdoStandard.Text = "标准" & vbCrLf & "(也包含预装字体)"
+        rdoStandard.Text = "标准" & vbCrLf & "(已使用字体和预装字体, 体积适中)"
         rdoStandard.TextImageRelation = TextImageRelation.ImageBeforeText
         rdoStandard.UseVisualStyleBackColor = False
         ' 
@@ -127,7 +126,7 @@ Partial Class FormOutput
         rdoFull.Size = New Size(358, 46)
         rdoFull.TabIndex = 14
         rdoFull.TabStop = True
-        rdoFull.Text = "完整" & vbCrLf & "(附加未使用字体)"
+        rdoFull.Text = "完整" & vbCrLf & "(已安装的全部字体, 体积最大)"
         rdoFull.TextImageRelation = TextImageRelation.ImageBeforeText
         rdoFull.UseVisualStyleBackColor = False
         ' 
@@ -173,7 +172,7 @@ Partial Class FormOutput
         rdoDefault.Size = New Size(358, 46)
         rdoDefault.TabIndex = 4
         rdoDefault.TabStop = True
-        rdoDefault.Text = "默认" & vbCrLf & "(仅限已使用字体)"
+        rdoDefault.Text = "默认" & vbCrLf & "(已使用字体, 体积最小)"
         rdoDefault.TextImageRelation = TextImageRelation.ImageBeforeText
         rdoDefault.UseVisualStyleBackColor = False
         ' 
@@ -243,7 +242,7 @@ Partial Class FormOutput
         tblExport.Controls.Add(btnCfg, 1, 0)
         tblExport.Controls.Add(ProgressBar1, 0, 0)
         tblExport.Controls.Add(btnDNFP, 2, 0)
-        tblExport.Location = New Point(12, 335)
+        tblExport.Location = New Point(12, 313)
         tblExport.Name = "tblExport"
         tblExport.RowCount = 1
         tblExport.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
@@ -289,31 +288,20 @@ Partial Class FormOutput
         ' 
         lblSizeTotal.AutoSize = True
         lblSizeTotal.ForeColor = Color.DarkGray
-        lblSizeTotal.Location = New Point(12, 293)
+        lblSizeTotal.Location = New Point(12, 271)
         lblSizeTotal.Margin = New Padding(3)
         lblSizeTotal.Name = "lblSizeTotal"
         lblSizeTotal.Size = New Size(72, 18)
         lblSizeTotal.TabIndex = 72
         lblSizeTotal.Text = "备份大小:"
         ' 
-        ' splitExport
-        ' 
-        splitExport.ForeColor = Color.DarkGray
-        splitExport.Location = New Point(12, 271)
-        splitExport.Margin = New Padding(3)
-        splitExport.Name = "splitExport"
-        splitExport.Size = New Size(358, 16)
-        splitExport.TabIndex = 71
-        splitExport.Text = "─────────────────────────────────────────────────────────"
-        ' 
         ' FormOutput
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 377)
+        ClientSize = New Size(382, 355)
         Controls.Add(lblSizeTotal)
-        Controls.Add(splitExport)
         Controls.Add(tblExport)
         Controls.Add(tblExportMode)
         Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
@@ -345,7 +333,6 @@ Partial Class FormOutput
     Friend WithEvents lblTime As Label
     Friend WithEvents lblUserName As Label
     Friend WithEvents lblSizeTotal As Label
-    Friend WithEvents splitExport As Label
     Friend WithEvents Label1 As Label
     Friend WithEvents Label2 As Label
 End Class

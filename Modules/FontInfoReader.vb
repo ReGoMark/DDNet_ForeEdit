@@ -14,8 +14,7 @@ Module FontInfoReader
     ' ─── 公开接口 ────────────────────────────────────────────────────────
 
     ''' <summary>
-    ''' 读取字体文件中所有子字体的名称信息。
-    ''' TTF/OTF 返回 1 个元素；TTC 返回 N 个（每个子字体一个）。
+    ''' 读取字体文件中所有子字体的名称信息。 TTF/OTF 返回 1 个元素；TTC 返回 N 个（每个子字体一个）。
     ''' </summary>
     ''' <param name="filePath">字体文件路径</param>
     ''' <returns>字体名称信息列表</returns>
@@ -115,7 +114,9 @@ Module FontInfoReader
 
     ' ─── 内部：表目录解析 ───────────────────────────────────────────────
 
-    ''' <summary>从指定偏移处读取单个子字体的 name / OS/2 表信息。</summary>
+    ''' <summary>
+    ''' 从指定偏移处读取单个子字体的 name / OS/2 表信息。
+    ''' </summary>
     Private Function ReadNameInfoAt(br As BinaryReader, tableOffset As Long) As FontInfoTable
         Dim info As New FontInfoTable()
         Try
@@ -147,10 +148,9 @@ Module FontInfoReader
     End Function
 
     ''' <summary>
-    ''' 解析 name 表，填充 FamilyName、StyleName、AllRawNames 及 Version。
-    ''' FamilyName / StyleName 的取值规则与 FreeType 一致：
-    ''' 族名优先 Name ID=16、回退 ID=1；样式名优先 Name ID=17、回退 ID=2。
-    ''' 同一 Name ID 的多条记录优先级：Windows 英文 > Windows 其他语言 > Mac。
+    ''' 解析 name 表，填充 FamilyName、StyleName、AllRawNames 及 Version。 FamilyName / StyleName 的取值规则与
+    ''' FreeType 一致： 族名优先 Name ID=16、回退 ID=1；样式名优先 Name ID=17、回退 ID=2。 同一 Name ID 的多条记录优先级：Windows
+    ''' 英文 &gt; Windows 其他语言 &gt; Mac。
     ''' </summary>
     Private Sub ReadNameTable(br As BinaryReader, nameTableOffset As UInteger, info As FontInfoTable)
         br.BaseStream.Seek(nameTableOffset, SeekOrigin.Begin)
@@ -217,7 +217,9 @@ Module FontInfoReader
         info.Version = getBest(5)
     End Sub
 
-    ''' <summary>解析 OS/2 表，读取字重、字宽和斜体标志。</summary>
+    ''' <summary>
+    ''' 解析 OS/2 表，读取字重、字宽和斜体标志。
+    ''' </summary>
     Private Sub ReadOs2Table(br As BinaryReader, os2Offset As UInteger, info As FontInfoTable)
         Try
             br.BaseStream.Seek(os2Offset, SeekOrigin.Begin)
@@ -234,7 +236,9 @@ Module FontInfoReader
         End Try
     End Sub
 
-    ''' <summary>返回第一个非空字符串，否则返回空。</summary>
+    ''' <summary>
+    ''' 返回第一个非空字符串，否则返回空。
+    ''' </summary>
     Private Function FirstNonEmpty(ParamArray candidates As String()) As String
         For Each s In candidates
             If Not String.IsNullOrEmpty(s) Then Return s
@@ -244,7 +248,9 @@ Module FontInfoReader
 
     ' ─── 内部：cmap 语言覆盖检测 ────────────────────────────────────────
 
-    ''' <summary>在字体表目录中定位 cmap 表并检测 Format 4 子表覆盖的语言码位。</summary>
+    ''' <summary>
+    ''' 在字体表目录中定位 cmap 表并检测 Format 4 子表覆盖的语言码位。
+    ''' </summary>
     Private Function CheckCoverage(br As BinaryReader, tableOffset As Long) As String
         br.BaseStream.Seek(tableOffset, SeekOrigin.Begin)
         ReadUInt32BE(br) ' sfnt version
@@ -292,8 +298,7 @@ Module FontInfoReader
         Dim startCodes(segCount - 1) As UShort
         For i = 0 To segCount - 1 : startCodes(i) = ReadUInt16BE(br) : Next
 
-        ' 用代表码位检查各语言是否被覆盖
-        ' LA = U+0041('A')  JP = U+3042('あ')  KR = U+AC00('가')  CN = U+4E2D('中')
+        ' 用代表码位检查各语言是否被覆盖 LA = U+0041('A') JP = U+3042('あ') KR = U+AC00('가') CN = U+4E2D('中')
         Dim checkPoints As (tag As String, code As Integer)() = {
             ("LA", &H41), ("JP", &H3042), ("KR", &HAC00), ("CN", &H4E2D)
         }
@@ -313,14 +318,18 @@ Module FontInfoReader
 
     ' ─── 内部：大端字节序读取 ───────────────────────────────────────────
 
-    ''' <summary>以大端字节序读取 2 字节无符号整数。</summary>
+    ''' <summary>
+    ''' 以大端字节序读取 2 字节无符号整数。
+    ''' </summary>
     Private Function ReadUInt16BE(br As BinaryReader) As UShort
         Dim b0 = br.ReadByte()
         Dim b1 = br.ReadByte()
         Return CUShort((CUShort(b0) << 8) Or b1)
     End Function
 
-    ''' <summary>以大端字节序读取 4 字节无符号整数。</summary>
+    ''' <summary>
+    ''' 以大端字节序读取 4 字节无符号整数。
+    ''' </summary>
     Private Function ReadUInt32BE(br As BinaryReader) As UInteger
         Dim b0 = br.ReadByte()
         Dim b1 = br.ReadByte()

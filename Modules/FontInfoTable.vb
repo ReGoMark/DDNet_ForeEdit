@@ -1,24 +1,26 @@
-﻿Imports System.Drawing.Text
-
-''' <summary>
-''' 单个子字体的元数据，由 FontInfoReader.ReadAllFontNames 填充。
-''' 字重、字宽和版本号已提供本地化或格式化属性。
+﻿''' <summary>
+''' 单个子字体的元数据，由 FontInfoReader.ReadAllFontNames 填充。 字重、字宽和版本号已提供本地化或格式化属性。
 ''' </summary>
 Public Class FontInfoTable
 
-    ''' <summary>Name ID=1 所有语言版本，用于和 GDI+ FontFamily.Name 匹配。</summary>
+    ''' <summary>
+    ''' Name ID=1 所有语言版本，用于和 GDI+ FontFamily.Name 匹配。
+    ''' </summary>
     Public Property AllRawNames As New List(Of String)
 
-    ''' <summary>index.json 使用的字体族名称（Name ID=16 优先，回退 Name ID=1）。</summary>
+    ''' <summary>
+    ''' index.json 使用的字体族名称（Name ID=16 优先，回退 Name ID=1）。
+    ''' </summary>
     Public Property FamilyName As String = ""
 
     ''' <summary>
-    ''' 样式名称（Name ID=17 优先，回退 Name ID=2），如 "Regular"、"Bold Italic"。
-    ''' 与 FreeType 的 style_name 取值规则一致；未读到则为空。
+    ''' 样式名称（Name ID=17 优先，回退 Name ID=2），如 "Regular"、"Bold Italic"。 与 FreeType 的 style_name 取值规则一致；未读到则为空。
     ''' </summary>
     Public Property StyleName As String = ""
 
-    ''' <summary>该子字体在文件中的物理序号（0-based；TTF/OTF 恒为 0，TTC 为子字体序号）。</summary>
+    ''' <summary>
+    ''' 该子字体在文件中的物理序号（0-based；TTF/OTF 恒为 0，TTC 为子字体序号）。
+    ''' </summary>
     Public Property FaceIndex As Integer = 0
 
     ''' <summary>
@@ -31,10 +33,8 @@ Public Class FontInfoTable
     End Property
 
     ''' <summary>
-    ''' DDNet index.json 中引用该字体面时使用的完整名称："family_name style_name"。
-    ''' DDNet 的 GetFaceByName 先按此完整名称精确匹配，匹配不到才退而求其次只按族名匹配
-    ''' （且只取第一个），因此 index.json 里应始终写这个值，而不是只写族名。
-    ''' 族名读取失败时返回空字符串。
+    ''' DDNet index.json 中引用该字体面时使用的完整名称："family_name style_name"。 DDNet 的 GetFaceByName
+    ''' 先按此完整名称精确匹配，匹配不到才退而求其次只按族名匹配 （且只取第一个），因此 index.json 里应始终写这个值，而不是只写族名。 族名读取失败时返回空字符串。
     ''' </summary>
     Public ReadOnly Property DdnetName As String
         Get
@@ -43,21 +43,28 @@ Public Class FontInfoTable
         End Get
     End Property
 
-    ''' <summary>字重值（OS/2.usWeightClass，100-900）；0 表示读取失败。</summary>
+    ''' <summary>
+    ''' 字重值（OS/2.usWeightClass，100-900）；0 表示读取失败。
+    ''' </summary>
     Public Property WeightClass As Integer = 0
 
-    ''' <summary>字宽值（OS/2.usWidthClass，1-9）；0 表示读取失败。</summary>
+    ''' <summary>
+    ''' 字宽值（OS/2.usWidthClass，1-9）；0 表示读取失败。
+    ''' </summary>
     Public Property WidthClass As Integer = 0
 
-    ''' <summary>版本字符串原始值（Name ID=5），如 "Version 2.003"；未读到则为空。</summary>
+    ''' <summary>
+    ''' 版本字符串原始值（Name ID=5），如 "Version 2.003"；未读到则为空。
+    ''' </summary>
     Public Property Version As String = ""
 
-    ''' <summary>字体是否为斜体（来自 OS/2.fsSelection bit 0）。</summary>
+    ''' <summary>
+    ''' 字体是否为斜体（来自 OS/2.fsSelection bit 0）。
+    ''' </summary>
     Public Property IsItalic As Boolean = False
 
     ''' <summary>
-    ''' 精简版本号：去掉 "Version " 前缀并截断分号后的内容。
-    ''' 例："Version 2.003;PS 001" → "2.003"；未读到则返回空字符串。
+    ''' 精简版本号：去掉 "Version " 前缀并截断分号后的内容。 例："Version 2.003;PS 001" → "2.003"；未读到则返回空字符串。
     ''' </summary>
     Public ReadOnly Property VersionShort As String
         Get
@@ -69,8 +76,7 @@ Public Class FontInfoTable
     End Property
 
     ''' <summary>
-    ''' 根据 WeightClass 和 IsItalic 推导 GDI+ FontStyle。
-    ''' Bold 阈值：WeightClass >= 600。
+    ''' 根据 WeightClass 和 IsItalic 推导 GDI+ FontStyle。 Bold 阈值：WeightClass &gt;= 600。
     ''' </summary>
     Public ReadOnly Property GdiFontStyle As FontStyle
         Get
@@ -82,9 +88,7 @@ Public Class FontInfoTable
     End Property
 
     '''' <summary>
-    '''' 尝试用 AllRawNames 中的 GDI 族名创建 Font 对象。
-    '''' GDI+ 只认 Name ID=1 的家族名；此方法逐一尝试直到成功。
-    '''' 调用方负责 Dispose 返回的 Font。
+    '''' 尝试用 AllRawNames 中的 GDI 族名创建 Font 对象。 GDI+ 只认 Name ID=1 的家族名；此方法逐一尝试直到成功。 调用方负责 Dispose 返回的 Font。
     '''' </summary>
     'Public Function TryCreateFont(size As Single) As Font
     '    Dim style As FontStyle = GdiFontStyle
@@ -109,7 +113,9 @@ Public Class FontInfoTable
     '    End Try
     'End Function
 
-    ''' <summary>字重的中文名称。</summary>
+    ''' <summary>
+    ''' 字重的中文名称。
+    ''' </summary>
     Public ReadOnly Property WeightName As String
         Get
             Select Case WeightClass
@@ -128,7 +134,9 @@ Public Class FontInfoTable
         End Get
     End Property
 
-    ''' <summary>字宽的中文名称。</summary>
+    ''' <summary>
+    ''' 字宽的中文名称。
+    ''' </summary>
     Public ReadOnly Property WidthName As String
         Get
             Select Case WidthClass

@@ -39,6 +39,7 @@ Partial Class FormAbout
         lblGithub = New Label()
         lbldotNET10 = New Label()
         ToolTip1 = New ToolTip(components)
+        lblGitee = New Label()
         Label1 = New Label()
         SuspendLayout()
         ' 
@@ -79,7 +80,7 @@ Partial Class FormAbout
         lblTeeworlds.AutoSize = True
         lblTeeworlds.Cursor = Cursors.Hand
         lblTeeworlds.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblTeeworlds.Location = New Point(212, 168)
+        lblTeeworlds.Location = New Point(194, 168)
         lblTeeworlds.Margin = New Padding(3)
         lblTeeworlds.Name = "lblTeeworlds"
         lblTeeworlds.Size = New Size(80, 18)
@@ -103,7 +104,7 @@ Partial Class FormAbout
         lblMail.AutoSize = True
         lblMail.Cursor = Cursors.Hand
         lblMail.ForeColor = SystemColors.Highlight
-        lblMail.Location = New Point(12, 222)
+        lblMail.Location = New Point(12, 246)
         lblMail.Margin = New Padding(3)
         lblMail.Name = "lblMail"
         lblMail.Size = New Size(64, 18)
@@ -116,7 +117,7 @@ Partial Class FormAbout
         lblSponsor.AutoSize = True
         lblSponsor.Cursor = Cursors.Hand
         lblSponsor.ForeColor = SystemColors.Highlight
-        lblSponsor.Location = New Point(124, 222)
+        lblSponsor.Location = New Point(124, 246)
         lblSponsor.Margin = New Padding(3)
         lblSponsor.Name = "lblSponsor"
         lblSponsor.Size = New Size(36, 18)
@@ -128,7 +129,7 @@ Partial Class FormAbout
         lblLicense.AutoSize = True
         lblLicense.Cursor = Cursors.Hand
         lblLicense.ForeColor = SystemColors.Highlight
-        lblLicense.Location = New Point(228, 222)
+        lblLicense.Location = New Point(180, 222)
         lblLicense.Margin = New Padding(3)
         lblLicense.Name = "lblLicense"
         lblLicense.Size = New Size(64, 18)
@@ -169,7 +170,7 @@ Partial Class FormAbout
         lblThanks.AutoSize = True
         lblThanks.Cursor = Cursors.Hand
         lblThanks.ForeColor = SystemColors.Highlight
-        lblThanks.Location = New Point(82, 222)
+        lblThanks.Location = New Point(82, 246)
         lblThanks.Margin = New Padding(3)
         lblThanks.Name = "lblThanks"
         lblThanks.Size = New Size(36, 18)
@@ -179,7 +180,7 @@ Partial Class FormAbout
         ' 
         ' btnOK
         ' 
-        btnOK.Location = New Point(318, 264)
+        btnOK.Location = New Point(318, 270)
         btnOK.Name = "btnOK"
         btnOK.Size = New Size(52, 30)
         btnOK.TabIndex = 39
@@ -191,7 +192,7 @@ Partial Class FormAbout
         lblGithub.AutoSize = True
         lblGithub.Cursor = Cursors.Hand
         lblGithub.ForeColor = SystemColors.Highlight
-        lblGithub.Location = New Point(166, 222)
+        lblGithub.Location = New Point(12, 222)
         lblGithub.Margin = New Padding(3)
         lblGithub.Name = "lblGithub"
         lblGithub.Size = New Size(56, 18)
@@ -203,14 +204,28 @@ Partial Class FormAbout
         ' 
         lbldotNET10.AutoSize = True
         lbldotNET10.Cursor = Cursors.Hand
-        lbldotNET10.ForeColor = Color.DarkGray
+        lbldotNET10.ForeColor = SystemColors.Highlight
         lbldotNET10.ImageAlign = ContentAlignment.MiddleRight
-        lbldotNET10.Location = New Point(12, 270)
+        lbldotNET10.Location = New Point(250, 222)
         lbldotNET10.Name = "lbldotNET10"
-        lbldotNET10.Size = New Size(254, 18)
+        lbldotNET10.Size = New Size(64, 18)
         lbldotNET10.TabIndex = 41
-        lbldotNET10.Text = "基于 .NET 10，单击此处了解最新动态"
+        lbldotNET10.Text = ".NET 10"
         lbldotNET10.TextAlign = ContentAlignment.MiddleRight
+        ToolTip1.SetToolTip(lbldotNET10, "了解有关 .NET 10 的最新动态")
+        ' 
+        ' lblGitee
+        ' 
+        lblGitee.AutoSize = True
+        lblGitee.Cursor = Cursors.Hand
+        lblGitee.ForeColor = SystemColors.Highlight
+        lblGitee.Location = New Point(74, 222)
+        lblGitee.Margin = New Padding(3)
+        lblGitee.Name = "lblGitee"
+        lblGitee.Size = New Size(100, 18)
+        lblGitee.TabIndex = 43
+        lblGitee.Text = "Gitee (国内)"
+        ToolTip1.SetToolTip(lblGitee, "访问本项目仓库主页(国内)")
         ' 
         ' Label1
         ' 
@@ -229,7 +244,8 @@ Partial Class FormAbout
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 306)
+        ClientSize = New Size(382, 312)
+        Controls.Add(lblGitee)
         Controls.Add(Label1)
         Controls.Add(lbldotNET10)
         Controls.Add(lblGithub)
@@ -274,4 +290,5 @@ Partial Class FormAbout
     Friend WithEvents lbldotNET10 As Label
     Friend WithEvents ToolTip1 As ToolTip
     Friend WithEvents Label1 As Label
+    Friend WithEvents lblGitee As Label
 End Class

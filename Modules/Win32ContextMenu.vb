@@ -106,6 +106,7 @@ Public Class Win32ContextMenu
                 Return New MenuItem() With {.IsSeparator = True}
             End Get
         End Property
+
     End Class
 
 #End Region
@@ -127,13 +128,17 @@ Public Class Win32ContextMenu
         _items.Clear()
     End Sub
 
-    ''' <summary>鼠标位置弹出（右键触发用）</summary>
+    ''' <summary>
+    ''' 鼠标位置弹出（右键触发用）
+    ''' </summary>
     Public Function Show(owner As Control, mouseLocation As Point) As MenuItem
         Dim screenPos As Point = owner.PointToScreen(mouseLocation)
         Return ShowAt(owner, screenPos, TPM_RETURNCMD Or TPM_RIGHTBUTTON)
     End Function
 
-    ''' <summary>指定方向弹出，button 控制左键/右键触发</summary>
+    ''' <summary>
+    ''' 指定方向弹出，button 控制左键/右键触发
+    ''' </summary>
     Public Function Show(owner As Control, location As Point, direction As ToolStripDropDownDirection, Optional button As MouseButtons = MouseButtons.Left) As MenuItem
         Dim screenPos As Point = owner.PointToScreen(location)
         Dim flags As UInteger = TPM_RETURNCMD

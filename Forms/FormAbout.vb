@@ -78,4 +78,16 @@
             MessageBox.Show($"无法打开链接：{ex.Message}", "打开链接失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
+
+    Private Sub lblGitee_Click(sender As Object, e As EventArgs) Handles lblGitee.Click
+        Try
+            Dim psi As New ProcessStartInfo()
+            psi.FileName = "https://gitee.com/regomark/DDNet_ForeEdit"
+            psi.UseShellExecute = True
+            Process.Start(psi)
+        Catch ex As Exception
+            MessageBox.Show($"无法打开链接：{ex.Message}", "打开链接失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
 End Class

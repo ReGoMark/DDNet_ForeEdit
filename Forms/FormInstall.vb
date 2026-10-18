@@ -43,11 +43,11 @@ Public Class FormInstall
     Private _loadedFileType As String = ""
 
     ''' <summary>
-    ''' 拖放安装模式：设置此属性后，窗口 Shown 时会自动加载该文件并触发安装流程。
-    ''' 由 FormMain 的 btnBlade 拖放触发。为 Nothing / 空时行为与手动打开窗口一致。
+    ''' 拖放安装模式：设置此属性后，窗口 Shown 时会自动加载该文件并触发安装流程。 由 FormMain 的 btnBlade 拖放触发。为 Nothing / 空时行为与手动打开窗口一致。
     ''' </summary>
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property AutoInstallFile As String = ""
+
     ' ─── 窗体生命周期 ──────────────────────────────────────────────────
 
     Private Sub FormBlade_Load(sender As Object, e As EventArgs) Handles MyBase.Load
@@ -67,8 +67,7 @@ Public Class FormInstall
     End Sub
 
     ''' <summary>
-    ''' 自动安装模式：Shown 时加载 AutoInstallFile 并触发 btnInstall.Click。
-    ''' 只触发一次，之后清空 AutoInstallFile。
+    ''' 自动安装模式：Shown 时加载 AutoInstallFile 并触发 btnInstall.Click。 只触发一次，之后清空 AutoInstallFile。
     ''' </summary>
     Private Sub FormBlade_Shown(sender As Object, e As EventArgs) Handles MyBase.Shown
         If String.IsNullOrEmpty(AutoInstallFile) Then Return
@@ -326,12 +325,12 @@ Public Class FormInstall
     End Sub
 
     ' ─── 安装 ────────────────────────────────────────────────────────
+
 #Region "── 静态安装方法（供 FormMain 拖放复用） ────────────"
 
     ''' <summary>
-    ''' 直接安装 .json 配置到目标字体目录（不打开 FormInstall 窗体）。
-    ''' 弹确认对话框，用户确认后覆盖 fontDir\index.json。
-    ''' 返回 True 表示已写入，False 表示用户取消或失败。
+    ''' 直接安装 .json 配置到目标字体目录（不打开 FormInstall 窗体）。 弹确认对话框，用户确认后覆盖 fontDir\index.json。 返回 True
+    ''' 表示已写入，False 表示用户取消或失败。
     ''' </summary>
     Public Shared Function InstallJsonConfigDirect(jsonPath As String,
                                                    fontDir As String,
@@ -359,9 +358,7 @@ Public Class FormInstall
     End Function
 
     ''' <summary>
-    ''' 直接安装 .dnfp 字体包到目标字体目录（不打开 FormInstall 窗体）。
-    ''' 弹确认对话框，用户确认后执行完整安装流程。
-    ''' 返回 True 表示已执行安装，False 表示用户取消或失败。
+    ''' 直接安装 .dnfp 字体包到目标字体目录（不打开 FormInstall 窗体）。 弹确认对话框，用户确认后执行完整安装流程。 返回 True 表示已执行安装，False 表示用户取消或失败。
     ''' </summary>
     Public Shared Function InstallDnfpDirect(packagePath As String,
                                              fontDir As String,

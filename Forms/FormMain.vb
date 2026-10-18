@@ -131,7 +131,7 @@ Public Class FormMain
 
 #Region "── 常量：版本与标题 ──────────────────────────────────────"
 
-    Public ReadOnly BuildVersion As String = "Build 1017.108"
+    Public ReadOnly BuildVersion As String = "Build 1018.6"
     Private ReadOnly TitleText As String = "DDNet ForeEdit"
 
 #End Region
@@ -265,7 +265,8 @@ Public Class FormMain
             New Win32ContextMenu.MenuItem() With {.Id = 96, .Text = "快捷键参考(&K)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\DNFE_hotkeys.pdf")},
             Win32ContextMenu.MenuItem.Separator,
             New Win32ContextMenu.MenuItem() With {.Id = 97, .Text = "更新日志(&L)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\updates.txt")},
-            New Win32ContextMenu.MenuItem() With {.Id = 98, .Text = "获取更新(&U)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit/releases", .UseShellExecute = True})}
+            New Win32ContextMenu.MenuItem() With {.Id = 98, .Text = "获取更新(&U)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit/releases", .UseShellExecute = True})},
+            New Win32ContextMenu.MenuItem() With {.Id = 99, .Text = "国内源更新(&C)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://gitee.com/regomark/DDNet_ForeEdit", .UseShellExecute = True})}
         }},
     New Win32ContextMenu.MenuItem() With {.Id = 10, .Text = "关于(&A)", .Icon = ImageList1.Images(7), .OnClick = Sub() FormAbout.ShowDialog(Me)}})
 
@@ -3047,7 +3048,7 @@ Public Class FormMain
             Select Case key
                 Case Keys.F1
                     Try
-                        Process.Start(New ProcessStartInfo With {.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit", .UseShellExecute = True})
+                        OpenLocalFile(Application.StartupPath & "\data\DNFE_documents.pdf")
                     Catch ex As Exception
                         MessageBox.Show($"无法打开链接：{ex.Message}", "打开链接失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     End Try
