@@ -40,13 +40,14 @@ Partial Class DialogThanks
         ' 
         lbl1.AutoEllipsis = True
         lbl1.AutoSize = True
+        lbl1.Font = New Font("等距更纱黑体 Slab SC", 9F)
         lbl1.ForeColor = SystemColors.Highlight
         lbl1.Location = New Point(12, 12)
         lbl1.Margin = New Padding(3)
         lbl1.Name = "lbl1"
-        lbl1.Size = New Size(162, 18)
+        lbl1.Size = New Size(190, 18)
         lbl1.TabIndex = 11
-        lbl1.Text = "感谢以下用户参与测试："
+        lbl1.Text = "感谢以下用户参与首批测试："
         ' 
         ' lbl2
         ' 
@@ -148,6 +149,7 @@ Partial Class DialogThanks
         ' 
         Label2.AutoEllipsis = True
         Label2.AutoSize = True
+        Label2.Font = New Font("等距更纱黑体 Slab SC", 9F)
         Label2.ForeColor = SystemColors.Highlight
         Label2.Location = New Point(12, 108)
         Label2.Margin = New Padding(3)
@@ -161,12 +163,12 @@ Partial Class DialogThanks
         Label7.AutoEllipsis = True
         Label7.AutoSize = True
         Label7.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        Label7.Location = New Point(12, 132)
+        Label7.Location = New Point(13, 132)
         Label7.Margin = New Padding(3)
         Label7.Name = "Label7"
-        Label7.Size = New Size(202, 18)
+        Label7.Size = New Size(230, 18)
         Label7.TabIndex = 25
-        Label7.Text = "@ 番茄牛腩锅 (提供部分教程)"
+        Label7.Text = "@ 番茄牛腩锅 (提供部分教程文档)"
         ' 
         ' DialogThanks
         ' 

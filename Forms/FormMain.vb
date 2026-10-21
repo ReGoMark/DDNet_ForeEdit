@@ -99,6 +99,11 @@ Public Class FormMain
     Private _installDirectory As String = ""
     Private _lastFileExtension As String = ""
     Private _isFillingComboBoxes As Boolean = False
+
+    ' 各语言组合框当前选中的字体键（与列表增删解耦，避免拿旧索引去查新列表）
+    Private ReadOnly _comboKeys As New Dictionary(Of ComboBox, String)
+    Private _fallbackComboKey As String = ""
+    Private _isFillingFallbackCombo As Boolean = False
     Private _originalDefaultFont As String = ""
     Private _originalJapaneseFont As String = ""
     Private _originalKoreanFont As String = ""
@@ -131,7 +136,7 @@ Public Class FormMain
 
 #Region "── 常量：版本与标题 ──────────────────────────────────────"
 
-    Public ReadOnly BuildVersion As String = "Build 1018.6"
+    Public ReadOnly BuildVersion As String = "Build 1021.30"
     Private ReadOnly TitleText As String = "DDNet ForeEdit"
 
 #End Region
@@ -208,6 +213,26 @@ Public Class FormMain
         Return _listKeys.IndexOf(key.ToLower())
     End Function
 
+    ''' <summary>
+    ''' 在列表与组合框一致时，记录五个语言组合框当前选中的键。
+    ''' </summary>
+    Private Sub CaptureComboKeys()
+        For Each cb As ComboBox In {cmbLA, cmbJP, cmbKR, cmbSC, cmbTC}
+            _comboKeys(cb) = ComboKey(cb)
+        Next
+    End Sub
+
+    ''' <summary>
+    ''' 登记无法解析的字体文件：照常显示在列表中，并登记路径使其可被卸载。
+    ''' </summary>
+    Private Sub RegisterUnreadableFont(filePath As String)
+        Dim fileName As String = Path.GetFileName(filePath)
+        Dim key As String = fileName.ToLower()
+        lstDirFonts.Items.Add(fileName)
+        _listKeys.Add(key)
+        _gdiToFilePath(key) = filePath
+    End Sub
+
 #End Region
 
 #Region "── 窗体生命周期 ──────────────────────────────────────────"
@@ -216,8 +241,25 @@ Public Class FormMain
         EnsureDirectoriesExist()
         UpdateLanguageVariantControls()
         UpdateFallbackControls()
-        ExecutePendingDeletions()
-        ExecutePendingCopies()
+
+        ' ★ 暂时停用 DialogPend 弹窗，改为静默处理挂起任务
+        Dim hasDeletions As Boolean = File.Exists(PendingDeletionsPath)
+        Dim hasCopies As Boolean = File.Exists(PendingCopiesPath)
+
+        If hasDeletions Then ExecutePendingDeletions(Nothing)
+        If hasCopies Then ExecutePendingCopies(Nothing)
+
+        ' ── 如果你以后想恢复弹窗，只需取消下面代码的注释，并注释掉上面的两行 If ──
+        'If hasDeletions OrElse hasCopies Then
+        '    Using frmPend As New DialogPend()
+        '        frmPend.Show()
+        '
+        '        If hasDeletions Then ExecutePendingDeletions(frmPend)
+        '        If hasCopies Then ExecutePendingCopies(frmPend)
+        '
+        '        frmPend.Close()
+        '    End Using
+        'End If
 
         Me.Text = TitleText
         Me.KeyPreview = True
@@ -258,15 +300,13 @@ Public Class FormMain
     .SubItems = New List(Of Win32ContextMenu.MenuItem) From {
             New Win32ContextMenu.MenuItem() With {.Id = 91, .Text = "下载字体资源(&R)", .Icon = ImageList1.Images(8), .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://www.maoken.com/", .UseShellExecute = True})},
             New Win32ContextMenu.MenuItem() With {.Id = 92, .Text = "下载游戏材质(&H)", .Icon = ImageList1.Images(8), .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://teedata.net/", .UseShellExecute = True})},
-            New Win32ContextMenu.MenuItem() With {.Id = 93, .Text = "访问中文社区(&T)", .Icon = ImageList1.Images(8), .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://teeworlds.cn/ddnet", .UseShellExecute = True})},
             Win32ContextMenu.MenuItem.Separator,
             New Win32ContextMenu.MenuItem() With {.Id = 94, .Text = "视频教程(&V)", .Icon = ImageList1.Images(8), .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://www.bilibili.com/video/BV1h7PezCE2i/?spm_id_from=333.1387.0.0&vd_source=c4099c355c2d06f10ac210fe7bae65a6", .UseShellExecute = True})},
             New Win32ContextMenu.MenuItem() With {.Id = 95, .Text = "说明文档(&D)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\DNFE_documents.pdf")},
             New Win32ContextMenu.MenuItem() With {.Id = 96, .Text = "快捷键参考(&K)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\DNFE_hotkeys.pdf")},
             Win32ContextMenu.MenuItem.Separator,
             New Win32ContextMenu.MenuItem() With {.Id = 97, .Text = "更新日志(&L)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\updates.txt")},
-            New Win32ContextMenu.MenuItem() With {.Id = 98, .Text = "获取更新(&U)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit/releases", .UseShellExecute = True})},
-            New Win32ContextMenu.MenuItem() With {.Id = 99, .Text = "国内源更新(&C)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://gitee.com/regomark/DDNet_ForeEdit", .UseShellExecute = True})}
+            New Win32ContextMenu.MenuItem() With {.Id = 98, .Text = "获取更新(&U)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit/releases", .UseShellExecute = True})}
         }},
     New Win32ContextMenu.MenuItem() With {.Id = 10, .Text = "关于(&A)", .Icon = ImageList1.Images(7), .OnClick = Sub() FormAbout.ShowDialog(Me)}})
 
@@ -503,13 +543,11 @@ Public Class FormMain
                             _fontCollections.Add(pfc)
                             RegisterFontFile(filePath, pfc, nameInfos)
                         Else
-                            lstDirFonts.Items.Add(fileName)
-                            _listKeys.Add(fileName.ToLower())
+                            RegisterUnreadableFont(filePath)
                             pfc.Dispose()
                         End If
                     Catch ex As Exception
-                        lstDirFonts.Items.Add(fileName)
-                        _listKeys.Add(fileName.ToLower())
+                        RegisterUnreadableFont(filePath)
                     End Try
 
                     loadedCount += 1
@@ -816,7 +854,8 @@ Public Class FormMain
     Private Sub SyncComboBoxItems()
         _isFillingComboBoxes = True
         For Each cb As ComboBox In {cmbLA, cmbJP, cmbKR, cmbSC, cmbTC}
-            Dim previousKey As String = ComboKey(cb)
+            Dim previousKey As String = ""
+            _comboKeys.TryGetValue(cb, previousKey)
             cb.Items.Clear()
             If cb IsNot cmbLA Then cb.Items.Add("-")
             For i As Integer = 0 To lstDirFonts.Items.Count - 1
@@ -839,6 +878,7 @@ Public Class FormMain
                 cb.SelectedIndex = If(cb.Items.Count > 0, 0, -1)
             End If
         Next
+        CaptureComboKeys()
         _isFillingComboBoxes = False
 
         RefreshAllPreviewLabels()
@@ -886,6 +926,7 @@ Public Class FormMain
         Catch ex As Exception
         Finally
             _isFillingComboBoxes = False
+            CaptureComboKeys()
             RefreshAllPreviewLabels()
             If _previewWindow IsNot Nothing AndAlso Not _previewWindow.IsDisposed AndAlso _previewWindow.Visible Then
                 SynchronizePreviewWindow()
@@ -923,9 +964,7 @@ Public Class FormMain
     End Sub
 
     Private Sub ApplyFontToLabel(lbl As Label, key As String)
-        Dim oldFont = lbl.Font
         lbl.Font = GetFontForKey(key, 9.0F)
-        oldFont?.Dispose()
     End Sub
 
     ''' <summary>
@@ -1162,6 +1201,7 @@ Public Class FormMain
         If _isFillingComboBoxes Then Return
 
         Dim cb = CType(sender, ComboBox)
+        _comboKeys(cb) = ComboKey(cb)
         Dim labelMap As New Dictionary(Of ComboBox, Label) From {
             {cmbLA, lblLA}, {cmbJP, lblJP}, {cmbKR, lblKorean}, {cmbSC, lblSC}, {cmbTC, lblTC}
         }
@@ -1210,11 +1250,28 @@ Public Class FormMain
     End Sub
 
     Private Sub PopulateFallbackComboBox()
-        cmbFallback.Items.Clear()
-        For i As Integer = 0 To lstDirFonts.Items.Count - 1
-            cmbFallback.Items.Add(lstDirFonts.Items(i))
-        Next
-        If cmbFallback.Items.Count > 0 Then cmbFallback.SelectedIndex = 0
+        Dim prevIdx As Integer = cmbFallback.SelectedIndex   ' 旧位置，仅在原字体被删时用于就近落位
+        _isFillingFallbackCombo = True
+        Try
+            cmbFallback.Items.Clear()
+            For i As Integer = 0 To lstDirFonts.Items.Count - 1
+                cmbFallback.Items.Add(lstDirFonts.Items(i))
+            Next
+
+            If cmbFallback.Items.Count > 0 Then
+                Dim idx As Integer = ListIndexByKey(_fallbackComboKey)
+                If idx < 0 Then idx = Math.Max(0, Math.Min(prevIdx, cmbFallback.Items.Count - 1))
+                cmbFallback.SelectedIndex = idx
+            End If
+        Finally
+            _isFillingFallbackCombo = False
+        End Try
+        _fallbackComboKey = KeyAt(cmbFallback.SelectedIndex)
+    End Sub
+
+    Private Sub cmbFallback_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbFallback.SelectedIndexChanged
+        If _isFillingFallbackCombo Then Return
+        _fallbackComboKey = KeyAt(cmbFallback.SelectedIndex)
     End Sub
 
     Private Sub RefreshFallbackListBox()
@@ -2015,7 +2072,6 @@ Public Class FormMain
 
     Private Sub IncrementallyScanNewFonts(newFilePaths As IEnumerable(Of String))
         For Each filePath As String In newFilePaths
-            Dim fileName = Path.GetFileName(filePath)
             Dim nameInfos = FontInfoReader.ReadAllFontNames(filePath)
 
             Try
@@ -2023,15 +2079,13 @@ Public Class FormMain
                 pfc.AddFontFile(filePath)
                 If pfc.Families.Length = 0 Then
                     pfc.Dispose()
-                    lstDirFonts.Items.Add(fileName)
-                    _listKeys.Add(fileName.ToLower())
+                    RegisterUnreadableFont(filePath)
                     Continue For
                 End If
                 _fontCollections.Add(pfc)
                 RegisterFontFile(filePath, pfc, nameInfos)
             Catch ex As Exception
-                lstDirFonts.Items.Add(fileName)
-                _listKeys.Add(fileName.ToLower())
+                RegisterUnreadableFont(filePath)
             End Try
         Next
 
@@ -2120,13 +2174,18 @@ Public Class FormMain
                 Next
             Next
 
+            Dim firstRemoved As Integer = Integer.MaxValue
+            lstDirFonts.ClearSelected()          ' 先清空选择，避免逐项删除时反复触发选中事件（会读字体文件）
+            lstDirFonts.BeginUpdate()
             For i = lstDirFonts.Items.Count - 1 To 0 Step -1
                 Dim key As String = KeyAt(i)
                 If toRemoveKeys.Contains(key) Then
                     lstDirFonts.Items.RemoveAt(i)
                     _listKeys.RemoveAt(i)
+                    firstRemoved = i             ' 倒序遍历，最后一次赋值即最小的被删索引
                 End If
             Next
+            lstDirFonts.EndUpdate()
 
             Dim deletedFamilyNames As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
             For Each key As String In toRemoveKeys
@@ -2152,6 +2211,10 @@ Public Class FormMain
             SyncComboBoxItems()
             PopulateFallbackComboBox()
             UpdateFontStatisticsLabel()
+
+            If firstRemoved <> Integer.MaxValue AndAlso lstDirFonts.Items.Count > 0 Then
+                lstDirFonts.SelectedIndex = Math.Min(firstRemoved, lstDirFonts.Items.Count - 1)
+            End If
         Catch ex As Exception
             MessageBox.Show($"卸载字体失败：{ex.Message}", "卸载字体", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
@@ -2759,18 +2822,23 @@ Public Class FormMain
 
 #Region "── 启动时清理挂起操作 ────────────────────────────────────"
 
-    Private Sub ExecutePendingDeletions()
+    Private Sub ExecutePendingDeletions(pDlg As DialogPend)
         Try
             If Not File.Exists(PendingDeletionsPath) Then Return
             Dim lines = File.ReadAllLines(PendingDeletionsPath)
             Dim remaining As New List(Of String)
 
+            Dim total As Integer = lines.Count(Function(l) Not String.IsNullOrWhiteSpace(l))
+            Dim current As Integer = 0
+
             For Each filePath In lines
                 If String.IsNullOrWhiteSpace(filePath) Then Continue For
 
-                ' ★ 安全校验：非字体文件 / 系统目录 / 非法路径 → 直接丢弃，不保留
-                If Not IsSafeFontPath(filePath) Then Continue For
+                current += 1
+                pDlg.UpdateTask("正在执行: 挂起删除", current, total)
 
+                ' ★ 安全校验
+                If Not IsSafeFontPath(filePath) Then Continue For
                 If Not File.Exists(filePath) Then Continue For
 
                 Try
@@ -2792,23 +2860,29 @@ Public Class FormMain
         End Try
     End Sub
 
-    Private Sub ExecutePendingCopies()
+    Private Sub ExecutePendingCopies(pDlg As DialogPend)
         Try
             If Not File.Exists(PendingCopiesPath) Then Return
             Dim lines = File.ReadAllLines(PendingCopiesPath)
             Dim remaining As New List(Of String)
 
+            Dim total As Integer = lines.Count(Function(l) Not String.IsNullOrWhiteSpace(l))
+            Dim current As Integer = 0
+
             For Each line In lines
                 If String.IsNullOrWhiteSpace(line) Then Continue For
+
+                current += 1
+                pDlg.UpdateTask("正在执行: 挂起复制", current, total)
+
                 Dim parts = line.Split("|"c)
                 If parts.Length <> 2 Then Continue For
 
                 Dim src = parts(0).Trim()
                 Dim dest = parts(1).Trim()
 
-                ' ★ 安全校验：源与目标都必须是合法字体路径
+                ' ★ 安全校验
                 If Not IsSafeFontPath(src) OrElse Not IsSafeFontPath(dest) Then Continue For
-
                 If Not File.Exists(src) Then Continue For
 
                 Try
@@ -3025,7 +3099,7 @@ Public Class FormMain
                 Case Keys.F : btnSearch.PerformClick() : Return True
                 Case Keys.B : btnBlade.PerformClick() : Return True
                 Case Keys.U : chkLocalDir.Checked = Not chkLocalDir.Checked : Return True
-                Case Keys.K : ShowBackupDialog()
+                Case Keys.K : ShowBackupDialog() : Return True
                 Case Keys.A
                     If lstDirFonts.Focused Then
                         SelectAllFonts()

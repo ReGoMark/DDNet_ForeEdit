@@ -40,13 +40,14 @@ Partial Class FormAbout
         lbldotNET10 = New Label()
         ToolTip1 = New ToolTip(components)
         lblGitee = New Label()
+        lblBilibili = New Label()
         Label1 = New Label()
         SuspendLayout()
         ' 
         ' lblVersion
         ' 
         lblVersion.AutoSize = True
-        lblVersion.Location = New Point(12, 66)
+        lblVersion.Location = New Point(12, 60)
         lblVersion.Margin = New Padding(3)
         lblVersion.Name = "lblVersion"
         lblVersion.Size = New Size(212, 18)
@@ -56,7 +57,7 @@ Partial Class FormAbout
         ' lblCopyright
         ' 
         lblCopyright.AutoSize = True
-        lblCopyright.Location = New Point(12, 90)
+        lblCopyright.Location = New Point(12, 84)
         lblCopyright.Margin = New Padding(3)
         lblCopyright.Name = "lblCopyright"
         lblCopyright.Size = New Size(298, 18)
@@ -66,8 +67,8 @@ Partial Class FormAbout
         ' splitDirectory
         ' 
         splitDirectory.ForeColor = Color.DarkGray
-        splitDirectory.Location = New Point(12, 117)
-        splitDirectory.Margin = New Padding(3, 6, 3, 6)
+        splitDirectory.Location = New Point(12, 108)
+        splitDirectory.Margin = New Padding(3)
         splitDirectory.Name = "splitDirectory"
         splitDirectory.Size = New Size(358, 18)
         splitDirectory.TabIndex = 4
@@ -80,7 +81,7 @@ Partial Class FormAbout
         lblTeeworlds.AutoSize = True
         lblTeeworlds.Cursor = Cursors.Hand
         lblTeeworlds.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblTeeworlds.Location = New Point(194, 168)
+        lblTeeworlds.Location = New Point(194, 156)
         lblTeeworlds.Margin = New Padding(3)
         lblTeeworlds.Name = "lblTeeworlds"
         lblTeeworlds.Size = New Size(80, 18)
@@ -91,8 +92,8 @@ Partial Class FormAbout
         ' Label10
         ' 
         Label10.ForeColor = Color.DarkGray
-        Label10.Location = New Point(12, 195)
-        Label10.Margin = New Padding(3, 6, 3, 6)
+        Label10.Location = New Point(12, 180)
+        Label10.Margin = New Padding(3)
         Label10.Name = "Label10"
         Label10.Size = New Size(358, 18)
         Label10.TabIndex = 12
@@ -104,7 +105,7 @@ Partial Class FormAbout
         lblMail.AutoSize = True
         lblMail.Cursor = Cursors.Hand
         lblMail.ForeColor = SystemColors.Highlight
-        lblMail.Location = New Point(12, 246)
+        lblMail.Location = New Point(12, 228)
         lblMail.Margin = New Padding(3)
         lblMail.Name = "lblMail"
         lblMail.Size = New Size(64, 18)
@@ -117,7 +118,7 @@ Partial Class FormAbout
         lblSponsor.AutoSize = True
         lblSponsor.Cursor = Cursors.Hand
         lblSponsor.ForeColor = SystemColors.Highlight
-        lblSponsor.Location = New Point(124, 246)
+        lblSponsor.Location = New Point(152, 228)
         lblSponsor.Margin = New Padding(3)
         lblSponsor.Name = "lblSponsor"
         lblSponsor.Size = New Size(36, 18)
@@ -129,7 +130,7 @@ Partial Class FormAbout
         lblLicense.AutoSize = True
         lblLicense.Cursor = Cursors.Hand
         lblLicense.ForeColor = SystemColors.Highlight
-        lblLicense.Location = New Point(180, 222)
+        lblLicense.Location = New Point(180, 204)
         lblLicense.Margin = New Padding(3)
         lblLicense.Name = "lblLicense"
         lblLicense.Size = New Size(64, 18)
@@ -143,7 +144,7 @@ Partial Class FormAbout
         lblSarasaSans.AutoSize = True
         lblSarasaSans.Cursor = Cursors.Hand
         lblSarasaSans.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblSarasaSans.Location = New Point(12, 144)
+        lblSarasaSans.Location = New Point(12, 132)
         lblSarasaSans.Margin = New Padding(3)
         lblSarasaSans.Name = "lblSarasaSans"
         lblSarasaSans.Size = New Size(192, 18)
@@ -157,7 +158,7 @@ Partial Class FormAbout
         lblDDNet.AutoSize = True
         lblDDNet.Cursor = Cursors.Hand
         lblDDNet.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblDDNet.Location = New Point(12, 168)
+        lblDDNet.Location = New Point(12, 156)
         lblDDNet.Margin = New Padding(3)
         lblDDNet.Name = "lblDDNet"
         lblDDNet.Size = New Size(176, 18)
@@ -170,7 +171,7 @@ Partial Class FormAbout
         lblThanks.AutoSize = True
         lblThanks.Cursor = Cursors.Hand
         lblThanks.ForeColor = SystemColors.Highlight
-        lblThanks.Location = New Point(82, 246)
+        lblThanks.Location = New Point(194, 228)
         lblThanks.Margin = New Padding(3)
         lblThanks.Name = "lblThanks"
         lblThanks.Size = New Size(36, 18)
@@ -180,7 +181,7 @@ Partial Class FormAbout
         ' 
         ' btnOK
         ' 
-        btnOK.Location = New Point(318, 270)
+        btnOK.Location = New Point(318, 252)
         btnOK.Name = "btnOK"
         btnOK.Size = New Size(52, 30)
         btnOK.TabIndex = 39
@@ -192,7 +193,7 @@ Partial Class FormAbout
         lblGithub.AutoSize = True
         lblGithub.Cursor = Cursors.Hand
         lblGithub.ForeColor = SystemColors.Highlight
-        lblGithub.Location = New Point(12, 222)
+        lblGithub.Location = New Point(12, 204)
         lblGithub.Margin = New Padding(3)
         lblGithub.Name = "lblGithub"
         lblGithub.Size = New Size(56, 18)
@@ -206,7 +207,7 @@ Partial Class FormAbout
         lbldotNET10.Cursor = Cursors.Hand
         lbldotNET10.ForeColor = SystemColors.Highlight
         lbldotNET10.ImageAlign = ContentAlignment.MiddleRight
-        lbldotNET10.Location = New Point(250, 222)
+        lbldotNET10.Location = New Point(250, 204)
         lbldotNET10.Name = "lbldotNET10"
         lbldotNET10.Size = New Size(64, 18)
         lbldotNET10.TabIndex = 41
@@ -219,7 +220,7 @@ Partial Class FormAbout
         lblGitee.AutoSize = True
         lblGitee.Cursor = Cursors.Hand
         lblGitee.ForeColor = SystemColors.Highlight
-        lblGitee.Location = New Point(74, 222)
+        lblGitee.Location = New Point(74, 204)
         lblGitee.Margin = New Padding(3)
         lblGitee.Name = "lblGitee"
         lblGitee.Size = New Size(100, 18)
@@ -227,10 +228,23 @@ Partial Class FormAbout
         lblGitee.Text = "Gitee (国内)"
         ToolTip1.SetToolTip(lblGitee, "访问本项目仓库主页(国内)")
         ' 
+        ' lblBilibili
+        ' 
+        lblBilibili.AutoSize = True
+        lblBilibili.Cursor = Cursors.Hand
+        lblBilibili.ForeColor = SystemColors.Highlight
+        lblBilibili.Location = New Point(82, 228)
+        lblBilibili.Margin = New Padding(3)
+        lblBilibili.Name = "lblBilibili"
+        lblBilibili.Size = New Size(64, 18)
+        lblBilibili.TabIndex = 44
+        lblBilibili.Text = "哔哩哔哩"
+        ToolTip1.SetToolTip(lblBilibili, "查看哔哩哔哩主页")
+        ' 
         ' Label1
         ' 
         Label1.AutoSize = True
-        Label1.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
+        Label1.Font = New Font("Consolas", 9F, FontStyle.Bold)
         Label1.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         Label1.Location = New Point(12, 12)
         Label1.Margin = New Padding(3)
@@ -244,7 +258,8 @@ Partial Class FormAbout
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 312)
+        ClientSize = New Size(382, 294)
+        Controls.Add(lblBilibili)
         Controls.Add(lblGitee)
         Controls.Add(Label1)
         Controls.Add(lbldotNET10)
@@ -291,4 +306,5 @@ Partial Class FormAbout
     Friend WithEvents ToolTip1 As ToolTip
     Friend WithEvents Label1 As Label
     Friend WithEvents lblGitee As Label
+    Friend WithEvents lblBilibili As Label
 End Class

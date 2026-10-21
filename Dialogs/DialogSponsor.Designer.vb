@@ -31,7 +31,7 @@ Partial Class DialogSponsor
         ' 
         ' lbl2
         ' 
-        lbl2.Location = New Point(12, 33)
+        lbl2.Location = New Point(12, 51)
         lbl2.Margin = New Padding(3)
         lbl2.Name = "lbl2"
         lbl2.Size = New Size(358, 40)
@@ -41,30 +41,30 @@ Partial Class DialogSponsor
         ' pic1
         ' 
         pic1.Image = CType(resources.GetObject("pic1.Image"), Image)
-        pic1.Location = New Point(12, 88)
+        pic1.Location = New Point(12, 97)
         pic1.Name = "pic1"
-        pic1.Size = New Size(358, 118)
+        pic1.Size = New Size(358, 113)
         pic1.SizeMode = PictureBoxSizeMode.Zoom
         pic1.TabIndex = 1
         pic1.TabStop = False
         ' 
         ' lbl1
         ' 
-        lbl1.AutoSize = True
+        lbl1.Font = New Font("等距更纱黑体 Slab SC", 9F)
         lbl1.ForeColor = SystemColors.Highlight
         lbl1.Location = New Point(12, 9)
         lbl1.Margin = New Padding(3, 0, 3, 3)
         lbl1.Name = "lbl1"
-        lbl1.Size = New Size(344, 18)
+        lbl1.Size = New Size(358, 36)
         lbl1.TabIndex = 2
-        lbl1.Text = "本项目完全免费，任何组织和个人不得用于商业目的。"
+        lbl1.Text = "本项目完全开源且免费，任何社会组织和个人不得用于商业目的。"
         ' 
         ' DialogSponsor
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 223)
+        ClientSize = New Size(382, 228)
         Controls.Add(lbl1)
         Controls.Add(pic1)
         Controls.Add(lbl2)
@@ -81,7 +81,6 @@ Partial Class DialogSponsor
         Text = "赞助"
         CType(pic1, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
-        PerformLayout()
     End Sub
 
     Friend WithEvents lbl2 As Label

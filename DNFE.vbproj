@@ -10,12 +10,14 @@
     <AssemblyName>DDNet ForeEdit</AssemblyName>
     <AssemblyTitle>DDNet ForeEdit</AssemblyTitle>
     <RootNamespace>FontEditor</RootNamespace>
-    <Version>2602.1018.6</Version>
+    <Version>2602.1021.30</Version>
     <Authors>ReGoMark</Authors>
     <Company>Bilibili @ReGoMark</Company>
     <Product>DDNet ForeEdit</Product>
     <Copyright>Copyright © 2026 ReGoMark</Copyright>
 	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+	<AssemblyVersion>2602.1021.30</AssemblyVersion>
+	<FileVersion>2602.1021.30</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -79,22 +81,22 @@
     <None Update="Data\hotkeys.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="data\SarasaMonoSlabSC-Regular.ttf">
+    <None Update="Data\SarasaMonoSlabSC-Regular.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="data\standard\DejaVuSans.ttf">
+    <None Update="Data\standard\DejaVuSans.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="data\standard\Font_Awesome_6_Free-Solid-900.otf">
+    <None Update="Data\standard\Font_Awesome_6_Free-Solid-900.otf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="data\standard\GlowSansJ-Compressed-Book.otf">
+    <None Update="Data\standard\GlowSansJ-Compressed-Book.otf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="data\standard\index.json">
+    <None Update="Data\standard\index.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="data\standard\SourceHanSans.ttc">
+    <None Update="Data\standard\SourceHanSans.ttc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Data\updates.txt">
@@ -112,7 +114,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="data\" />
+    <Folder Include="Data\" />
   </ItemGroup>
 
 </Project>

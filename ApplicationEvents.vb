@@ -24,11 +24,7 @@ Namespace My
     ' End Sub
 
     Partial Friend Class MyApplication
-        Private Sub MyApplication_Startup(
-        sender As Object,
-        e As ApplicationServices.StartupEventArgs
-    ) Handles Me.Startup
-
+        Private Sub MyApplication_Startup(sender As Object, e As ApplicationServices.StartupEventArgs) Handles Me.Startup
             If Not DialogCheck.IsFontInstalled() Then
                 Using frm As New DialogCheck()
                     If frm.ShowDialog() = DialogResult.Abort Then

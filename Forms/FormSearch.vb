@@ -105,8 +105,9 @@ Public Class FormSearch
     ''' 确保匹配项针对当前关键词已经计算过。
     ''' </summary>
     Private Function EnsureMatches() As Boolean
-        Dim kw = txtKeywords.Text.Trim()
-        If kw <> _lastKeyword Then RebuildMatches(kw)
+        ' 本窗口是非模态的，目标列表随时可能增删（卸载、安装、重载目录），
+        ' 缓存的索引会过期，所以每次都按当前列表重算（几百项的字符串比较，成本可忽略）
+        RebuildMatches(txtKeywords.Text.Trim())
 
         If _matches.Count = 0 Then
             ' 若上一次 Rebuild 已经写过错误状态，则不覆盖
@@ -128,6 +129,7 @@ Public Class FormSearch
 
         _currentMatch = pos
         Dim itemIndex = _matches(pos)
+        If itemIndex < 0 OrElse itemIndex >= TargetList.Items.Count Then Return
 
         ' ── 兼容 MultiExtended：先清空所有已选项，再单选目标项 ──
         TargetList.ClearSelected()
@@ -310,7 +312,7 @@ Public Class FormSearch
         ' 只全选搜索结果：先清空旧选择，再逐项选中 _matches
         TargetList.ClearSelected()
         For Each idx As Integer In _matches
-            TargetList.SetSelected(idx, True)
+            If idx >= 0 AndAlso idx < TargetList.Items.Count Then TargetList.SetSelected(idx, True)
         Next
 
         UpdateStatus($"全选 {_matches.Count} 项结果")

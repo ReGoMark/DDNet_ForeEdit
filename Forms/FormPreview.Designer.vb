@@ -57,10 +57,10 @@ Partial Class FormPreview
         lblTC.Dock = DockStyle.Fill
         lblTC.Font = New Font("等距更纱黑体 Slab SC", 9F)
         lblTC.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblTC.Location = New Point(0, 606)
+        lblTC.Location = New Point(0, 576)
         lblTC.Margin = New Padding(0, 3, 0, 3)
         lblTC.Name = "lblTC"
-        lblTC.Size = New Size(403, 90)
+        lblTC.Size = New Size(393, 90)
         lblTC.TabIndex = 4
         lblTC.Text = "幾次相忘於世，總在山窮水盡相見。" & vbCrLf & "0123456789 ~！@#￥%……&*（）—+「」" & vbCrLf & "：『』《》？·-=【】；‘，。、" & vbCrLf & "😀😁😂" & ChrW(55358) & ChrW(56611) & "😊😎😍🤔😴" & ChrW(55358) & ChrW(56623) & ChrW(55358) & ChrW(56691) & "😭" & vbCrLf & "╭ ─ │╰ ─ ᴄᴜʀʀᴇɴᴛ ᴍᴀᴘ ★★★✰✰"
         lblTC.TextAlign = ContentAlignment.MiddleLeft
@@ -155,10 +155,10 @@ Partial Class FormPreview
         lblSC.Dock = DockStyle.Fill
         lblSC.Font = New Font("等距更纱黑体 Slab SC", 9F)
         lblSC.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblSC.Location = New Point(0, 480)
+        lblSC.Location = New Point(0, 456)
         lblSC.Margin = New Padding(0, 3, 0, 3)
         lblSC.Name = "lblSC"
-        lblSC.Size = New Size(403, 90)
+        lblSC.Size = New Size(393, 90)
         lblSC.TabIndex = 3
         lblSC.Text = "弱水三千、巫山十二，指点虚无归路。" & vbCrLf & "0123456789 ~！@#￥%……&*（）—+「」" & vbCrLf & "：" & ChrW(8220) & ChrW(8221) & "《》？·-=【】；‘，。、" & vbCrLf & "😀😁😂" & ChrW(55358) & ChrW(56611) & "😊😎😍🤔😴" & ChrW(55358) & ChrW(56623) & ChrW(55358) & ChrW(56691) & "😭" & vbCrLf & "╭ ─ │╰ ─ ᴄᴜʀʀᴇɴᴛ ᴍᴀᴘ ★★★✰✰"
         lblSC.TextAlign = ContentAlignment.MiddleLeft
@@ -170,10 +170,10 @@ Partial Class FormPreview
         lblKR.Dock = DockStyle.Fill
         lblKR.Font = New Font("等距更纱黑体 Slab SC", 9F)
         lblKR.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblKR.Location = New Point(0, 372)
+        lblKR.Location = New Point(0, 354)
         lblKR.Margin = New Padding(0, 3, 0, 3)
         lblKR.Name = "lblKR"
-        lblKR.Size = New Size(403, 72)
+        lblKR.Size = New Size(393, 72)
         lblKR.TabIndex = 2
         lblKR.Text = "나의 죽음을 헛되이 말라. " & vbCrLf & "0123456789 ~!@#$%^&*()_+{}:""<>?`-=[];',./" & vbCrLf & "😀😁😂" & ChrW(55358) & ChrW(56611) & "😊😎😍🤔😴" & ChrW(55358) & ChrW(56623) & ChrW(55358) & ChrW(56691) & "😭" & vbCrLf & "╭ ─ │╰ ─ ᴄᴜʀʀᴇɴᴛ ᴍᴀᴘ ★★★✰✰"
         lblKR.TextAlign = ContentAlignment.MiddleLeft
@@ -184,10 +184,10 @@ Partial Class FormPreview
         lblJP.Dock = DockStyle.Fill
         lblJP.Font = New Font("等距更纱黑体 Slab SC", 9F)
         lblJP.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblJP.Location = New Point(0, 246)
+        lblJP.Location = New Point(0, 234)
         lblJP.Margin = New Padding(0, 3, 0, 3)
         lblJP.Name = "lblJP"
-        lblJP.Size = New Size(403, 90)
+        lblJP.Size = New Size(393, 90)
         lblJP.TabIndex = 1
         lblJP.Text = "恥の多い生涯を送って来ました。" & vbCrLf & "0123456789 ~！@#￥%……&*（）—+「」" & vbCrLf & "：『』《》？·-=【】；‘，。、" & vbCrLf & "😀😁😂" & ChrW(55358) & ChrW(56611) & "😊😎😍🤔😴" & ChrW(55358) & ChrW(56623) & ChrW(55358) & ChrW(56691) & "😭" & vbCrLf & "╭ ─ │╰ ─ ᴄᴜʀʀᴇɴᴛ ᴍᴀᴘ ★★★✰✰"
         lblJP.TextAlign = ContentAlignment.MiddleLeft
@@ -199,10 +199,10 @@ Partial Class FormPreview
         lblLA.Dock = DockStyle.Fill
         lblLA.Font = New Font("等距更纱黑体 Slab SC", 9F)
         lblLA.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblLA.Location = New Point(0, 138)
+        lblLA.Location = New Point(0, 132)
         lblLA.Margin = New Padding(0, 3, 0, 3)
         lblLA.Name = "lblLA"
-        lblLA.Size = New Size(403, 72)
+        lblLA.Size = New Size(393, 72)
         lblLA.TabIndex = 0
         lblLA.Text = "Once we dreamt that we were strangers." & vbCrLf & "0123456789 ~!@#$%^&*()_+{}:""<>?`-=[];',./" & vbCrLf & "😀😁😂" & ChrW(55358) & ChrW(56611) & "😊😎😍🤔😴" & ChrW(55358) & ChrW(56623) & ChrW(55358) & ChrW(56691) & "😭" & vbCrLf & "╭ ─ │╰ ─ ᴄᴜʀʀᴇɴᴛ ᴍᴀᴘ ★★★✰✰"
         lblLA.TextAlign = ContentAlignment.MiddleLeft
@@ -214,8 +214,8 @@ Partial Class FormPreview
         tagTC.Cursor = Cursors.Hand
         tagTC.Dock = DockStyle.Left
         tagTC.ForeColor = Color.DarkGray
-        tagTC.Location = New Point(0, 579)
-        tagTC.Margin = New Padding(0, 6, 0, 6)
+        tagTC.Location = New Point(0, 552)
+        tagTC.Margin = New Padding(0, 3, 0, 3)
         tagTC.Name = "tagTC"
         tagTC.Size = New Size(381, 18)
         tagTC.TabIndex = 9
@@ -228,8 +228,8 @@ Partial Class FormPreview
         tagSC.Cursor = Cursors.Hand
         tagSC.Dock = DockStyle.Left
         tagSC.ForeColor = Color.DarkGray
-        tagSC.Location = New Point(0, 453)
-        tagSC.Margin = New Padding(0, 6, 0, 6)
+        tagSC.Location = New Point(0, 432)
+        tagSC.Margin = New Padding(0, 3, 0, 3)
         tagSC.Name = "tagSC"
         tagSC.Size = New Size(381, 18)
         tagSC.TabIndex = 8
@@ -243,8 +243,8 @@ Partial Class FormPreview
         tagKR.Cursor = Cursors.Hand
         tagKR.Dock = DockStyle.Left
         tagKR.ForeColor = Color.DarkGray
-        tagKR.Location = New Point(0, 345)
-        tagKR.Margin = New Padding(0, 6, 0, 6)
+        tagKR.Location = New Point(0, 330)
+        tagKR.Margin = New Padding(0, 3, 0, 3)
         tagKR.Name = "tagKR"
         tagKR.Size = New Size(381, 18)
         tagKR.TabIndex = 7
@@ -257,8 +257,8 @@ Partial Class FormPreview
         tagJP.Cursor = Cursors.Hand
         tagJP.Dock = DockStyle.Left
         tagJP.ForeColor = Color.DarkGray
-        tagJP.Location = New Point(0, 219)
-        tagJP.Margin = New Padding(0, 6, 0, 6)
+        tagJP.Location = New Point(0, 210)
+        tagJP.Margin = New Padding(0, 3, 0, 3)
         tagJP.Name = "tagJP"
         tagJP.Size = New Size(381, 18)
         tagJP.TabIndex = 6
@@ -272,8 +272,8 @@ Partial Class FormPreview
         tagLA.Cursor = Cursors.Hand
         tagLA.Dock = DockStyle.Left
         tagLA.ForeColor = Color.DarkGray
-        tagLA.Location = New Point(0, 111)
-        tagLA.Margin = New Padding(0, 6, 0, 6)
+        tagLA.Location = New Point(0, 108)
+        tagLA.Margin = New Padding(0, 3, 0, 3)
         tagLA.Name = "tagLA"
         tagLA.Size = New Size(381, 18)
         tagLA.TabIndex = 5
@@ -312,7 +312,7 @@ Partial Class FormPreview
         TableLayoutPanel4.RowStyles.Add(New RowStyle())
         TableLayoutPanel4.RowStyles.Add(New RowStyle())
         TableLayoutPanel4.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
-        TableLayoutPanel4.Size = New Size(403, 669)
+        TableLayoutPanel4.Size = New Size(393, 640)
         TableLayoutPanel4.TabIndex = 3
         ' 
         ' TableLayoutPanel1
@@ -340,7 +340,7 @@ Partial Class FormPreview
         TableLayoutPanel1.RowCount = 2
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
-        TableLayoutPanel1.Size = New Size(403, 105)
+        TableLayoutPanel1.Size = New Size(393, 105)
         TableLayoutPanel1.TabIndex = 6
         ' 
         ' rdoFont9
@@ -375,7 +375,7 @@ Partial Class FormPreview
         TableLayoutPanel2.RowCount = 2
         TableLayoutPanel2.RowStyles.Add(New RowStyle())
         TableLayoutPanel2.RowStyles.Add(New RowStyle())
-        TableLayoutPanel2.Size = New Size(69, 72)
+        TableLayoutPanel2.Size = New Size(59, 72)
         TableLayoutPanel2.TabIndex = 6
         ' 
         ' rdoFont22
@@ -414,7 +414,7 @@ Partial Class FormPreview
         AutoSize = True
         AutoSizeMode = AutoSizeMode.GrowAndShrink
         BackColor = Color.White
-        ClientSize = New Size(427, 693)
+        ClientSize = New Size(417, 664)
         Controls.Add(TableLayoutPanel4)
         Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
         ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))

@@ -36,7 +36,6 @@ Partial Class DialogDirectory
         ' 
         ' TableLayoutPanel1
         ' 
-        TableLayoutPanel1.AutoSize = True
         TableLayoutPanel1.ColumnCount = 2
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
@@ -46,7 +45,6 @@ Partial Class DialogDirectory
         TableLayoutPanel1.Controls.Add(split1, 0, 3)
         TableLayoutPanel1.Controls.Add(lblNote, 0, 4)
         TableLayoutPanel1.Location = New Point(12, 12)
-        TableLayoutPanel1.Margin = New Padding(3, 3, 3, 6)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
         TableLayoutPanel1.RowCount = 5
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
@@ -54,14 +52,15 @@ Partial Class DialogDirectory
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
-        TableLayoutPanel1.Size = New Size(358, 207)
+        TableLayoutPanel1.Size = New Size(358, 215)
         TableLayoutPanel1.TabIndex = 8
         ' 
         ' lblTitle
         ' 
+        lblTitle.AutoSize = True
         TableLayoutPanel1.SetColumnSpan(lblTitle, 2)
         lblTitle.Dock = DockStyle.Fill
-        lblTitle.Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
+        lblTitle.Font = New Font("等距更纱黑体 Slab SC", 9F)
         lblTitle.ForeColor = SystemColors.Highlight
         lblTitle.Location = New Point(0, 0)
         lblTitle.Margin = New Padding(0, 0, 0, 3)
@@ -176,7 +175,6 @@ Partial Class DialogDirectory
         TableLayoutPanel1.ResumeLayout(False)
         TableLayoutPanel1.PerformLayout()
         ResumeLayout(False)
-        PerformLayout()
     End Sub
 
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel

@@ -67,7 +67,7 @@ Partial Class FormSearch
         btnTail.AllowDrop = True
         btnTail.AutoSize = True
         btnTail.Image = CType(resources.GetObject("btnTail.Image"), Image)
-        btnTail.Location = New Point(340, 109)
+        btnTail.Location = New Point(340, 108)
         btnTail.Name = "btnTail"
         btnTail.Size = New Size(30, 30)
         btnTail.TabIndex = 17
@@ -80,7 +80,7 @@ Partial Class FormSearch
         btnHead.AllowDrop = True
         btnHead.AutoSize = True
         btnHead.Image = CType(resources.GetObject("btnHead.Image"), Image)
-        btnHead.Location = New Point(304, 109)
+        btnHead.Location = New Point(304, 108)
         btnHead.Name = "btnHead"
         btnHead.Size = New Size(30, 30)
         btnHead.TabIndex = 18
@@ -141,7 +141,8 @@ Partial Class FormSearch
         ' 
         cmbCases.Appearance = Appearance.Button
         cmbCases.Image = CType(resources.GetObject("cmbCases.Image"), Image)
-        cmbCases.Location = New Point(100, 109)
+        cmbCases.ImageAlign = ContentAlignment.MiddleRight
+        cmbCases.Location = New Point(100, 108)
         cmbCases.Name = "cmbCases"
         cmbCases.Size = New Size(82, 30)
         cmbCases.TabIndex = 23
@@ -154,7 +155,8 @@ Partial Class FormSearch
         ' 
         cmbAllwords.Appearance = Appearance.Button
         cmbAllwords.Image = CType(resources.GetObject("cmbAllwords.Image"), Image)
-        cmbAllwords.Location = New Point(12, 109)
+        cmbAllwords.ImageAlign = ContentAlignment.MiddleRight
+        cmbAllwords.Location = New Point(12, 108)
         cmbAllwords.Name = "cmbAllwords"
         cmbAllwords.Size = New Size(82, 30)
         cmbAllwords.TabIndex = 24
@@ -167,7 +169,8 @@ Partial Class FormSearch
         ' 
         cmbFormal.Appearance = Appearance.Button
         cmbFormal.Image = CType(resources.GetObject("cmbFormal.Image"), Image)
-        cmbFormal.Location = New Point(188, 109)
+        cmbFormal.ImageAlign = ContentAlignment.MiddleRight
+        cmbFormal.Location = New Point(188, 108)
         cmbFormal.Name = "cmbFormal"
         cmbFormal.Size = New Size(82, 30)
         cmbFormal.TabIndex = 25
@@ -179,8 +182,8 @@ Partial Class FormSearch
         ' Label10
         ' 
         Label10.ForeColor = Color.DarkGray
-        Label10.Location = New Point(12, 82)
-        Label10.Margin = New Padding(3, 6, 3, 6)
+        Label10.Location = New Point(12, 84)
+        Label10.Margin = New Padding(3)
         Label10.Name = "Label10"
         Label10.Size = New Size(358, 18)
         Label10.TabIndex = 54

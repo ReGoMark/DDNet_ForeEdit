@@ -329,7 +329,7 @@ Public Class FormOutput
         Using sfd As New SaveFileDialog()
             sfd.Title = "保存字体包"
             sfd.FileName = "无标题"
-            sfd.Filter = "DDNet 字体包 (*.dnfp)|*.dnfp|所有文件|*.*"
+            sfd.Filter = "字体包文件 (*.dnfp)|*.dnfp|压缩文件 (*.zip)|*.zip|所有文件|*.*"
             sfd.DefaultExt = "dnfp"
             If sfd.ShowDialog(Me) <> DialogResult.OK Then Return
             outputPath = sfd.FileName
@@ -446,7 +446,7 @@ Public Class FormOutput
                         Dim fn As String = Path.GetFileName(fontFile)
                         zipArchive.CreateEntryFromFile(fontFile, "fonts/" & fn, CompressionLevel.Fastest)
                         n += 1
-                        progress.Report(New PackProgress With {.Current = n, .Message = "拷贝: " & fn})
+                        progress.Report(New PackProgress With {.Current = n, .Message = "复制: " & fn})
                     End If
                 Next
 
@@ -500,4 +500,17 @@ Public Class FormOutput
         End Using
     End Sub
 
+    ' ─── 按 Esc 关闭 ────────────────────────────────────────────────
+    Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
+        If keyData = Keys.Escape Then
+            Dim cbo = TryCast(ActiveControl, ComboBox)
+            If cbo IsNot Nothing AndAlso cbo.DroppedDown Then
+                Return MyBase.ProcessCmdKey(msg, keyData)
+            End If
+
+            Me.Close()
+            Return True
+        End If
+        Return MyBase.ProcessCmdKey(msg, keyData)
+    End Function
 End Class

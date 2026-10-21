@@ -36,24 +36,6 @@ Public Class DialogCheck
 #Region "按钮事件"
 
     ''' <summary>
-    ''' 打开字体文件所在文件夹并高亮该文件。
-    ''' </summary>
-    Private Sub btnFolder_Click(sender As Object, e As EventArgs) Handles btnLocal.Click
-        Dim fontFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", FontFileName)
-
-        If File.Exists(fontFile) Then
-            Dim psi As New ProcessStartInfo
-            psi.FileName = "explorer.exe"
-            psi.Arguments = $"/select,""{fontFile}"""
-            psi.UseShellExecute = True
-            Process.Start(psi)
-        Else
-            MessageBox.Show($"未找到字体文件：{vbCrLf}{fontFile}",
-                            "文件缺失", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-        End If
-    End Sub
-
-    ''' <summary>
     ''' 忽略提示，继续进入程序。
     ''' </summary>
     Private Sub btnIgnore_Click(sender As Object, e As EventArgs) Handles btnIgnore.Click
@@ -84,7 +66,23 @@ Public Class DialogCheck
     End Sub
 
     Private Sub DialogCheck_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Dim fontFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", FontFileName)
+        Label1.Text = fontFile
+    End Sub
 
+    Private Sub Label1_Click(sender As Object, e As EventArgs) Handles Label1.Click
+        Dim fontFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", FontFileName)
+
+        If File.Exists(fontFile) Then
+            Dim psi As New ProcessStartInfo
+            psi.FileName = "explorer.exe"
+            psi.Arguments = $"/select,""{fontFile}"""
+            psi.UseShellExecute = True
+            Process.Start(psi)
+        Else
+            MessageBox.Show($"未找到字体文件：{vbCrLf}{fontFile}",
+                            "文件缺失", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End If
     End Sub
 
 #End Region

@@ -52,8 +52,8 @@ Partial Class FormBackup
         splitExport = New Label()
         btnSelectAll = New Button()
         tblExport = New TableLayoutPanel()
-        chkExtra = New CheckBox()
         ProgressBar2 = New ProgressBar()
+        chkExtra = New CheckBox()
         btnSnapshot = New Button()
         ToolTip1 = New ToolTip(components)
         TableLayoutPanel1.SuspendLayout()
@@ -441,6 +441,16 @@ Partial Class FormBackup
         tblExport.Size = New Size(358, 30)
         tblExport.TabIndex = 50
         ' 
+        ' ProgressBar2
+        ' 
+        ProgressBar2.BackColor = Color.WhiteSmoke
+        ProgressBar2.Dock = DockStyle.Fill
+        ProgressBar2.Location = New Point(114, 3)
+        ProgressBar2.Name = "ProgressBar2"
+        ProgressBar2.Size = New Size(100, 24)
+        ProgressBar2.TabIndex = 7
+        ProgressBar2.Visible = False
+        ' 
         ' chkExtra
         ' 
         chkExtra.Appearance = Appearance.Button
@@ -452,16 +462,6 @@ Partial Class FormBackup
         chkExtra.Text = "包含安装目录"
         chkExtra.TextAlign = ContentAlignment.MiddleCenter
         chkExtra.UseVisualStyleBackColor = True
-        ' 
-        ' ProgressBar2
-        ' 
-        ProgressBar2.BackColor = Color.WhiteSmoke
-        ProgressBar2.Dock = DockStyle.Fill
-        ProgressBar2.Location = New Point(114, 3)
-        ProgressBar2.Name = "ProgressBar2"
-        ProgressBar2.Size = New Size(100, 24)
-        ProgressBar2.TabIndex = 7
-        ProgressBar2.Visible = False
         ' 
         ' btnSnapshot
         ' 
@@ -493,7 +493,7 @@ Partial Class FormBackup
         MaximizeBox = False
         Name = "FormBackup"
         StartPosition = FormStartPosition.CenterParent
-        Text = "备份 (实验性)"
+        Text = "备份"
         TableLayoutPanel1.ResumeLayout(False)
         TableLayoutPanel1.PerformLayout()
         tblExport.ResumeLayout(False)

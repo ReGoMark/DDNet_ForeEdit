@@ -169,9 +169,7 @@ Public Class FormPreview
 
         _currentSize = _sizeMap(rb)
         For Each lbl In GetPreviewLabels()
-            Dim oldFont = lbl.Font
             lbl.Font = New Font(lbl.Font.FontFamily, _currentSize, lbl.Font.Style)
-            oldFont?.Dispose()
         Next
     End Sub
 
@@ -186,11 +184,9 @@ Public Class FormPreview
         Dim lbl As Label = GetLabelByLang(langKey)
         If lbl Is Nothing Then Return
 
-        Dim oldFont = lbl.Font
         If family IsNot Nothing Then
             Try
                 lbl.Font = New Font(family, _currentSize, style, GraphicsUnit.Point)
-                oldFont?.Dispose()
                 Return
             Catch
             End Try
@@ -198,7 +194,6 @@ Public Class FormPreview
 
         ' 兜底：恢复窗体默认字体（当前字号）
         lbl.Font = New Font(Me.Font.FontFamily, _currentSize)
-        oldFont?.Dispose()
     End Sub
 
     ' ─── 私有辅助方法 ──────────────────────────────────────────────────
@@ -253,4 +248,20 @@ Public Class FormPreview
         lbl.Visible = willShow
     End Sub
 
+    ' ─── 按 Esc 关闭 ────────────────────────────────────────────────
+    Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
+        If keyData = Keys.Escape Then
+            Dim cbo = TryCast(ActiveControl, ComboBox)
+            If cbo IsNot Nothing AndAlso cbo.DroppedDown Then
+                Return MyBase.ProcessCmdKey(msg, keyData)
+            End If
+
+            Me.Close()
+            Return True
+        End If
+        Return MyBase.ProcessCmdKey(msg, keyData)
+    End Function
+    Private Sub FormPreview_SizeChanged(sender As Object, e As EventArgs) Handles MyBase.SizeChanged
+        ApplyDockPosition()
+    End Sub
 End Class

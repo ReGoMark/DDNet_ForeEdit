@@ -90,4 +90,14 @@
         End Try
     End Sub
 
+    Private Sub lblBilibili_Click(sender As Object, e As EventArgs) Handles lblBilibili.Click
+        Try
+            Dim psi As New ProcessStartInfo()
+            psi.FileName = "https://space.bilibili.com/220248940?spm_id_from=333.1007.0.0"
+            psi.UseShellExecute = True
+            Process.Start(psi)
+        Catch ex As Exception
+            MessageBox.Show($"无法打开链接：{ex.Message}", "打开链接失败", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
 End Class

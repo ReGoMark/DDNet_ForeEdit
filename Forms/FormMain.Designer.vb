@@ -223,13 +223,13 @@ Partial Class FormMain
         btnBrowse.AllowDrop = True
         btnBrowse.AutoSize = True
         btnBrowse.Image = CType(resources.GetObject("btnBrowse.Image"), Image)
+        btnBrowse.ImageAlign = ContentAlignment.MiddleRight
         btnBrowse.Location = New Point(0, 0)
         btnBrowse.Margin = New Padding(0, 0, 3, 0)
         btnBrowse.Name = "btnBrowse"
         btnBrowse.Size = New Size(68, 30)
         btnBrowse.TabIndex = 1
         btnBrowse.Text = "浏览"
-        btnBrowse.TextAlign = ContentAlignment.MiddleRight
         btnBrowse.TextImageRelation = TextImageRelation.ImageBeforeText
         ToolTip1.SetToolTip(btnBrowse, "浏览/拖放快捷方式(Ctrl+O)")
         btnBrowse.UseVisualStyleBackColor = True
@@ -457,13 +457,13 @@ Partial Class FormMain
         ' 
         btnFontInstall.AllowDrop = True
         btnFontInstall.Image = CType(resources.GetObject("btnFontInstall.Image"), Image)
+        btnFontInstall.ImageAlign = ContentAlignment.MiddleRight
         btnFontInstall.Location = New Point(0, 0)
         btnFontInstall.Margin = New Padding(0, 0, 3, 0)
         btnFontInstall.Name = "btnFontInstall"
         btnFontInstall.Size = New Size(68, 30)
         btnFontInstall.TabIndex = 2
         btnFontInstall.Text = "浏览"
-        btnFontInstall.TextAlign = ContentAlignment.MiddleRight
         btnFontInstall.TextImageRelation = TextImageRelation.ImageBeforeText
         ToolTip1.SetToolTip(btnFontInstall, "安装/拖放字体(Ctrl+I)")
         btnFontInstall.UseVisualStyleBackColor = True
@@ -507,8 +507,8 @@ Partial Class FormMain
         ' splitDirectory
         ' 
         splitDirectory.ForeColor = Color.DarkGray
-        splitDirectory.Location = New Point(12, 51)
-        splitDirectory.Margin = New Padding(3, 6, 3, 6)
+        splitDirectory.Location = New Point(12, 48)
+        splitDirectory.Margin = New Padding(3)
         splitDirectory.Name = "splitDirectory"
         splitDirectory.Size = New Size(488, 18)
         splitDirectory.TabIndex = 2
@@ -582,14 +582,14 @@ Partial Class FormMain
         tblDirFonts.Name = "tblDirFonts"
         tblDirFonts.RowCount = 1
         tblDirFonts.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
-        tblDirFonts.Size = New Size(488, 24)
+        tblDirFonts.Size = New Size(488, 26)
         tblDirFonts.TabIndex = 4
         ' 
         ' splitCfg
         ' 
         splitCfg.ForeColor = Color.DarkGray
-        splitCfg.Location = New Point(12, 300)
-        splitCfg.Margin = New Padding(3, 6, 3, 6)
+        splitCfg.Location = New Point(12, 291)
+        splitCfg.Margin = New Padding(3)
         splitCfg.Name = "splitCfg"
         splitCfg.Size = New Size(488, 18)
         splitCfg.TabIndex = 5
@@ -631,7 +631,7 @@ Partial Class FormMain
         tblConfigFonts.Controls.Add(btnRecoveryTC, 4, 5)
         tblConfigFonts.Controls.Add(tagLA, 0, 0)
         tblConfigFonts.Controls.Add(tagJP, 0, 2)
-        tblConfigFonts.Location = New Point(12, 327)
+        tblConfigFonts.Location = New Point(12, 315)
         tblConfigFonts.Name = "tblConfigFonts"
         tblConfigFonts.RowCount = 8
         tblConfigFonts.RowStyles.Add(New RowStyle())
@@ -642,7 +642,7 @@ Partial Class FormMain
         tblConfigFonts.RowStyles.Add(New RowStyle())
         tblConfigFonts.RowStyles.Add(New RowStyle())
         tblConfigFonts.RowStyles.Add(New RowStyle(SizeType.Absolute, 20F))
-        tblConfigFonts.Size = New Size(488, 328)
+        tblConfigFonts.Size = New Size(488, 329)
         tblConfigFonts.TabIndex = 6
         ' 
         ' btnRecoveryLA
@@ -677,7 +677,7 @@ Partial Class FormMain
         pnlFallbackFonts.Location = New Point(0, 212)
         pnlFallbackFonts.Margin = New Padding(0)
         pnlFallbackFonts.Name = "pnlFallbackFonts"
-        pnlFallbackFonts.Size = New Size(488, 116)
+        pnlFallbackFonts.Size = New Size(488, 117)
         pnlFallbackFonts.TabIndex = 30
         ' 
         ' lstFallback
@@ -1075,7 +1075,7 @@ Partial Class FormMain
         tblBottonBar.Controls.Add(btnBlade, 6, 0)
         tblBottonBar.Controls.Add(btnOutput, 7, 0)
         tblBottonBar.Controls.Add(btnDefault, 4, 0)
-        tblBottonBar.Location = New Point(12, 661)
+        tblBottonBar.Location = New Point(12, 650)
         tblBottonBar.Name = "tblBottonBar"
         tblBottonBar.RowCount = 1
         tblBottonBar.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
@@ -1166,12 +1166,11 @@ Partial Class FormMain
         ' 
         ' pnlDirFonts
         ' 
-        pnlDirFonts.Anchor = AnchorStyles.Top Or AnchorStyles.Bottom Or AnchorStyles.Left Or AnchorStyles.Right
         pnlDirFonts.Controls.Add(lstDirFonts)
         pnlDirFonts.Controls.Add(pnlFontInfo)
         pnlDirFonts.Controls.Add(TableLayoutPanel4)
         pnlDirFonts.Controls.Add(tblDirFonts)
-        pnlDirFonts.Location = New Point(0, 77)
+        pnlDirFonts.Location = New Point(0, 71)
         pnlDirFonts.Margin = New Padding(3, 2, 3, 2)
         pnlDirFonts.Name = "pnlDirFonts"
         pnlDirFonts.Size = New Size(518, 223)
@@ -1199,7 +1198,7 @@ Partial Class FormMain
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(512, 703)
+        ClientSize = New Size(512, 692)
         Controls.Add(tblBottonBar)
         Controls.Add(tblConfigFonts)
         Controls.Add(splitCfg)

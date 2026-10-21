@@ -40,15 +40,19 @@ Partial Class FormInstall
         btnBroswe = New Button()
         lstbDNFP = New ListBox()
         lblDNFP = New Label()
+        ProgressBar1 = New ProgressBar()
+        tblExport = New TableLayoutPanel()
         Panel1.SuspendLayout()
         tblPackInfo.SuspendLayout()
+        tblExport.SuspendLayout()
         SuspendLayout()
         ' 
         ' btnOpen
         ' 
         btnOpen.BackColor = Color.Transparent
         btnOpen.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        btnOpen.Location = New Point(190, 353)
+        btnOpen.Location = New Point(178, 0)
+        btnOpen.Margin = New Padding(3, 0, 3, 0)
         btnOpen.Name = "btnOpen"
         btnOpen.Size = New Size(52, 30)
         btnOpen.TabIndex = 28
@@ -59,7 +63,8 @@ Partial Class FormInstall
         ' 
         btnInstall.BackColor = Color.Transparent
         btnInstall.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        btnInstall.Location = New Point(248, 353)
+        btnInstall.Location = New Point(236, 0)
+        btnInstall.Margin = New Padding(3, 0, 0, 0)
         btnInstall.Name = "btnInstall"
         btnInstall.Padding = New Padding(3, 0, 0, 0)
         btnInstall.Size = New Size(122, 30)
@@ -238,12 +243,12 @@ Partial Class FormInstall
         btnBroswe.BackColor = Color.Transparent
         btnBroswe.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         btnBroswe.Image = CType(resources.GetObject("btnBroswe.Image"), Image)
+        btnBroswe.ImageAlign = ContentAlignment.MiddleRight
         btnBroswe.Location = New Point(12, 12)
         btnBroswe.Name = "btnBroswe"
         btnBroswe.Size = New Size(68, 30)
         btnBroswe.TabIndex = 1
         btnBroswe.Text = "浏览"
-        btnBroswe.TextAlign = ContentAlignment.MiddleRight
         btnBroswe.TextImageRelation = TextImageRelation.ImageBeforeText
         btnBroswe.UseVisualStyleBackColor = False
         ' 
@@ -269,6 +274,31 @@ Partial Class FormInstall
         lblDNFP.Text = "等待数据加载"
         lblDNFP.TextAlign = ContentAlignment.MiddleRight
         ' 
+        ' ProgressBar1
+        ' 
+        ProgressBar1.Location = New Point(0, 3)
+        ProgressBar1.Margin = New Padding(0, 3, 3, 3)
+        ProgressBar1.Name = "ProgressBar1"
+        ProgressBar1.Size = New Size(172, 24)
+        ProgressBar1.TabIndex = 49
+        ' 
+        ' tblExport
+        ' 
+        tblExport.BackColor = Color.Transparent
+        tblExport.ColumnCount = 3
+        tblExport.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
+        tblExport.ColumnStyles.Add(New ColumnStyle())
+        tblExport.ColumnStyles.Add(New ColumnStyle())
+        tblExport.Controls.Add(btnInstall, 2, 0)
+        tblExport.Controls.Add(ProgressBar1, 0, 0)
+        tblExport.Controls.Add(btnOpen, 1, 0)
+        tblExport.Location = New Point(12, 353)
+        tblExport.Name = "tblExport"
+        tblExport.RowCount = 1
+        tblExport.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
+        tblExport.Size = New Size(358, 30)
+        tblExport.TabIndex = 50
+        ' 
         ' FormInstall
         ' 
         AllowDrop = True
@@ -276,9 +306,8 @@ Partial Class FormInstall
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(382, 395)
+        Controls.Add(tblExport)
         Controls.Add(lblDNFP)
-        Controls.Add(btnInstall)
-        Controls.Add(btnOpen)
         Controls.Add(btnBroswe)
         Controls.Add(lstbDNFP)
         Controls.Add(Panel1)
@@ -294,6 +323,7 @@ Partial Class FormInstall
         Panel1.PerformLayout()
         tblPackInfo.ResumeLayout(False)
         tblPackInfo.PerformLayout()
+        tblExport.ResumeLayout(False)
         ResumeLayout(False)
     End Sub
     Friend WithEvents btnInstall As Button
@@ -313,4 +343,6 @@ Partial Class FormInstall
     Friend WithEvents btnBroswe As Button
     Friend WithEvents lstbDNFP As ListBox
     Friend WithEvents lblDNFP As Label
+    Friend WithEvents ProgressBar1 As ProgressBar
+    Friend WithEvents tblExport As TableLayoutPanel
 End Class

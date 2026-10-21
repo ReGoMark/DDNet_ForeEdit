@@ -385,9 +385,9 @@ Public Class FormBackup
         Dim outputPath As String
         Using sfd As New SaveFileDialog()
             sfd.Title = "保存备份"
-            sfd.Filter = "Zip 文件 (*.zip)|*.zip|所有文件|*.*"
-            sfd.FileName = "无标题.zip"
-            sfd.DefaultExt = "zip"
+            sfd.Filter = "备份文件 (*.bak)|*.bak|压缩文件 (*.zip)|*.zip|所有文件|*.*"
+            sfd.FileName = "无标题.bak"
+            sfd.DefaultExt = "bak"
             If sfd.ShowDialog(Me) <> DialogResult.OK Then Return
             outputPath = sfd.FileName
         End Using
@@ -740,4 +740,18 @@ Public Class FormBackup
         countLbl.ForeColor = c
     End Sub
 
+    ' ─── 按 Esc 关闭 ────────────────────────────────────────────────
+    Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
+        If keyData = Keys.Escape Then
+            ' 如果当前有下拉框展开，让下拉框自己处理 Esc
+            Dim cbo = TryCast(ActiveControl, ComboBox)
+            If cbo IsNot Nothing AndAlso cbo.DroppedDown Then
+                Return MyBase.ProcessCmdKey(msg, keyData)
+            End If
+
+            Me.Close()
+            Return True
+        End If
+        Return MyBase.ProcessCmdKey(msg, keyData)
+    End Function
 End Class

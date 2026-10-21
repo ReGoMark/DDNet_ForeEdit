@@ -35,7 +35,9 @@ Partial Class DialogMessage
         ' 
         ' lblTitle
         ' 
+        lblTitle.AutoSize = True
         lblTitle.Dock = DockStyle.Fill
+        lblTitle.Font = New Font("等距更纱黑体 Slab SC", 9F)
         lblTitle.ForeColor = SystemColors.Highlight
         lblTitle.Location = New Point(0, 0)
         lblTitle.Margin = New Padding(0, 0, 0, 3)
@@ -107,7 +109,7 @@ Partial Class DialogMessage
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
-        TableLayoutPanel1.Size = New Size(358, 235)
+        TableLayoutPanel1.Size = New Size(358, 244)
         TableLayoutPanel1.TabIndex = 7
         ' 
         ' lblNote
@@ -119,9 +121,9 @@ Partial Class DialogMessage
         lblNote.Location = New Point(0, 205)
         lblNote.Margin = New Padding(0, 3, 0, 3)
         lblNote.Name = "lblNote"
-        lblNote.Size = New Size(358, 27)
+        lblNote.Size = New Size(358, 36)
         lblNote.TabIndex = 7
-        lblNote.Text = "Line 1"
+        lblNote.Text = "Line 1" & vbCrLf & "Line 2"
         ' 
         ' DialogMessage
         ' 
