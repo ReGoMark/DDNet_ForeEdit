@@ -1,4 +1,4 @@
-<img width="96" height="96" alt="DNFE_modern" src="Resources/.images/DNFE_modern.png" />
+<img width="96" height="96" alt="DNFE_modern" src="Resources/images/DNFE_modern.png" />
 
 
 # DDNet ForeEdit
@@ -188,9 +188,9 @@ DDNet 字体可能位于游戏安装目录或用户目录中。用户目录又�
 
 📺︎ [哔哩哔哩](https://space.bilibili.com/220248940?spm_id_from=333.1007.0.0)
 
-📩 邮箱 regmvks@outlook.com
+📩 regmvks@outlook.com
 
 ## 赞助
 
-<img width="200" src="Resources/.images/sponsorships.png" />
+<img width="200" src="Resources/images/sponsorships.png" />
 
