@@ -1,37 +1,47 @@
 ﻿Imports System.ComponentModel
+Imports System.Resources
 Imports System.Text.RegularExpressions
 
+''' <summary>
+''' 字体列表查找窗体（非模态）。
+''' 支持：关键词查找、上一个/下一个/首个/末尾匹配、按序号跳转、全选搜索结果。
+''' 支持三种匹配选项：全字段、区分大小写、正则表达式。
+''' 目标列表由 FormMain 通过 TargetList 注入；列表随时可能增删，故每次查找都按当前列表重算。
+''' </summary>
 Public Class FormSearch
 
-    ''' <summary>
-    ''' 搜索目标列表（由 FormMain 提供）。
-    ''' </summary>
+#Region "── 公开属性 ────────────────────────────────────────────"
+
+    ''' <summary>搜索目标列表（由 FormMain 提供）。</summary>
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property TargetList As ListBox
 
-    ''' <summary>
-    ''' 匹配项在目标列表中的索引集合（升序）。
-    ''' </summary>
+#End Region
+
+#Region "── 私有字段 ────────────────────────────────────────────"
+
+    ''' <summary>匹配项在目标列表中的索引集合（升序）。</summary>
     Private _matches As New List(Of Integer)
 
-    ''' <summary>
-    ''' 当前匹配在 _matches 中的位置。
-    ''' </summary>
+    ''' <summary>当前匹配在 _matches 中的位置（-1 表示尚未选中任何匹配）。</summary>
     Private _currentMatch As Integer = -1
 
     ''' <summary>
-    ''' 上一次搜索使用的关键词，避免重复计算匹配。 三个复选框状态改变时会被重置，强制下次重算。
+    ''' 上一次搜索使用的关键词。
+    ''' 注：当前实现中 EnsureMatches 每次都重算匹配，本字段仅在 RebuildMatches / 
+    ''' SearchOption_CheckedChanged 里赋值，未参与分支判断，保留以维持原有结构。
     ''' </summary>
     Private _lastKeyword As String = ""
 
-    ' ─── 生命周期 ──────────────────────────────────────────────────
+    ''' <summary>本窗体本次会话内生成的图标，FormClosed 时统一 Dispose。</summary>
+    Private ReadOnly _ownedIcons As New List(Of Image)
+
+#End Region
+
+#Region "── 窗体生命周期 ────────────────────────────────────────"
 
     Private Sub FormSearch_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' 用设计器里的 ToolTip1（不是局部变量，否则 Load 结束后就被 GC）
-        ToolTip1.SetToolTip(btnSelectAll, "全选所有匹配结果")
-        ToolTip1.SetToolTip(cmbAllwords, "全字匹配")
-        ToolTip1.SetToolTip(cmbCases, "区分大小写")
-        ToolTip1.SetToolTip(cmbFormal, "正则表达式")
+        ApplyAwareIcons()
 
         ' 用当前列表选中项预填关键词
         If TargetList IsNot Nothing AndAlso TargetList.SelectedIndex >= 0 Then
@@ -40,32 +50,91 @@ Public Class FormSearch
         txtKeywords.Focus()
         txtKeywords.SelectAll()
         UpdateStatus("输入关键词进行查找")
+
+        ' 初始化标题：有预填文本时带上关键词，否则纯显示「查找」
+        If String.IsNullOrEmpty(txtKeywords.Text.Trim()) Then
+            Me.Text = "查找"
+        Else
+            Me.Text = $"查找 - {txtKeywords.Text.Trim()}"
+        End If
     End Sub
 
-    ' ─── 核心搜索逻辑 ─────────────────────────────────────────────
+    ''' <summary>首次显示时手动居中于 Owner。</summary>
+    Protected Overrides Sub OnShown(e As EventArgs)
+        MyBase.OnShown(e)
+        CenterOnOwner()
+    End Sub
+
+    ''' <summary>释放本次会话生成的图标。</summary>
+    Private Sub FormSearch_FormClosed(sender As Object, e As FormClosedEventArgs) Handles Me.FormClosed
+        For Each img In _ownedIcons
+            Try : img.Dispose() : Catch : End Try
+        Next
+        _ownedIcons.Clear()
+    End Sub
+
+#End Region
+
+#Region "── DPI 图标 ────────────────────────────────────────────"
 
     ''' <summary>
-    ''' 重新计算匹配项索引集合。 依据三个开关（全字匹配 / 区分大小写 / 正则）组合计算：
-    ''' - 普通模式：IndexOf / Equals（由 _allfields 决定）
-    ''' - 正则模式：Regex.IsMatch，IgnoreCase 由 _cases 决定，全字匹配时自动加 ^(?:...)$
+    ''' 从 Icons.resx 应用本窗体的图标（含 CheckBox 形式的选项按钮）。
+    ''' 资源缺失时静默跳过（控件保持 Designer 原图）。
+    ''' </summary>
+    Private Sub ApplyAwareIcons()
+        Dim rm As ResourceManager
+        Try
+            rm = New ResourceManager("DNFE.Icons", GetType(FormMain).Assembly)
+        Catch ex As MissingManifestResourceException
+            Return
+        End Try
+
+        Dim map As New Dictionary(Of ButtonBase, String) From {
+            {btnPrior, "prior"},
+            {btnHead, "head"},
+            {btnTail, "tail"},
+            {chkAllwords, "allwords"},
+            {chkCases, "cases"},
+            {chkFormal, "formal"}
+        }
+
+        AwareIcon.ApplyButtonIcons(Me, rm, map, _ownedIcons)
+    End Sub
+
+#End Region
+
+#Region "── 核心搜索逻辑 ────────────────────────────────────────"
+
+    ''' <summary>
+    ''' 重新计算匹配项索引集合。
+    ''' 依据三个开关（全字段 / 区分大小写 / 正则）组合：
+    ''' · 普通模式：IndexOf / Equals（由 chkAllwords 决定）
+    ''' · 正则模式：Regex.IsMatch，IgnoreCase 由 chkCases 决定，全字段匹配时自动加 ^(?:...)$
     ''' </summary>
     Private Function RebuildMatches(keyword As String) As Boolean
         _matches.Clear()
         _currentMatch = -1
         _lastKeyword = keyword
 
+        ' 更新标题栏（不截断）
+        If String.IsNullOrEmpty(keyword) Then
+            Me.Text = "查找"
+        Else
+            Me.Text = $"查找 - {keyword}"
+        End If
+
         If TargetList Is Nothing OrElse String.IsNullOrEmpty(keyword) Then Return False
 
         Dim total As Integer = TargetList.Items.Count
 
         Try
-            If cmbFormal.Checked Then
+            If chkFormal.Checked Then
                 ' ── 正则模式 ──
                 Dim opts As RegexOptions = RegexOptions.None
-                If Not cmbCases.Checked Then opts = opts Or RegexOptions.IgnoreCase
+                If Not chkCases.Checked Then opts = opts Or RegexOptions.IgnoreCase
 
                 Dim pattern As String = keyword
-                If cmbAllwords.Checked Then pattern = "^(?:" & pattern & ")$"
+                If chkAllwords.Checked Then pattern = "^(?:" & pattern & ")$"
 
                 Dim rx As New Regex(pattern, opts, TimeSpan.FromSeconds(2))
                 For i As Integer = 0 To total - 1
@@ -75,13 +144,13 @@ Public Class FormSearch
                 Next
             Else
                 ' ── 普通模式 ──
-                Dim cmp As StringComparison = If(cmbCases.Checked,
+                Dim cmp As StringComparison = If(chkCases.Checked,
                                                  StringComparison.Ordinal,
                                                  StringComparison.OrdinalIgnoreCase)
                 For i As Integer = 0 To total - 1
                     Dim item As String = TargetList.Items(i).ToString()
                     Dim hit As Boolean
-                    If cmbAllwords.Checked Then
+                    If chkAllwords.Checked Then
                         hit = String.Equals(item, keyword, cmp)
                     Else
                         hit = item.IndexOf(keyword, cmp) >= 0
@@ -103,10 +172,10 @@ Public Class FormSearch
 
     ''' <summary>
     ''' 确保匹配项针对当前关键词已经计算过。
+    ''' 本窗口是非模态的，目标列表随时可能增删（卸载/安装/重载目录），缓存的索引会过期，
+    ''' 所以每次都按当前列表重算（几百项字符串比较，成本可忽略）。
     ''' </summary>
     Private Function EnsureMatches() As Boolean
-        ' 本窗口是非模态的，目标列表随时可能增删（卸载、安装、重载目录），
-        ' 缓存的索引会过期，所以每次都按当前列表重算（几百项的字符串比较，成本可忽略）
         RebuildMatches(txtKeywords.Text.Trim())
 
         If _matches.Count = 0 Then
@@ -121,9 +190,7 @@ Public Class FormSearch
         Return True
     End Function
 
-    ''' <summary>
-    ''' 选中并滚动到指定位置的匹配项。
-    ''' </summary>
+    ''' <summary>选中并滚动到指定位置的匹配项。</summary>
     Private Sub SelectMatch(pos As Integer)
         If pos < 0 OrElse pos >= _matches.Count Then Return
 
@@ -131,7 +198,7 @@ Public Class FormSearch
         Dim itemIndex = _matches(pos)
         If itemIndex < 0 OrElse itemIndex >= TargetList.Items.Count Then Return
 
-        ' ── 兼容 MultiExtended：先清空所有已选项，再单选目标项 ──
+        ' 兼容 MultiExtended：先清空所有已选项，再单选目标项
         TargetList.ClearSelected()
         TargetList.SelectedIndex = itemIndex
         TargetList.TopIndex = itemIndex
@@ -139,17 +206,13 @@ Public Class FormSearch
         UpdateStatus()
     End Sub
 
-    ''' <summary>
-    ''' 获取列表中当前第一个选中项的索引；无选中返回 -1。 用作「下一项 / 上一项」的参照点。
-    ''' </summary>
+    ''' <summary>获取列表中当前第一个选中项的索引；无选中返回 -1。用作「下一项/上一项」的参照点。</summary>
     Private Function GetCurrentListIndex() As Integer
         If TargetList Is Nothing OrElse TargetList.SelectedIndices.Count = 0 Then Return -1
         Return TargetList.SelectedIndices(0)
     End Function
 
-    ''' <summary>
-    ''' 更新状态标签。
-    ''' </summary>
+    ''' <summary>更新状态标签；传 custom 则直接显示 custom。</summary>
     Private Sub UpdateStatus(Optional custom As String = "")
         If Not String.IsNullOrEmpty(custom) Then
             lblStatus.Text = custom
@@ -160,13 +223,13 @@ Public Class FormSearch
         End If
     End Sub
 
-    ' ─── 搜索选项事件 ─────────────────────────────────────────────
+#End Region
 
-    ''' <summary>
-    ''' 三个搜索选项开关变化时，重置缓存并立即重算匹配。
-    ''' </summary>
+#Region "── 搜索选项事件 ────────────────────────────────────────"
+
+    ''' <summary>三个搜索选项开关变化时，重置缓存并立即重算匹配。</summary>
     Private Sub SearchOption_CheckedChanged(sender As Object, e As EventArgs) _
-        Handles cmbAllwords.CheckedChanged, cmbCases.CheckedChanged, cmbFormal.CheckedChanged
+        Handles chkAllwords.CheckedChanged, chkCases.CheckedChanged, chkFormal.CheckedChanged
 
         ' 关键：清空关键词缓存，强制下次重算
         _lastKeyword = ""
@@ -188,11 +251,11 @@ Public Class FormSearch
         End If
     End Sub
 
-    ' ─── 按钮事件 ──────────────────────────────────────────────────
+#End Region
 
-    ''' <summary>
-    ''' 查找下一个：从列表当前选中项之后开始找匹配；到末尾循环。
-    ''' </summary>
+#Region "── 按钮事件：查找系列 ──────────────────────────────────"
+
+    ''' <summary>查找下一个：从列表当前选中项之后开始找匹配；到末尾循环。</summary>
     Private Sub btnNext_Click(sender As Object, e As EventArgs) Handles btnNext.Click
         If Not EnsureMatches() Then Return
 
@@ -212,14 +275,11 @@ Public Class FormSearch
             End If
         Next
 
-        ' 没找到则循环到第一个
         If foundPos < 0 Then foundPos = 0
         SelectMatch(foundPos)
     End Sub
 
-    ''' <summary>
-    ''' 查找上一个：从列表当前选中项之前开始找匹配；到开头循环。
-    ''' </summary>
+    ''' <summary>查找上一个：从列表当前选中项之前开始找匹配；到开头循环。</summary>
     Private Sub btnPrior_Click(sender As Object, e As EventArgs) Handles btnPrior.Click
         If Not EnsureMatches() Then Return
 
@@ -239,30 +299,27 @@ Public Class FormSearch
             End If
         Next
 
-        ' 没找到则循环到最后一个
         If foundPos < 0 Then foundPos = _matches.Count - 1
         SelectMatch(foundPos)
     End Sub
 
-    ''' <summary>
-    ''' 跳转到第一个匹配。
-    ''' </summary>
+    ''' <summary>跳转到第一个匹配。</summary>
     Private Sub btnHead_Click(sender As Object, e As EventArgs) Handles btnHead.Click
         If Not EnsureMatches() Then Return
         SelectMatch(0)
     End Sub
 
-    ''' <summary>
-    ''' 跳转到最后一个匹配。
-    ''' </summary>
+    ''' <summary>跳转到最后一个匹配。</summary>
     Private Sub btnTail_Click(sender As Object, e As EventArgs) Handles btnTail.Click
         If Not EnsureMatches() Then Return
         SelectMatch(_matches.Count - 1)
     End Sub
 
-    ''' <summary>
-    ''' 按序号跳转到列表项（1 起始）。
-    ''' </summary>
+#End Region
+
+#Region "── 按钮事件：跳转与全选 ────────────────────────────────"
+
+    ''' <summary>按序号跳转到列表项（1 起始）。</summary>
     Private Sub btnTurn_Click(sender As Object, e As EventArgs) Handles btnTurn.Click
         If TargetList Is Nothing Then Return
 
@@ -282,24 +339,7 @@ Public Class FormSearch
         lblStatus.Text = $"已跳转到第 {idx} 项"
     End Sub
 
-    Protected Overrides Sub OnShown(e As EventArgs)
-        MyBase.OnShown(e)
-        CenterOnOwner()
-    End Sub
-
-    ''' <summary>
-    ''' 非模态窗体手动居中于 Owner。
-    ''' </summary>
-    Private Sub CenterOnOwner()
-        If Owner Is Nothing Then Return
-        Me.Location = New Point(
-            Owner.Left + (Owner.Width - Me.Width) \ 2,
-            Owner.Top + (Owner.Height - Me.Height) \ 2)
-    End Sub
-
-    ''' <summary>
-    ''' 全选【搜索结果】：只选中当前关键词匹配的项。
-    ''' </summary>
+    ''' <summary>全选【搜索结果】：只选中当前关键词匹配的项，不影响其他列表项。</summary>
     Private Sub btnSelectAll_Click(sender As Object, e As EventArgs) Handles btnSelectAll.Click
         If TargetList Is Nothing OrElse TargetList.Items.Count = 0 Then
             UpdateStatus("列表为空")
@@ -309,7 +349,7 @@ Public Class FormSearch
         ' 确保针对当前关键词的匹配已计算
         If Not EnsureMatches() Then Return
 
-        ' 只全选搜索结果：先清空旧选择，再逐项选中 _matches
+        ' 先清空旧选择，再逐项选中 _matches
         TargetList.ClearSelected()
         For Each idx As Integer In _matches
             If idx >= 0 AndAlso idx < TargetList.Items.Count Then TargetList.SetSelected(idx, True)
@@ -318,11 +358,27 @@ Public Class FormSearch
         UpdateStatus($"全选 {_matches.Count} 项结果")
     End Sub
 
-    ' ─── 快捷键分发 ────────────────────────────────────────────────
+#End Region
+
+#Region "── 窗口定位 ────────────────────────────────────────────"
+
+    ''' <summary>非模态窗体手动居中于 Owner（Owner 为空时使用系统默认位置）。</summary>
+    Private Sub CenterOnOwner()
+        If Owner Is Nothing Then Return
+        Me.Location = New Point(
+            Owner.Left + (Owner.Width - Me.Width) \ 2,
+            Owner.Top + (Owner.Height - Me.Height) \ 2)
+    End Sub
+
+#End Region
+
+#Region "── 快捷键分发 ──────────────────────────────────────────"
 
     ''' <summary>
-    ''' 全局快捷键（FormSearch 为活动窗口时生效）： Enter → 查找下一个 Esc → 关闭 Ctrl+G → 按输入框的序号跳转 F2 → 首个匹配 F3 → 下一个匹配
-    ''' Shift+F3 → 上一个匹配 F4 → 末尾匹配 所有按键统一在此处理，控件级事件不再重复拦截，避免冗余。
+    ''' 全局快捷键（FormSearch 为活动窗口时生效）：
+    ''' Enter → 查找下一个；Esc → 关闭；Ctrl+G → 按输入框序号跳转；
+    ''' F2 → 首个匹配；F3 → 下一个匹配；Shift+F3 → 上一个匹配；F4 → 末尾匹配。
+    ''' 所有按键统一在此处理，控件级事件不再重复拦截，避免冗余。
     ''' </summary>
     Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
         Dim ctrl As Boolean = (keyData And Keys.Control) = Keys.Control
@@ -375,5 +431,7 @@ Public Class FormSearch
 
         Return MyBase.ProcessCmdKey(msg, keyData)
     End Function
+
+#End Region
 
 End Class

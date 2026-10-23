@@ -183,6 +183,7 @@ Partial Class FormAbout
         ' 
         btnOK.Location = New Point(318, 252)
         btnOK.Name = "btnOK"
+        btnOK.Padding = New Padding(3, 0, 3, 0)
         btnOK.Size = New Size(52, 30)
         btnOK.TabIndex = 39
         btnOK.Text = "确定"

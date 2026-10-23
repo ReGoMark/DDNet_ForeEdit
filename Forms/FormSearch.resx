@@ -130,6 +130,9 @@
         YII=
 </value>
   </data>
+  <metadata name="ToolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
   <data name="btnHead.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAS
@@ -146,7 +149,7 @@
         Aif22cjJL7Q0AAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="cmbCases.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="chkCases.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAS
         cQAAEnEB89x6jgAAAHdJREFUOE/FjEEOgCAMBHk67/GTis0OKbT1RtxkEt1Z2o6l927s32XG4M6Qg9mF
@@ -154,7 +157,7 @@
         ztD3PGJFFR7BobT2AKhOG6PNUFy4AAAAAElFTkSuQmCC
 </value>
   </data>
-  <data name="cmbAllwords.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="chkAllwords.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAS
         cQAAEnEB89x6jgAAAG1JREFUOE/VjwEKwDAIA3267+knt1iUqVVoYTB2EFjUhI5eg5mn/Ld5IfsSHAzo
@@ -162,7 +165,7 @@
         EUQ3c1gDhsUS850AAAAASUVORK5CYII=
 </value>
   </data>
-  <data name="cmbFormal.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+  <data name="chkFormal.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAS
         cQAAEnEB89x6jgAAAIZJREFUOE/FkAsKgDAMQ3f0ncdL6lLSLbZliAgGwvp5KWj7TL13s9beQ7EvNYCD

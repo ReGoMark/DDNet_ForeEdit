@@ -2,39 +2,19 @@
 Imports System.IO.Compression
 Imports System.Text
 Imports System.Threading
-Imports System.Threading.Tasks
 
 ''' <summary>
-''' 备份对话框：选择要备份的数据范围，打包为 zip。 主来源：%AppData%\DDNet\（Local）。 附加来源：由 FormMain 传入的当前加载 data
-''' 目录（Install，可选）。 勾选「也包含当前目录」时，两组数据分别放入 local/ 和 install/ 子文件夹。 打包在后台线程执行，支持关闭窗体取消。
+''' 备份对话框：选择要备份的数据范围，打包为 zip。
+''' 主来源：%AppData%\DDNet\（Local）。
+''' 附加来源：由 FormMain 传入的当前加载 data 目录（Install，可选）。
+''' 自动包含附加目录，分别放入 local/ 和 install/ 子文件夹。
+''' 打包在后台线程执行，支持关闭窗体取消。
 ''' </summary>
 Public Class FormBackup
 
-    ''' <summary>
-    ''' DDNet 用户数据根目录（主来源，可能不存在）。
-    ''' </summary>
-    Private ReadOnly DdnetDir As String = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DDNet")
+#Region "── 内部类型 ────────────────────────────────────────────"
 
-    ''' <summary>
-    ''' 由 FormMain 传入的附加数据目录（当前加载的 fonts 目录的父级）。 为空表示主窗体未加载字体目录，chkExtra 会被禁用。
-    ''' </summary>
-    <System.ComponentModel.Browsable(False),
-     System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)>
-    Public Property DataDirectory As String = ""
-
-    ''' <summary>
-    ''' 各项大小的缓存（键：category；值：字节数）。RefreshSizes 时更新。
-    ''' </summary>
-    Private ReadOnly _sizeCache As New Dictionary(Of String, Long)
-
-    ''' <summary>
-    ''' 当前备份操作的取消令牌源。为 Nothing 表示无操作进行中。
-    ''' </summary>
-    Private _cts As CancellationTokenSource = Nothing
-
-    ' ─── 后台备份辅助类型 ────────────────────────────────────────────
-
+    ''' <summary>备份选项快照（在主线程采集，供后台线程只读使用）。</summary>
     Private Class BackupOptions
         Public Settings As Boolean
         Public Saves As Boolean
@@ -43,33 +23,57 @@ Public Class FormBackup
         Public Videos As Boolean
         Public Assets As Boolean
         Public Ghosts As Boolean
+        Public Screenshots As Boolean
         Public IncludeExtra As Boolean
         Public ExtraRoot As String = ""
     End Class
 
+    ''' <summary>备份进度载体（供进度条与标题栏使用）。</summary>
     Private Class BackupProgress
         Public Current As Integer
         Public Total As Integer
         Public Message As String
     End Class
 
-    ' ─── 窗体生命周期 ──────────────────────────────────────────────────
+#End Region
 
-    Private Sub DialogBackup_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        UpdateExtraCheckBoxState()
-        RefreshSizes()
-        UpdateRowEnabledStates()
-
-        Dim dblProp = GetType(Control).GetProperty("DoubleBuffered",
-                                                   Reflection.BindingFlags.Instance Or
-                                                   Reflection.BindingFlags.NonPublic)
-        If dblProp IsNot Nothing Then
-            dblProp.SetValue(Me, True, Nothing)
-        End If
-    End Sub
+#Region "── 公开属性 ────────────────────────────────────────────"
 
     ''' <summary>
-    ''' DataDirectory 是否可用：非空、存在、且与 DdnetDir 不同。
+    ''' 由 FormMain 传入的附加数据目录（当前加载的 fonts 目录的父级）。
+    ''' 为空表示主窗体未加载字体目录，此时禁用「附加目录」相关选项。
+    ''' </summary>
+    <System.ComponentModel.Browsable(False),
+     System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)>
+    Public Property DataDirectory As String = ""
+
+#End Region
+
+#Region "── 私有字段 ────────────────────────────────────────────"
+
+    ''' <summary>DDNet 用户数据根目录（主来源，可能不存在）。</summary>
+    Private ReadOnly DdnetDir As String = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "DDNet")
+
+    ''' <summary>各项大小的缓存（键：category；值：字节数）。RefreshSizes 时更新。</summary>
+    Private ReadOnly _sizeCache As New Dictionary(Of String, Long)
+
+    ''' <summary>当前备份操作的取消令牌源。为 Nothing 表示无操作进行中。</summary>
+    Private _cts As CancellationTokenSource = Nothing
+
+#End Region
+
+#Region "── 环境可用性判断 ──────────────────────────────────────"
+
+    ''' <summary>主目录（%AppData%\DDNet）是否可用。</summary>
+    Private ReadOnly Property PrimaryAvailable As Boolean
+        Get
+            Return Directory.Exists(DdnetDir)
+        End Get
+    End Property
+
+    ''' <summary>
+    ''' 附加目录是否可用：非空、存在、且与主目录不是同一路径（避免重复统计与打包）。
     ''' </summary>
     Private Function IsExtraAvailable() As Boolean
         If String.IsNullOrEmpty(DataDirectory) OrElse Not Directory.Exists(DataDirectory) Then Return False
@@ -82,40 +86,33 @@ Public Class FormBackup
         End Try
     End Function
 
-    ''' <summary>
-    ''' 当前是否要包含附加目录。
-    ''' </summary>
-    Private ReadOnly Property IncludeExtraNow As Boolean
-        Get
-            Return chkExtra.Checked AndAlso chkExtra.Enabled
-        End Get
-    End Property
+#End Region
 
-    ''' <summary>
-    ''' 主目录是否可用。
-    ''' </summary>
-    Private ReadOnly Property PrimaryAvailable As Boolean
-        Get
-            Return Directory.Exists(DdnetDir)
-        End Get
-    End Property
+#Region "── 窗体生命周期 ────────────────────────────────────────"
 
-    ''' <summary>
-    ''' 刷新 chkExtra 的可用性状态。
-    ''' </summary>
-    Private Sub UpdateExtraCheckBoxState()
-        If IsExtraAvailable() Then
-            chkExtra.Enabled = True
-            ToolTip1.SetToolTip(chkExtra, $"从当前安装目录下扫描")
+    ' 注：方法名为历史遗留 DialogBackup_Load（类名实为 FormBackup），保留以维持 Handles 绑定。
+    Private Sub DialogBackup_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' 根据是否包含安装目录，动态设置初始标题
+        Dim hasExtra As Boolean = IsExtraAvailable()
+        If hasExtra Then
+            Me.Text = "备份 - 用户目录, 安装目录"
         Else
-            chkExtra.Checked = False
-            chkExtra.Enabled = False
+            Me.Text = "备份 - 用户目录"
+        End If
+
+        RefreshSizes()
+        UpdateRowEnabledStates()
+
+        ' 窗体双缓冲
+        Dim dblProp = GetType(Control).GetProperty("DoubleBuffered",
+                                                   Reflection.BindingFlags.Instance Or
+                                                   Reflection.BindingFlags.NonPublic)
+        If dblProp IsNot Nothing Then
+            dblProp.SetValue(Me, True, Nothing)
         End If
     End Sub
 
-    ''' <summary>
-    ''' 窗体关闭时若正在备份，询问用户是否中断。
-    ''' </summary>
+    ''' <summary>窗体关闭时若正在备份，询问用户是否中断。</summary>
     Private Sub FormBackup_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         If _cts IsNot Nothing AndAlso Not _cts.IsCancellationRequested Then
             If e.CloseReason = CloseReason.UserClosing Then
@@ -133,13 +130,16 @@ Public Class FormBackup
         End If
     End Sub
 
-    ' ─── 大小与数量显示 ──────────────────────────────────────────────
+#End Region
+
+#Region "── 大小与数量显示 ──────────────────────────────────────"
 
     ''' <summary>
-    ''' 刷新 7 组大小 + 数量。勾选 chkExtra 时按"分区"统计： 每组显示 local + install 两项之和（若来源不同文件不计重复）。
+    ''' 刷新各组大小 + 数量。
+    ''' 自动判断是否包含安装目录，按「分区」统计（local / install 同项均计入）。
     ''' </summary>
     Private Sub RefreshSizes()
-        Dim incExtra As Boolean = IncludeExtraNow
+        Dim incExtra As Boolean = IsExtraAvailable()
 
         Dim a = GetSingleFileInfo("settings_ddnet.cfg", incExtra)
         _sizeCache("settings") = a.size
@@ -166,19 +166,25 @@ Public Class FormBackup
         lblSizeVideos.Text = FormatSizeOrDash(e.size, e.count)
         lblCountVideos.Text = FormatCountOrDash(e.count)
 
-        Dim f = GetFolderInfo("assets", incExtra)
-        _sizeCache("assets") = f.size
-        lblSizeAssets.Text = FormatSizeOrDash(f.size, f.count)
-        lblCountAssets.Text = FormatCountOrDash(f.count)
+        Dim f = GetFolderInfo("screenshots", incExtra)
+        _sizeCache("screenshots") = f.size
+        lblSizeScreenshots.Text = FormatSizeOrDash(f.size, f.count)
+        lblCountScreenshots.Text = FormatCountOrDash(f.count)
 
-        Dim g = GetFolderInfo("ghosts", incExtra)
-        _sizeCache("ghosts") = g.size
-        lblSizeGhosts.Text = FormatSizeOrDash(g.size, g.count)
-        lblCountGhosts.Text = FormatCountOrDash(g.count)
+        Dim g = GetFolderInfo("assets", incExtra)
+        _sizeCache("assets") = g.size
+        lblSizeAssets.Text = FormatSizeOrDash(g.size, g.count)
+        lblCountAssets.Text = FormatCountOrDash(g.count)
+
+        Dim h = GetFolderInfo("ghosts", incExtra)
+        _sizeCache("ghosts") = h.size
+        lblSizeGhosts.Text = FormatSizeOrDash(h.size, h.count)
+        lblCountGhosts.Text = FormatCountOrDash(h.count)
 
         RefreshTotalSize()
     End Sub
 
+    ''' <summary>按当前勾选状态，从缓存累加出总计大小。</summary>
     Private Sub RefreshTotalSize()
         Dim total As Long = 0
         If chkSettings.Checked AndAlso _sizeCache.ContainsKey("settings") Then total += _sizeCache("settings")
@@ -186,14 +192,13 @@ Public Class FormBackup
         If chkSaves.Checked AndAlso _sizeCache.ContainsKey("saves") Then total += _sizeCache("saves")
         If chkDemos.Checked AndAlso _sizeCache.ContainsKey("demos") Then total += _sizeCache("demos")
         If chkVideos.Checked AndAlso _sizeCache.ContainsKey("videos") Then total += _sizeCache("videos")
+        If chkScreenshots.Checked AndAlso _sizeCache.ContainsKey("screenshots") Then total += _sizeCache("screenshots")
         If chkAssets.Checked AndAlso _sizeCache.ContainsKey("assets") Then total += _sizeCache("assets")
         If chkGhosts.Checked AndAlso _sizeCache.ContainsKey("ghosts") Then total += _sizeCache("ghosts")
         lblSizeTotal.Text = $"备份大小: {FormatBytes(total)}"
     End Sub
 
-    ''' <summary>
-    ''' 单文件信息：勾选时 local + install **都计入**（不去重）。
-    ''' </summary>
+    ''' <summary>单文件信息：勾选时 local + install 都计入（不去重）。</summary>
     Private Function GetSingleFileInfo(fileName As String, includeExtra As Boolean) As (count As Integer, size As Long)
         Dim totalSize As Long = 0
         Dim totalCount As Integer = 0
@@ -222,7 +227,8 @@ Public Class FormBackup
     End Function
 
     ''' <summary>
-    ''' 其他 *.cfg：勾选时 local + install 都计入（不去重，分别进 local/ 和 install/）。 附加目录的 autoexec_server.cfg 排除。
+    ''' 其他 *.cfg：勾选时 local + install 都计入（不去重，分别进 local/ 和 install/）。
+    ''' 附加目录的 autoexec_server.cfg 排除。
     ''' </summary>
     Private Function GetOtherCfgInfo(includeExtra As Boolean) As (count As Integer, size As Long)
         Dim total As Long = 0
@@ -266,18 +272,14 @@ Public Class FormBackup
         Return (count, total)
     End Function
 
-    ''' <summary>
-    ''' 文件夹统计：勾选时 local + install 都计入（按各自分区去重，不跨分区去重）。
-    ''' </summary>
+    ''' <summary>文件夹统计：勾选时 local + install 都计入（按各自分区去重，不跨分区去重）。</summary>
     Private Function GetFolderInfo(subFolder As String, includeExtra As Boolean) As (count As Integer, size As Long)
         Dim total As Long = 0
         Dim count As Integer = 0
 
-        ' 主目录内部按相对路径去重
         Dim seenLocal As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
         CollectFolderInfo(DdnetDir, subFolder, seenLocal, total, count)
 
-        ' 附加目录内部按相对路径去重（独立集合，不与主目录交叉）
         If includeExtra Then
             Dim seenExtra As New HashSet(Of String)(StringComparer.OrdinalIgnoreCase)
             CollectFolderInfo(DataDirectory, subFolder, seenExtra, total, count)
@@ -286,6 +288,7 @@ Public Class FormBackup
         Return (count, total)
     End Function
 
+    ''' <summary>收集单个根目录下某子文件夹的全部文件（递归），按 seen 去重累加。</summary>
     Private Sub CollectFolderInfo(root As String, subFolder As String,
                                   seen As HashSet(Of String),
                                   ByRef total As Long, ByRef count As Integer)
@@ -325,30 +328,23 @@ Public Class FormBackup
         Return bytes.ToString() & " B"
     End Function
 
-    ' ─── 勾选状态变化 ────────────────────────────────────────────────
+#End Region
+
+#Region "── 勾选 / 全选 ──────────────────────────────────────────"
 
     Private Sub AnyCheckBox_CheckedChanged(sender As Object, e As EventArgs) _
-        Handles chkSettings.CheckedChanged,
-                chkCfg.CheckedChanged,
-                chkSaves.CheckedChanged,
-                chkDemos.CheckedChanged,
-                chkVideos.CheckedChanged,
-                chkAssets.CheckedChanged,
-                chkGhosts.CheckedChanged
+        Handles chkSettings.CheckedChanged, chkCfg.CheckedChanged, chkSaves.CheckedChanged,
+                chkDemos.CheckedChanged, chkVideos.CheckedChanged, chkScreenshots.CheckedChanged,
+                chkAssets.CheckedChanged, chkGhosts.CheckedChanged
         RefreshTotalSize()
         UpdateRowEnabledStates()
     End Sub
 
-    Private Sub chkExtra_CheckedChanged(sender As Object, e As EventArgs) Handles chkExtra.CheckedChanged
-        RefreshSizes()
-    End Sub
-
-    ' ─── 全选 / 全不选 ────────────────────────────────────────────────
-
+    ''' <summary>全选 / 全不选（按当前状态取反）。</summary>
     Private Sub btnSelectAll_Click(sender As Object, e As EventArgs) Handles btnSelectAll.Click
         Dim allChecked As Boolean =
             chkSettings.Checked AndAlso chkCfg.Checked AndAlso chkSaves.Checked AndAlso
-            chkDemos.Checked AndAlso chkVideos.Checked AndAlso
+            chkDemos.Checked AndAlso chkVideos.Checked AndAlso chkScreenshots.Checked AndAlso
             chkAssets.Checked AndAlso chkGhosts.Checked
 
         Dim newValue As Boolean = Not allChecked
@@ -358,49 +354,76 @@ Public Class FormBackup
         chkSaves.Checked = newValue
         chkDemos.Checked = newValue
         chkVideos.Checked = newValue
+        chkScreenshots.Checked = newValue
         chkAssets.Checked = newValue
         chkGhosts.Checked = newValue
     End Sub
 
-    ' ─── 备份（异步）─────────────────────────────────────────────────
+    ''' <summary>刷新每组「大小 / 数量」文字颜色（勾选 → 深色，未勾选 → 灰色）。</summary>
+    Private Sub UpdateRowEnabledStates()
+        SetRowEnabled(chkSettings, lblSizeSettings, lblCountSettings)
+        SetRowEnabled(chkCfg, lblSizeCfg, lblCountCfg)
+        SetRowEnabled(chkSaves, lblSizeSaves, lblCountSaves)
+        SetRowEnabled(chkDemos, lblSizeDemos, lblCountDemos)
+        SetRowEnabled(chkVideos, lblSizeVideos, lblCountVideos)
+        SetRowEnabled(chkScreenshots, lblSizeScreenshots, lblCountScreenshots)
+        SetRowEnabled(chkAssets, lblSizeAssets, lblCountAssets)
+        SetRowEnabled(chkGhosts, lblSizeGhosts, lblCountGhosts)
+    End Sub
 
+    Private Sub SetRowEnabled(chk As CheckBox, sizeLbl As Label, countLbl As Label)
+        Dim c As Color = If(chk.Checked, Color.FromArgb(64, 64, 64), Color.DarkGray)
+        sizeLbl.ForeColor = c
+        countLbl.ForeColor = c
+    End Sub
+
+#End Region
+
+#Region "── 备份（异步） ────────────────────────────────────────"
+
+    ' 注：方法名为历史遗留 btnBackupTo_Click（控件名实为 btnBackup），保留以维持 Handles 绑定。
     Private Async Sub btnBackupTo_Click(sender As Object, e As EventArgs) Handles btnBackup.Click
         If _cts IsNot Nothing Then Return
 
+        ' 无任何勾选时直接返回
         If Not (chkSettings.Checked OrElse chkCfg.Checked OrElse chkSaves.Checked OrElse
-                chkDemos.Checked OrElse chkVideos.Checked OrElse
+                chkDemos.Checked OrElse chkVideos.Checked OrElse chkScreenshots.Checked OrElse
                 chkAssets.Checked OrElse chkGhosts.Checked) Then
             Return
         End If
 
         Dim hasPrimary As Boolean = PrimaryAvailable
-        Dim hasExtra As Boolean = IncludeExtraNow AndAlso IsExtraAvailable()
+        Dim hasExtra As Boolean = IsExtraAvailable()
         If Not hasPrimary AndAlso Not hasExtra Then
             MessageBox.Show($"找不到可备份的目录：{DdnetDir}" & vbCrLf &
-                            "请在 FormMain 中加载字体目录后重试，或勾选「也包含当前目录」。",
+                            "请在 FormMain 中加载字体目录后重试。",
                             "备份", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
+        ' 选择输出路径
         Dim outputPath As String
         Using sfd As New SaveFileDialog()
             sfd.Title = "保存备份"
             sfd.Filter = "备份文件 (*.bak)|*.bak|压缩文件 (*.zip)|*.zip|所有文件|*.*"
             sfd.FileName = "无标题.bak"
             sfd.DefaultExt = "bak"
+            sfd.OverwritePrompt = True
             If sfd.ShowDialog(Me) <> DialogResult.OK Then Return
             outputPath = sfd.FileName
         End Using
 
+        ' 采集 UI 状态快照（避免后台线程访问 UI）
         Dim opt As New BackupOptions With {
             .Settings = chkSettings.Checked,
             .Saves = chkSaves.Checked,
             .Cfg = chkCfg.Checked,
             .Demos = chkDemos.Checked,
             .Videos = chkVideos.Checked,
+            .Screenshots = chkScreenshots.Checked,
             .Assets = chkAssets.Checked,
             .Ghosts = chkGhosts.Checked,
-            .IncludeExtra = IncludeExtraNow,
+            .IncludeExtra = hasExtra,
             .ExtraRoot = DataDirectory
         }
         Dim rootDir As String = DdnetDir
@@ -408,16 +431,16 @@ Public Class FormBackup
         _cts = New CancellationTokenSource()
         Dim token As CancellationToken = _cts.Token
 
+        ' UI 状态
         Dim origTitle As String = Me.Text
         ProgressBar2.Visible = True
         ProgressBar2.Minimum = 0
         ProgressBar2.Maximum = 1
         ProgressBar2.Value = 0
         btnBackup.Enabled = False
-        btnCancel.Enabled = False
         btnSelectAll.Enabled = False
-        btnSnapshot.Enabled = False
 
+        ' 进度回调（自动编组回 UI 线程）
         Dim progress = New Progress(Of BackupProgress)(
             Sub(p)
                 If IsDisposed OrElse Disposing Then Return
@@ -429,7 +452,7 @@ Public Class FormBackup
                         ProgressBar2.Value = p.Current
                     End If
                     If Not String.IsNullOrEmpty(p.Message) Then
-                        Me.Text = $"{origTitle} - {p.Message}"
+                        Me.Text = $"备份 - {p.Message}"
                     End If
                 Catch
                 End Try
@@ -455,6 +478,7 @@ Public Class FormBackup
             errorMsg = ex.Message
         End Try
 
+        ' 窗体在备份过程中被关闭：清理半成品后直接返回
         If IsDisposed OrElse Disposing Then
             Try
                 _cts?.Dispose()
@@ -470,6 +494,7 @@ Public Class FormBackup
             Return
         End If
 
+        ' 结果处理
         If cancelled Then
             Try
                 If File.Exists(outputPath) Then File.Delete(outputPath)
@@ -487,6 +512,7 @@ Public Class FormBackup
                             MessageBoxButtons.OK, MessageBoxIcon.Information)
         End If
 
+        ' 恢复 UI 状态
         Try
             _cts?.Dispose()
         Catch
@@ -497,13 +523,12 @@ Public Class FormBackup
         ProgressBar2.Value = 0
         Me.Text = origTitle
         btnBackup.Enabled = True
-        btnCancel.Enabled = True
         btnSelectAll.Enabled = True
-        btnSnapshot.Enabled = True
     End Sub
 
     ''' <summary>
-    ''' 后台：收集 + 写 zip + verification.txt。 IncludeExtra 时：主目录 → local/，附加目录 → install/；否则主目录放根。
+    ''' 后台：收集 + 写 zip + verification.txt。
+    ''' IncludeExtra 时：主目录 → local/，附加目录 → install/；否则主目录放根。
     ''' </summary>
     Private Function DoBackupCore(zipPath As String,
                                   rootDir As String,
@@ -593,8 +618,9 @@ Public Class FormBackup
     End Function
 
     ''' <summary>
-    ''' 从 rootDir 收集备份文件。isExtra = True 时排除 autoexec_server.cfg。 folderPrefix 为压缩包内相对路径前缀（如 "local/"
-    ''' 或 "install/"）。
+    ''' 从 rootDir 收集备份文件。
+    ''' isExtra = True 时排除 autoexec_server.cfg。
+    ''' folderPrefix 为压缩包内相对路径前缀（如 "local/" 或 "install/"）。
     ''' </summary>
     Private Function CollectEntries(rootDir As String,
                                     seen As HashSet(Of String),
@@ -631,6 +657,7 @@ Public Class FormBackup
         Dim folderMap As New List(Of Tuple(Of Boolean, String)) From {
             Tuple.Create(opt.Demos, "demos"),
             Tuple.Create(opt.Videos, "videos"),
+            Tuple.Create(opt.Screenshots, "screenshots"),
             Tuple.Create(opt.Assets, "assets"),
             Tuple.Create(opt.Ghosts, "ghosts")
         }
@@ -653,6 +680,7 @@ Public Class FormBackup
         Return True
     End Function
 
+    ''' <summary>把条目追加到 entries（relPath 归一化为 "/" 分隔），按归一化路径去重。</summary>
     Private Sub AddEntry(seen As HashSet(Of String),
                          entries As List(Of Tuple(Of String, String)),
                          relPath As String,
@@ -663,9 +691,15 @@ Public Class FormBackup
         End If
     End Sub
 
-    ' ─── 快照 ────────────────────────────────────────────────────────
+#End Region
 
-    Private Sub btnSnapshot_Click(sender As Object, e As EventArgs) Handles btnSnapshot.Click
+#Region "── 遗留事件（未绑定到任何控件，保留原有结构） ──────────"
+
+    ''' <summary>
+    ''' 快照：把 settings_ddnet.cfg 与 ddnet-saves.txt 复制到程序目录下的 backup/。
+    ''' 注：当前 Designer 中无 btnSnapshot 控件，此方法未绑定，保留以备将来启用。
+    ''' </summary>
+    Private Sub btnSnapshot_Click(sender As Object, e As EventArgs)
         If Not Directory.Exists(DdnetDir) Then
             MessageBox.Show($"找不到 DDNet 数据目录：{DdnetDir}", "快照",
                             MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -715,35 +749,22 @@ Public Class FormBackup
         End If
     End Sub
 
-    ' ─── 取消 ──────────────────────────────────────────────────────
-
-    Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click
-        Me.DialogResult = DialogResult.Cancel
-        Me.Close()
+    ''' <summary>
+    ''' 取消并关闭窗体。
+    ''' 注：当前 Designer 中无 btnCancel 控件，此方法未绑定，保留以备将来启用。
+    ''' </summary>
+    Private Sub btnCancel_Click(sender As Object, e As EventArgs)
+        DialogResult = DialogResult.Cancel
+        Close()
     End Sub
 
-    ' ─── 行启用状态 ─────────────────────────────────────────────────
+#End Region
 
-    Private Sub UpdateRowEnabledStates()
-        SetRowEnabled(chkSettings, lblSizeSettings, lblCountSettings)
-        SetRowEnabled(chkCfg, lblSizeCfg, lblCountCfg)
-        SetRowEnabled(chkSaves, lblSizeSaves, lblCountSaves)
-        SetRowEnabled(chkDemos, lblSizeDemos, lblCountDemos)
-        SetRowEnabled(chkVideos, lblSizeVideos, lblCountVideos)
-        SetRowEnabled(chkAssets, lblSizeAssets, lblCountAssets)
-        SetRowEnabled(chkGhosts, lblSizeGhosts, lblCountGhosts)
-    End Sub
+#Region "── 快捷键 ──────────────────────────────────────────────"
 
-    Private Sub SetRowEnabled(chk As CheckBox, sizeLbl As Label, countLbl As Label)
-        Dim c As Color = If(chk.Checked, Color.FromArgb(64, 64, 64), Color.DarkGray)
-        sizeLbl.ForeColor = c
-        countLbl.ForeColor = c
-    End Sub
-
-    ' ─── 按 Esc 关闭 ────────────────────────────────────────────────
+    ''' <summary>按 Esc 关闭（若 ComboBox 处于下拉状态则先收起下拉）。</summary>
     Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
         If keyData = Keys.Escape Then
-            ' 如果当前有下拉框展开，让下拉框自己处理 Esc
             Dim cbo = TryCast(ActiveControl, ComboBox)
             If cbo IsNot Nothing AndAlso cbo.DroppedDown Then
                 Return MyBase.ProcessCmdKey(msg, keyData)
@@ -754,4 +775,7 @@ Public Class FormBackup
         End If
         Return MyBase.ProcessCmdKey(msg, keyData)
     End Function
+
+#End Region
+
 End Class

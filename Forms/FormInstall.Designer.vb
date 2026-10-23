@@ -42,6 +42,7 @@ Partial Class FormInstall
         lblDNFP = New Label()
         ProgressBar1 = New ProgressBar()
         tblExport = New TableLayoutPanel()
+        Label1 = New Label()
         Panel1.SuspendLayout()
         tblPackInfo.SuspendLayout()
         tblExport.SuspendLayout()
@@ -52,7 +53,7 @@ Partial Class FormInstall
         btnOpen.BackColor = Color.Transparent
         btnOpen.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         btnOpen.Location = New Point(178, 0)
-        btnOpen.Margin = New Padding(3, 0, 3, 0)
+        btnOpen.Margin = New Padding(0, 0, 3, 0)
         btnOpen.Name = "btnOpen"
         btnOpen.Size = New Size(52, 30)
         btnOpen.TabIndex = 28
@@ -66,7 +67,7 @@ Partial Class FormInstall
         btnInstall.Location = New Point(236, 0)
         btnInstall.Margin = New Padding(3, 0, 0, 0)
         btnInstall.Name = "btnInstall"
-        btnInstall.Padding = New Padding(3, 0, 0, 0)
+        btnInstall.Padding = New Padding(3, 0, 3, 0)
         btnInstall.Size = New Size(122, 30)
         btnInstall.TabIndex = 25
         btnInstall.Text = "安装到当前目录"
@@ -266,6 +267,7 @@ Partial Class FormInstall
         ' 
         ' lblDNFP
         ' 
+        lblDNFP.AutoEllipsis = True
         lblDNFP.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lblDNFP.Location = New Point(86, 18)
         lblDNFP.Name = "lblDNFP"
@@ -276,11 +278,12 @@ Partial Class FormInstall
         ' 
         ' ProgressBar1
         ' 
-        ProgressBar1.Location = New Point(0, 3)
-        ProgressBar1.Margin = New Padding(0, 3, 3, 3)
+        ProgressBar1.Dock = DockStyle.Fill
+        ProgressBar1.Location = New Point(3, 3)
         ProgressBar1.Name = "ProgressBar1"
         ProgressBar1.Size = New Size(172, 24)
         ProgressBar1.TabIndex = 49
+        ProgressBar1.Visible = False
         ' 
         ' tblExport
         ' 
@@ -290,14 +293,25 @@ Partial Class FormInstall
         tblExport.ColumnStyles.Add(New ColumnStyle())
         tblExport.ColumnStyles.Add(New ColumnStyle())
         tblExport.Controls.Add(btnInstall, 2, 0)
-        tblExport.Controls.Add(ProgressBar1, 0, 0)
         tblExport.Controls.Add(btnOpen, 1, 0)
-        tblExport.Location = New Point(12, 353)
+        tblExport.Controls.Add(ProgressBar1, 0, 0)
+        tblExport.Location = New Point(12, 354)
         tblExport.Name = "tblExport"
         tblExport.RowCount = 1
         tblExport.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
+        tblExport.RowStyles.Add(New RowStyle(SizeType.Absolute, 20F))
         tblExport.Size = New Size(358, 30)
         tblExport.TabIndex = 50
+        ' 
+        ' Label1
+        ' 
+        Label1.AutoSize = True
+        Label1.Location = New Point(12, 333)
+        Label1.Name = "Label1"
+        Label1.Size = New Size(56, 18)
+        Label1.TabIndex = 51
+        Label1.Text = "Label1"
+        Label1.Visible = False
         ' 
         ' FormInstall
         ' 
@@ -305,7 +319,8 @@ Partial Class FormInstall
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 395)
+        ClientSize = New Size(382, 396)
+        Controls.Add(Label1)
         Controls.Add(tblExport)
         Controls.Add(lblDNFP)
         Controls.Add(btnBroswe)
@@ -325,6 +340,7 @@ Partial Class FormInstall
         tblPackInfo.PerformLayout()
         tblExport.ResumeLayout(False)
         ResumeLayout(False)
+        PerformLayout()
     End Sub
     Friend WithEvents btnInstall As Button
     Friend WithEvents btnOpen As Button
@@ -345,4 +361,5 @@ Partial Class FormInstall
     Friend WithEvents lblDNFP As Label
     Friend WithEvents ProgressBar1 As ProgressBar
     Friend WithEvents tblExport As TableLayoutPanel
+    Friend WithEvents Label1 As Label
 End Class

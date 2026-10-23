@@ -22,6 +22,7 @@ Partial Class FormPreview
     '不要使用代码编辑器修改它。
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        components = New ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormPreview))
         lblTC = New Label()
         rdoFont10 = New RadioButton()
@@ -45,6 +46,7 @@ Partial Class FormPreview
         TableLayoutPanel2 = New TableLayoutPanel()
         rdoFont22 = New RadioButton()
         chkDock = New CheckBox()
+        ToolTip1 = New ToolTip(components)
         TableLayoutPanel4.SuspendLayout()
         TableLayoutPanel1.SuspendLayout()
         TableLayoutPanel2.SuspendLayout()
@@ -397,13 +399,15 @@ Partial Class FormPreview
         ' chkDock
         ' 
         chkDock.Appearance = Appearance.Button
-        chkDock.Location = New Point(337, 0)
-        chkDock.Margin = New Padding(3, 0, 3, 3)
+        chkDock.Dock = DockStyle.Right
+        chkDock.Image = CType(resources.GetObject("chkDock.Image"), Image)
+        chkDock.Location = New Point(363, 0)
+        chkDock.Margin = New Padding(3, 0, 0, 3)
         chkDock.Name = "chkDock"
-        chkDock.Size = New Size(52, 30)
+        chkDock.Size = New Size(30, 30)
         chkDock.TabIndex = 10
-        chkDock.Text = "吸附"
         chkDock.TextAlign = ContentAlignment.MiddleCenter
+        ToolTip1.SetToolTip(chkDock, "吸附")
         chkDock.UseVisualStyleBackColor = True
         ' 
         ' FormPreview
@@ -455,4 +459,5 @@ Partial Class FormPreview
     Friend WithEvents rdoFont22 As RadioButton
     Friend WithEvents rdoFont9 As RadioButton
     Friend WithEvents chkDock As CheckBox
+    Friend WithEvents ToolTip1 As ToolTip
 End Class

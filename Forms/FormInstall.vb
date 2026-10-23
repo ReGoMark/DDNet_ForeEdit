@@ -1,15 +1,19 @@
 ﻿Imports System.ComponentModel
 Imports System.IO
 Imports System.IO.Compression
+Imports System.Resources
 Imports System.Text
 Imports System.Text.RegularExpressions
 
 ''' <summary>
-''' BLADE 字体包安装窗体：加载 .dnfp / .json 并直接部署到当前 fonts 目录。 导出功能在 FormOutput。
+''' BLADE 字体包安装窗体：加载 .dnfp / .json 并直接部署到当前 fonts 目录。
+''' 导出功能在 FormOutput；打包/安装的公共分析逻辑通过 Shared 方法对外复用（FormMain 拖放安装）。
 ''' </summary>
 Public Class FormInstall
 
-    ' ─── 内部辅助类 ──────────────────────────────────────────────────
+#Region "── 内部类型 ────────────────────────────────────────────"
+
+    ''' <summary>安装进度载体（供进度条与标题栏使用）。</summary>
     Private Class InstallProgress
         Public IsMarquee As Boolean
         Public Current As Integer
@@ -17,6 +21,7 @@ Public Class FormInstall
         Public Message As String
     End Class
 
+    ''' <summary>包内容分析结果：待新增 / 待覆盖 / 待删除 文件清单。</summary>
     Private Class ScanResult
         Public NewJson As String
         Public ToAdd As New List(Of String)
@@ -25,7 +30,9 @@ Public Class FormInstall
         Public PackSize As Long
     End Class
 
-    ' ─── 目录结构常量（提至类级别，避免重复声明） ────────────────────
+#End Region
+
+#Region "── 常量：目录结构 ──────────────────────────────────────"
 
     Private Shared ReadOnly AppRoot As String = Application.StartupPath
     Private Shared ReadOnly ManifestDir As String = Path.Combine(AppRoot, "manifest")
@@ -33,28 +40,46 @@ Public Class FormInstall
     Private Shared ReadOnly PendingCopiesPath As String = Path.Combine(ManifestDir, "pendingcopies.txt")
     Private Shared ReadOnly CacheDir As String = Path.Combine(AppRoot, "cache")
 
-    ' ─── 由 FormMain 传入的属性 ──────────────────────────────────────
+#End Region
 
-    ''' <summary>
-    ''' 当前正在操作的字体目录路径。
-    ''' </summary>
+#Region "── 公开属性 ────────────────────────────────────────────"
+
+    ''' <summary>当前正在操作的字体目录路径（由 FormMain 传入）。</summary>
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property FontDir As String = ""
 
-    ' ─── 状态字段 ────────────────────────────────────────────────────
-
-    Private _loadedDnfpPath As String = ""
-    Private _loadedJsonPath As String = ""
-    Private _loadedFileType As String = ""
-
+    ''' <summary>
+    ''' 窗体首次显示时自动加载并安装的文件路径（由 FormMain 传入，用于「拖放 .dnfp 到 BLADE」场景）。
+    ''' 使用后立即清空。
+    ''' </summary>
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property AutoInstallFile As String = ""
 
-    ' ─── 窗体生命周期 ──────────────────────────────────────────────────
+#End Region
+
+#Region "── 私有字段 ────────────────────────────────────────────"
+
+    ''' <summary>已加载的 .dnfp 路径。</summary>
+    Private _loadedDnfpPath As String = ""
+
+    ''' <summary>已加载的 .json 配置路径。</summary>
+    Private _loadedJsonPath As String = ""
+
+    ''' <summary>已加载文件的类型（"dnfp" / "json" / 空）。</summary>
+    Private _loadedFileType As String = ""
+
+    ''' <summary>本窗体本次会话内生成的图标，FormClosed 时统一 Dispose。</summary>
+    Private ReadOnly _ownedIcons As New List(Of Image)
+
+#End Region
+
+#Region "── 窗体生命周期 ────────────────────────────────────────"
 
     Private Sub FormBlade_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         EnsureDirectoriesExist()
+        ApplyAwareIcons()
 
+        ' 未传入有效字体目录时禁用安装相关按钮
         If String.IsNullOrEmpty(FontDir) OrElse Not Directory.Exists(FontDir) Then
             btnInstall.Enabled = False
             btnOpen.Enabled = False
@@ -62,12 +87,19 @@ Public Class FormInstall
 
         lstbDNFP.ItemHeight = FormMain.SharedItemHeight
 
-        Dim dblProp = GetType(Control).GetProperty("DoubleBuffered", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
+        ' ListBox 双缓冲
+        Dim dblProp = GetType(Control).GetProperty(
+            "DoubleBuffered",
+            Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
         If dblProp IsNot Nothing Then
             dblProp.SetValue(lstbDNFP, True, Nothing)
         End If
     End Sub
 
+    ''' <summary>
+    ''' 首次显示时如带有 AutoInstallFile（.dnfp / .json），则自动加载并执行安装。
+    ''' AutoInstallFile 使用后立即清空，避免重复触发。
+    ''' </summary>
     Private Sub FormBlade_Shown(sender As Object, e As EventArgs) Handles MyBase.Shown
         If String.IsNullOrEmpty(AutoInstallFile) Then Return
 
@@ -92,35 +124,41 @@ Public Class FormInstall
         End Try
     End Sub
 
-    Private Sub EnsureDirectoriesExist()
-        For Each dir As String In {ManifestDir, CacheDir}
-            If Not Directory.Exists(dir) Then
-                Try
-                    Directory.CreateDirectory(dir)
-                Catch
-                End Try
-            End If
+    ''' <summary>释放本次会话生成的图标。</summary>
+    Private Sub FormInstall_FormClosed(sender As Object, e As FormClosedEventArgs) Handles Me.FormClosed
+        For Each img In _ownedIcons
+            Try : img.Dispose() : Catch : End Try
         Next
+        _ownedIcons.Clear()
     End Sub
 
-    ' ─── 通用辅助 ────────────────────────────────────────────────────
+#End Region
 
-    Private Shared Sub AppendPendingLines(path As String, lines As IEnumerable(Of String))
-        If lines Is Nothing Then Return
-        Dim arr = lines.Where(Function(l) Not String.IsNullOrWhiteSpace(l)).ToList()
-        If arr.Count = 0 Then Return
+#Region "── DPI 图标 ────────────────────────────────────────────"
+
+    ''' <summary>
+    ''' 从 Icons.resx 应用本窗体的图标。
+    ''' 注：控件名 btnBroswe（Designer 既有拼写），此处沿用，勿改。
+    ''' 资源缺失时静默跳过（控件保持 Designer 原图）。
+    ''' </summary>
+    Private Sub ApplyAwareIcons()
+        Dim rm As ResourceManager
         Try
-            Dim existing As New List(Of String)
-            If File.Exists(path) Then
-                existing.AddRange(File.ReadAllLines(path).Where(Function(l) Not String.IsNullOrWhiteSpace(l)))
-            End If
-            existing.AddRange(arr)
-            File.WriteAllLines(path, existing.Distinct(StringComparer.OrdinalIgnoreCase))
-        Catch
+            rm = New ResourceManager("DNFE.Icons", GetType(FormMain).Assembly)
+        Catch ex As MissingManifestResourceException
+            Return
         End Try
+
+        Dim map As New Dictionary(Of Button, String) From {
+            {btnBroswe, "drag"}
+        }
+
+        AwareIcon.ApplyButtonIcons(Me, rm, map, _ownedIcons)
     End Sub
 
-    ' ─── 加载字体包 / JSON ──────────────────────────────────────────
+#End Region
+
+#Region "── 加载字体包 / 配置 ────────────────────────────────────"
 
     Private Sub btnZipBroswe_Click(sender As Object, e As EventArgs) Handles btnBroswe.Click
         Using ofd As New OpenFileDialog
@@ -167,6 +205,10 @@ Public Class FormInstall
         End If
     End Sub
 
+    ''' <summary>
+    ''' 加载并解析 .dnfp 字体包（仅读取元信息与文件清单，不执行安装）。
+    ''' 校验：必须含 verification.txt 与 fonts/index.json。
+    ''' </summary>
     Private Sub LoadPackage(filePath As String)
         ResetLoadState()
 
@@ -194,6 +236,7 @@ Public Class FormInstall
                     Return
                 End If
 
+                ' 解析 verification.txt 键值对
                 Dim verData As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
                 Using sr As New StreamReader(verEntry.Open(), Encoding.UTF8)
                     For Each line As String In sr.ReadToEnd().Split({vbCrLf, vbCr, vbLf}, StringSplitOptions.RemoveEmptyEntries)
@@ -204,9 +247,11 @@ Public Class FormInstall
                     Next
                 End Using
 
+                ' 备注
                 Dim noteVal As String = ""
                 lblZipNote.Text = If(verData.TryGetValue("note", noteVal) AndAlso Not String.IsNullOrWhiteSpace(noteVal), noteVal, "-")
 
+                ' 打包模式
                 Dim modeVal As String = ""
                 verData.TryGetValue("mode", modeVal)
                 Dim modeStr As String = "-"
@@ -217,6 +262,7 @@ Public Class FormInstall
                     Case Else : modeStr = If(String.IsNullOrEmpty(modeVal), "-", modeVal)
                 End Select
 
+                ' 来源目录
                 Dim sourceVal As String = ""
                 verData.TryGetValue("source", sourceVal)
                 Dim sourceStr As String = "-"
@@ -229,6 +275,7 @@ Public Class FormInstall
 
                 lblZipType.Text = If(String.IsNullOrEmpty(modeStr) OrElse modeStr = "-", sourceStr, $"{modeStr}, {sourceStr}")
 
+                ' 列出包内 fonts/ 下的文件
                 lstbDNFP.Items.Clear()
                 Dim fontCount As Integer = 0
                 For Each entry As ZipArchiveEntry In archive.Entries
@@ -249,6 +296,9 @@ Public Class FormInstall
             _loadedDnfpPath = filePath
             _loadedFileType = "dnfp"
 
+            ' 保留「安装」字样，附加文件名
+            Me.Text = $"安装 - {fi.Name}"
+
             Dim hasFontDir As Boolean = Not String.IsNullOrEmpty(FontDir) AndAlso Directory.Exists(FontDir)
             btnInstall.Enabled = hasFontDir
             btnOpen.Enabled = hasFontDir
@@ -257,6 +307,7 @@ Public Class FormInstall
         End Try
     End Sub
 
+    ''' <summary>加载 index.json 配置文件（仅记录元信息，不执行安装）。</summary>
     Private Sub ImportJsonConfig(filePath As String)
         ResetLoadState()
 
@@ -287,11 +338,14 @@ Public Class FormInstall
             _loadedFileType = "json"
             btnInstall.Enabled = True
             btnOpen.Enabled = True
+
+            Me.Text = $"安装 - {fi.Name}"
         Catch ex As Exception
             MessageBox.Show("加载配置失败：" & ex.Message, "安装配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
+    ''' <summary>重置加载状态与界面元信息（不改变字体目录）。</summary>
     Private Sub ResetLoadState()
         _loadedJsonPath = ""
         _loadedDnfpPath = ""
@@ -304,15 +358,16 @@ Public Class FormInstall
         lblZipType.Text = "-"
         btnInstall.Enabled = False
         btnOpen.Enabled = False
+
+        ' 重置标题栏为纯「安装」
+        Me.Text = "安装"
     End Sub
 
-    ' ─── 安装 ────────────────────────────────────────────────────────
+#End Region
 
-#Region "── 核心安装逻辑 ────────────"
+#Region "── 核心安装逻辑（Shared，供 FormMain 复用） ────────────"
 
-    ''' <summary>
-    ''' 直接安装 .json 配置到目标字体目录
-    ''' </summary>
+    ''' <summary>直接安装 .json 配置到目标字体目录（覆盖 index.json）。</summary>
     Public Shared Function InstallJsonConfigDirect(jsonPath As String, fontDir As String, owner As IWin32Window) As Boolean
         If String.IsNullOrEmpty(jsonPath) OrElse Not File.Exists(jsonPath) Then Return False
         If String.IsNullOrEmpty(fontDir) OrElse Not Directory.Exists(fontDir) Then
@@ -334,7 +389,8 @@ Public Class FormInstall
     End Function
 
     ''' <summary>
-    ''' 直接安装 .dnfp 字体包（供 FormMain 拖放复用，无进度条）
+    ''' 直接安装 .dnfp 字体包（无进度条）。
+    ''' 供 FormMain 拖放 .dnfp 到安装按钮时复用。
     ''' </summary>
     Public Shared Function InstallDnfpDirect(packagePath As String, fontDir As String, owner As IWin32Window) As Boolean
         If String.IsNullOrEmpty(packagePath) OrElse Not File.Exists(packagePath) Then Return False
@@ -361,7 +417,7 @@ Public Class FormInstall
                 Return False
             End If
 
-            ' 确认对话框
+            ' 确认对话框：列出新增 / 覆盖 / 删除项
             Using dlg As New DialogMessage()
                 dlg.Text = "确认安装"
                 dlg.TitleText = $"确认要安装「{Path.GetFileName(packagePath)}」吗？"
@@ -386,10 +442,10 @@ Public Class FormInstall
                 If dlg.ShowDialog(owner) <> DialogResult.OK Then Return False
             End Using
 
-            ' 执行安装（传 Nothing 表示无进度条）
+            ' 执行安装（Nothing 表示无进度条）
             ExecuteInstall(scanResult, fontDir, Nothing)
 
-            ' 提示
+            ' 完成提示
             Dim hasPending As Boolean = (scanResult.ToAdd.Count > 0) OrElse (scanResult.ToReplace.Count > 0) OrElse (scanResult.ToDelete.Count > 0)
             If hasPending Then
                 MessageBox.Show(owner, "字体包安装成功，下次启动时生效。", "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -410,13 +466,16 @@ Public Class FormInstall
     End Function
 
     ''' <summary>
-    ''' 异步安装（供 FormInstall 窗体使用，带进度条）
+    ''' 异步安装（带进度条）。
+    ''' 流程：后台解压 &amp; 分析 → UI 线程确认 → 后台执行安装 → UI 线程完成提示。
     ''' </summary>
-    Private Shared Async Function InstallDnfpAsync(packagePath As String, fontDir As String, owner As IWin32Window, progress As IProgress(Of InstallProgress)) As Task(Of Boolean)
+    Private Shared Async Function InstallDnfpAsync(packagePath As String, fontDir As String,
+                                                   owner As IWin32Window,
+                                                   progress As IProgress(Of InstallProgress)) As Task(Of Boolean)
         Dim tempDir = Path.Combine(Path.GetTempPath(), "dnfe_import_" & Guid.NewGuid.ToString("N").Substring(0, 8))
 
         Try
-            ' 1. 后台解压与分析（去掉了解压和分析的进度文本提示）
+            ' 1. 后台解压 + 分析
             Dim scanResult As ScanResult = Await Task.Run(Function()
                                                               If Directory.Exists(tempDir) Then Directory.Delete(tempDir, True)
                                                               Directory.CreateDirectory(tempDir)
@@ -481,7 +540,8 @@ Public Class FormInstall
     End Function
 
     ''' <summary>
-    ''' 提取出来的公共分析与差异比对逻辑
+    ''' 分析包内容与目标目录的差异，生成新增 / 覆盖 / 删除清单。
+    ''' 删除规则：目标目录中既不在包内、也不在 index.json 引用列表、且不是 Font Awesome 的字体，视为多余。
     ''' </summary>
     Private Shared Function AnalyzePackage(srcDir As String, fontDir As String, packagePath As String) As ScanResult
         Dim jsonSrc = Path.Combine(srcDir, "index.json")
@@ -497,12 +557,14 @@ Public Class FormInstall
             Next
         End If
 
+        ' 包内字体文件
         Dim zipFonts As New List(Of String)
         zipFonts.AddRange(Directory.GetFiles(srcDir, "*.ttf"))
         zipFonts.AddRange(Directory.GetFiles(srcDir, "*.ttc"))
         zipFonts.AddRange(Directory.GetFiles(srcDir, "*.otf"))
         Dim zipFileNames As New HashSet(Of String)(zipFonts.Select(Function(f) Path.GetFileName(f)), StringComparer.OrdinalIgnoreCase)
 
+        ' 目标目录当前字体
         Dim currentFonts As New List(Of String)
         currentFonts.AddRange(Directory.GetFiles(fontDir, "*.ttf"))
         currentFonts.AddRange(Directory.GetFiles(fontDir, "*.ttc"))
@@ -510,6 +572,7 @@ Public Class FormInstall
 
         Dim res As New ScanResult With {.NewJson = newJson}
 
+        ' 包内：目标已存在 → 覆盖；不存在 → 新增
         For Each f In zipFonts
             If File.Exists(Path.Combine(fontDir, Path.GetFileName(f))) Then
                 res.ToReplace.Add(f)
@@ -518,6 +581,7 @@ Public Class FormInstall
             End If
         Next
 
+        ' 目标多余：既不在包内、也不在 index.json 引用里
         For Each f In currentFonts
             Dim fn = Path.GetFileName(f)
             If Not zipFileNames.Contains(fn) AndAlso Not referencedFiles.Contains(fn) Then
@@ -537,9 +601,11 @@ Public Class FormInstall
     End Function
 
     ''' <summary>
-    ''' 提取出来的公共执行逻辑（复制、缓存、写挂起记录）
+    ''' 执行安装：复制文件、写 index.json、记录失败项到 pending 清单（下次启动时重试）。
+    ''' progress 为 Nothing 表示无进度条。
     ''' </summary>
     Private Shared Sub ExecuteInstall(scanResult As ScanResult, fontDir As String, progress As IProgress(Of InstallProgress))
+        ' 清理上一次的 cache
         Directory.CreateDirectory(CacheDir)
         For Each ext In {"*.ttf", "*.ttc", "*.otf"}
             For Each oldFile In Directory.GetFiles(CacheDir, ext)
@@ -551,7 +617,7 @@ Public Class FormInstall
         Dim totalSteps As Integer = scanResult.ToAdd.Count + scanResult.ToReplace.Count
         Dim step0 As Integer = 0
 
-        ' toAdd：直接复制
+        ' toAdd：直接复制；失败则写缓存 + 记入 pending
         Dim addCopyLines As New List(Of String)
         For Each f In scanResult.ToAdd
             step0 += 1
@@ -599,9 +665,10 @@ Public Class FormInstall
 
 #End Region
 
-    ' ─── 按钮事件 ────────────────────────────────────────────────────
+#Region "── 安装按钮事件 ────────────────────────────────────────"
 
     Private Async Sub btnInstall_Click(sender As Object, e As EventArgs) Handles btnInstall.Click
+        ' 已加载 .json：直接走配置覆盖
         If Not String.IsNullOrEmpty(_loadedJsonPath) AndAlso File.Exists(_loadedJsonPath) Then
             If InstallJsonConfigDirect(_loadedJsonPath, FontDir, Me) Then ResetLoadState()
             Return
@@ -612,7 +679,7 @@ Public Class FormInstall
             Return
         End If
 
-        Dim origTitle As String = Me.Text
+        Dim origTitle = Text
         btnInstall.Enabled = False
         btnOpen.Enabled = False
         btnBroswe.Enabled = False
@@ -635,9 +702,9 @@ Public Class FormInstall
                     If displayMsg.Length > 40 Then displayMsg = "..." & displayMsg.Substring(displayMsg.Length - 37)
 
                     If p.Total > 0 AndAlso Not p.IsMarquee Then
-                        Me.Text = $"{origTitle} - {displayMsg} ({p.Current}/{p.Total})"
+                        Text = $"{origTitle} - {displayMsg} ({p.Current}/{p.Total})"
                     Else
-                        Me.Text = $"{origTitle} - {displayMsg}"
+                        Text = $"{origTitle} - {displayMsg}"
                     End If
                 End If
             End Sub)
@@ -647,7 +714,7 @@ Public Class FormInstall
         ProgressBar1.Value = 0
 
         Try
-            Dim ok As Boolean = Await InstallDnfpAsync(_loadedDnfpPath, FontDir, Me, progress)
+            Dim ok = Await InstallDnfpAsync(_loadedDnfpPath, FontDir, Me, progress)
             If ok Then ResetLoadState()
         Catch ex As Exception
             MessageBox.Show($"安装失败：{ex.Message}", "安装字体包", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -657,9 +724,13 @@ Public Class FormInstall
             btnBroswe.Enabled = True
             ProgressBar1.Visible = False
             ProgressBar1.Value = 0
-            Me.Text = origTitle
+            Text = origTitle
         End Try
     End Sub
+
+#End Region
+
+#Region "── 打开按钮事件 ────────────────────────────────────────"
 
     Private Sub btnOpen_Click(sender As Object, e As EventArgs) Handles btnOpen.Click
         If _loadedFileType = "json" Then
@@ -683,7 +754,9 @@ Public Class FormInstall
         End If
     End Sub
 
-    ' ─── 列表自绘 ────────────────────────────────────────────────────
+#End Region
+
+#Region "── 列表自绘 ────────────────────────────────────────────"
 
     Private Sub lstbBlade_DrawItem(sender As Object, e As DrawItemEventArgs) Handles lstbDNFP.DrawItem
         If e.Index < 0 OrElse e.Index >= lstbDNFP.Items.Count Then Return
@@ -697,6 +770,7 @@ Public Class FormInstall
 
         TextRenderer.DrawText(e.Graphics, itemText, e.Font, textRect, textColor, TextFormatFlags.Left Or TextFormatFlags.NoPrefix)
 
+        ' 右侧序号
         Dim tag = $"{e.Index + 1}"
         Using tagFont As New Font("Consolas", 7.5F, FontStyle.Regular, GraphicsUnit.Point)
             Using tagColor As New SolidBrush(If((e.State And DrawItemState.Selected) <> 0, Color.FromArgb(200, 255, 255, 255), Color.Gray))
@@ -708,7 +782,37 @@ Public Class FormInstall
         e.DrawFocusRectangle()
     End Sub
 
-    ' ─── 辅助 ────────────────────────────────────────────────────────
+#End Region
+
+#Region "── 通用辅助 ────────────────────────────────────────────"
+
+    ''' <summary>确保应用运行所需的子目录存在（ManifestDir / CacheDir）。</summary>
+    Private Sub EnsureDirectoriesExist()
+        For Each dir As String In {ManifestDir, CacheDir}
+            If Not Directory.Exists(dir) Then
+                Try
+                    Directory.CreateDirectory(dir)
+                Catch
+                End Try
+            End If
+        Next
+    End Sub
+
+    ''' <summary>把若干行追加到 pending 文本文件（自动去重、忽略空行）。</summary>
+    Private Shared Sub AppendPendingLines(path As String, lines As IEnumerable(Of String))
+        If lines Is Nothing Then Return
+        Dim arr = lines.Where(Function(l) Not String.IsNullOrWhiteSpace(l)).ToList()
+        If arr.Count = 0 Then Return
+        Try
+            Dim existing As New List(Of String)
+            If File.Exists(path) Then
+                existing.AddRange(File.ReadAllLines(path).Where(Function(l) Not String.IsNullOrWhiteSpace(l)))
+            End If
+            existing.AddRange(arr)
+            File.WriteAllLines(path, existing.Distinct(StringComparer.OrdinalIgnoreCase))
+        Catch
+        End Try
+    End Sub
 
     Private Shared Function FormatBytes(bytes As Long) As String
         If bytes >= 1024L * 1024 * 1024 Then Return (bytes / 1024 / 1024 / 1024).ToString("F2") & " GB"
@@ -717,6 +821,11 @@ Public Class FormInstall
         Return bytes.ToString() & " B"
     End Function
 
+#End Region
+
+#Region "── 快捷键 ──────────────────────────────────────────────"
+
+    ''' <summary>按 Esc 关闭（若 ComboBox 处于下拉状态则先收起下拉）。</summary>
     Protected Overrides Function ProcessCmdKey(ByRef msg As Message, keyData As Keys) As Boolean
         If keyData = Keys.Escape Then
             Dim cbo = TryCast(ActiveControl, ComboBox)
@@ -726,4 +835,7 @@ Public Class FormInstall
         End If
         Return MyBase.ProcessCmdKey(msg, keyData)
     End Function
+
+#End Region
+
 End Class

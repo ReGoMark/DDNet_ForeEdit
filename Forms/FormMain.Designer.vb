@@ -98,14 +98,13 @@ Partial Class FormMain
         tblBottonBar = New TableLayoutPanel()
         btnMenu = New Button()
         btnApply = New Button()
-        btnPreview = New Button()
         ProgressBar1 = New ProgressBar()
+        btnPreview = New Button()
         btnBlade = New Button()
         btnOutput = New Button()
         btnDefault = New Button()
         ToolTip1 = New ToolTip(components)
         pnlDirFonts = New Panel()
-        ImageList1 = New ImageList(components)
         tblTopBar.SuspendLayout()
         pnlFontInfo.SuspendLayout()
         tblFontInfo.SuspendLayout()
@@ -704,7 +703,7 @@ Partial Class FormMain
         pnlFallback.Location = New Point(266, 2)
         pnlFallback.Margin = New Padding(3, 2, 3, 2)
         pnlFallback.Name = "pnlFallback"
-        pnlFallback.Size = New Size(222, 104)
+        pnlFallback.Size = New Size(222, 98)
         pnlFallback.TabIndex = 29
         ' 
         ' cmbFallback
@@ -1070,8 +1069,8 @@ Partial Class FormMain
         tblBottonBar.ColumnStyles.Add(New ColumnStyle())
         tblBottonBar.Controls.Add(btnMenu, 0, 0)
         tblBottonBar.Controls.Add(btnApply, 8, 0)
-        tblBottonBar.Controls.Add(btnPreview, 1, 0)
         tblBottonBar.Controls.Add(ProgressBar1, 5, 0)
+        tblBottonBar.Controls.Add(btnPreview, 1, 0)
         tblBottonBar.Controls.Add(btnBlade, 6, 0)
         tblBottonBar.Controls.Add(btnOutput, 7, 0)
         tblBottonBar.Controls.Add(btnDefault, 4, 0)
@@ -1105,6 +1104,15 @@ Partial Class FormMain
         ToolTip1.SetToolTip(btnApply, "应用修改(Ctrl+S)" & vbCrLf & "应用修改并启动(Shift+点击)")
         btnApply.UseVisualStyleBackColor = True
         ' 
+        ' ProgressBar1
+        ' 
+        ProgressBar1.Location = New Point(108, 2)
+        ProgressBar1.Margin = New Padding(3, 2, 3, 2)
+        ProgressBar1.Name = "ProgressBar1"
+        ProgressBar1.Size = New Size(206, 26)
+        ProgressBar1.TabIndex = 9
+        ProgressBar1.Visible = False
+        ' 
         ' btnPreview
         ' 
         btnPreview.Image = CType(resources.GetObject("btnPreview.Image"), Image)
@@ -1115,16 +1123,6 @@ Partial Class FormMain
         btnPreview.TabIndex = 2
         ToolTip1.SetToolTip(btnPreview, "预览(Ctrl+P)")
         btnPreview.UseVisualStyleBackColor = True
-        ' 
-        ' ProgressBar1
-        ' 
-        ProgressBar1.Dock = DockStyle.Fill
-        ProgressBar1.Location = New Point(108, 2)
-        ProgressBar1.Margin = New Padding(3, 2, 3, 2)
-        ProgressBar1.Name = "ProgressBar1"
-        ProgressBar1.Size = New Size(206, 26)
-        ProgressBar1.TabIndex = 9
-        ProgressBar1.Visible = False
         ' 
         ' btnBlade
         ' 
@@ -1175,22 +1173,6 @@ Partial Class FormMain
         pnlDirFonts.Name = "pnlDirFonts"
         pnlDirFonts.Size = New Size(518, 223)
         pnlDirFonts.TabIndex = 8
-        ' 
-        ' ImageList1
-        ' 
-        ImageList1.ColorDepth = ColorDepth.Depth32Bit
-        ImageList1.ImageStream = CType(resources.GetObject("ImageList1.ImageStream"), ImageListStreamer)
-        ImageList1.TransparentColor = Color.Transparent
-        ImageList1.Images.SetKeyName(0, "preview.ico")
-        ImageList1.Images.SetKeyName(1, "search_context.ico")
-        ImageList1.Images.SetKeyName(2, "blade.ico")
-        ImageList1.Images.SetKeyName(3, "output.ico")
-        ImageList1.Images.SetKeyName(4, "backup.ico")
-        ImageList1.Images.SetKeyName(5, "help.ico")
-        ImageList1.Images.SetKeyName(6, "recovery_context.ico")
-        ImageList1.Images.SetKeyName(7, "dnfe.ico")
-        ImageList1.Images.SetKeyName(8, "link.ico")
-        ImageList1.Images.SetKeyName(9, "refresh.ico")
         ' 
         ' FormMain
         ' 
@@ -1316,6 +1298,5 @@ Partial Class FormMain
     Friend WithEvents pnlFallbackFonts As Panel
     Friend WithEvents pnlDirFonts As Panel
     Friend WithEvents btnSearch As Button
-    Friend WithEvents ImageList1 As ImageList
 
 End Class

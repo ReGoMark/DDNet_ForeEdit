@@ -1,4 +1,6 @@
-﻿Imports Microsoft.VisualBasic.ApplicationServices
+﻿Imports System.Globalization
+Imports System.Threading
+Imports Microsoft.VisualBasic.ApplicationServices
 
 Namespace My
     ' The following events are available for MyApplication:
@@ -33,6 +35,8 @@ Namespace My
                     End If
                 End Using
             End If
+            Thread.CurrentThread.CurrentCulture = New CultureInfo("zh-CN")
+            Thread.CurrentThread.CurrentUICulture = New CultureInfo("zh-CN")
         End Sub
     End Class
 End Namespace

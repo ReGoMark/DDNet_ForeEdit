@@ -25,11 +25,9 @@ Partial Class FormBackup
         components = New ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormBackup))
         btnBackup = New Button()
-        btnCancel = New Button()
         TableLayoutPanel1 = New TableLayoutPanel()
         lblSizeTotal = New Label()
         lblCountSettings = New Label()
-        chkVideos = New CheckBox()
         chkSaves = New CheckBox()
         chkGhosts = New CheckBox()
         chkDemos = New CheckBox()
@@ -38,7 +36,6 @@ Partial Class FormBackup
         lblSizeCfg = New Label()
         lblSizeSaves = New Label()
         lblSizeDemos = New Label()
-        lblSizeVideos = New Label()
         lblSizeAssets = New Label()
         lblSizeGhosts = New Label()
         chkSettings = New CheckBox()
@@ -46,16 +43,20 @@ Partial Class FormBackup
         lblCountCfg = New Label()
         lblCountSaves = New Label()
         lblCountDemos = New Label()
-        lblCountVideos = New Label()
         lblCountAssets = New Label()
         lblCountGhosts = New Label()
         splitExport = New Label()
+        chkVideos = New CheckBox()
+        chkScreenshots = New CheckBox()
+        lblCountVideos = New Label()
+        lblSizeVideos = New Label()
+        lblCountScreenshots = New Label()
+        lblSizeScreenshots = New Label()
+        ProgressBar2 = New ProgressBar()
         btnSelectAll = New Button()
         tblExport = New TableLayoutPanel()
-        ProgressBar2 = New ProgressBar()
-        chkExtra = New CheckBox()
-        btnSnapshot = New Button()
         ToolTip1 = New ToolTip(components)
+        Label1 = New Label()
         TableLayoutPanel1.SuspendLayout()
         tblExport.SuspendLayout()
         SuspendLayout()
@@ -71,46 +72,39 @@ Partial Class FormBackup
         btnBackup.Text = "保存备份"
         btnBackup.UseVisualStyleBackColor = True
         ' 
-        ' btnCancel
-        ' 
-        btnCancel.Location = New Point(351, 260)
-        btnCancel.Margin = New Padding(3, 0, 0, 0)
-        btnCancel.Name = "btnCancel"
-        btnCancel.Size = New Size(52, 30)
-        btnCancel.TabIndex = 9
-        btnCancel.Text = "取消"
-        btnCancel.UseVisualStyleBackColor = True
-        btnCancel.Visible = False
-        ' 
         ' TableLayoutPanel1
         ' 
+        TableLayoutPanel1.AutoSize = True
         TableLayoutPanel1.ColumnCount = 3
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle())
-        TableLayoutPanel1.Controls.Add(lblSizeTotal, 0, 14)
+        TableLayoutPanel1.Controls.Add(lblSizeTotal, 0, 15)
         TableLayoutPanel1.Controls.Add(lblCountSettings, 1, 0)
-        TableLayoutPanel1.Controls.Add(chkVideos, 0, 6)
         TableLayoutPanel1.Controls.Add(chkSaves, 0, 2)
-        TableLayoutPanel1.Controls.Add(chkGhosts, 0, 12)
+        TableLayoutPanel1.Controls.Add(chkGhosts, 0, 13)
         TableLayoutPanel1.Controls.Add(chkDemos, 0, 4)
-        TableLayoutPanel1.Controls.Add(chkAssets, 0, 9)
+        TableLayoutPanel1.Controls.Add(chkAssets, 0, 10)
         TableLayoutPanel1.Controls.Add(lblSizeSettings, 2, 0)
         TableLayoutPanel1.Controls.Add(lblSizeCfg, 2, 1)
         TableLayoutPanel1.Controls.Add(lblSizeSaves, 2, 2)
         TableLayoutPanel1.Controls.Add(lblSizeDemos, 2, 4)
-        TableLayoutPanel1.Controls.Add(lblSizeVideos, 2, 6)
-        TableLayoutPanel1.Controls.Add(lblSizeAssets, 2, 9)
-        TableLayoutPanel1.Controls.Add(lblSizeGhosts, 2, 12)
+        TableLayoutPanel1.Controls.Add(lblSizeAssets, 2, 10)
+        TableLayoutPanel1.Controls.Add(lblSizeGhosts, 2, 13)
         TableLayoutPanel1.Controls.Add(chkSettings, 0, 0)
         TableLayoutPanel1.Controls.Add(chkCfg, 0, 1)
         TableLayoutPanel1.Controls.Add(lblCountCfg, 1, 1)
         TableLayoutPanel1.Controls.Add(lblCountSaves, 1, 2)
         TableLayoutPanel1.Controls.Add(lblCountDemos, 1, 4)
-        TableLayoutPanel1.Controls.Add(lblCountVideos, 1, 6)
-        TableLayoutPanel1.Controls.Add(lblCountAssets, 1, 9)
-        TableLayoutPanel1.Controls.Add(lblCountGhosts, 1, 12)
-        TableLayoutPanel1.Controls.Add(splitExport, 0, 13)
+        TableLayoutPanel1.Controls.Add(lblCountAssets, 1, 10)
+        TableLayoutPanel1.Controls.Add(lblCountGhosts, 1, 13)
+        TableLayoutPanel1.Controls.Add(splitExport, 0, 14)
+        TableLayoutPanel1.Controls.Add(chkVideos, 0, 5)
+        TableLayoutPanel1.Controls.Add(chkScreenshots, 0, 7)
+        TableLayoutPanel1.Controls.Add(lblCountVideos, 1, 5)
+        TableLayoutPanel1.Controls.Add(lblSizeVideos, 2, 5)
+        TableLayoutPanel1.Controls.Add(lblCountScreenshots, 1, 7)
+        TableLayoutPanel1.Controls.Add(lblSizeScreenshots, 2, 7)
         TableLayoutPanel1.Location = New Point(12, 12)
         TableLayoutPanel1.Name = "TableLayoutPanel1"
         TableLayoutPanel1.RowCount = 16
@@ -129,9 +123,8 @@ Partial Class FormBackup
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
-        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 20F))
-        TableLayoutPanel1.RowStyles.Add(New RowStyle(SizeType.Absolute, 20F))
-        TableLayoutPanel1.Size = New Size(358, 260)
+        TableLayoutPanel1.RowStyles.Add(New RowStyle())
+        TableLayoutPanel1.Size = New Size(358, 267)
         TableLayoutPanel1.TabIndex = 10
         ' 
         ' lblSizeTotal
@@ -139,7 +132,7 @@ Partial Class FormBackup
         lblSizeTotal.AutoSize = True
         TableLayoutPanel1.SetColumnSpan(lblSizeTotal, 3)
         lblSizeTotal.ForeColor = Color.DarkGray
-        lblSizeTotal.Location = New Point(0, 218)
+        lblSizeTotal.Location = New Point(0, 246)
         lblSizeTotal.Margin = New Padding(0, 3, 0, 3)
         lblSizeTotal.Name = "lblSizeTotal"
         lblSizeTotal.Size = New Size(72, 18)
@@ -158,18 +151,6 @@ Partial Class FormBackup
         lblCountSettings.Text = "-"
         lblCountSettings.TextAlign = ContentAlignment.MiddleRight
         ' 
-        ' chkVideos
-        ' 
-        chkVideos.AutoSize = True
-        chkVideos.Dock = DockStyle.Left
-        chkVideos.Location = New Point(0, 112)
-        chkVideos.Margin = New Padding(0, 3, 3, 3)
-        chkVideos.Name = "chkVideos"
-        chkVideos.Size = New Size(170, 22)
-        chkVideos.TabIndex = 51
-        chkVideos.Text = "渲染 (...\videos\)"
-        chkVideos.UseVisualStyleBackColor = True
-        ' 
         ' chkSaves
         ' 
         chkSaves.AutoSize = True
@@ -186,12 +167,12 @@ Partial Class FormBackup
         ' 
         chkGhosts.AutoSize = True
         chkGhosts.Dock = DockStyle.Left
-        chkGhosts.Location = New Point(0, 168)
+        chkGhosts.Location = New Point(0, 196)
         chkGhosts.Margin = New Padding(0, 3, 3, 3)
         chkGhosts.Name = "chkGhosts"
-        chkGhosts.Size = New Size(170, 22)
+        chkGhosts.Size = New Size(138, 22)
         chkGhosts.TabIndex = 13
-        chkGhosts.Text = "影子 (...\ghosts\)"
+        chkGhosts.Text = "影子 (ghosts\)"
         chkGhosts.UseVisualStyleBackColor = True
         ' 
         ' chkDemos
@@ -201,21 +182,21 @@ Partial Class FormBackup
         chkDemos.Location = New Point(0, 84)
         chkDemos.Margin = New Padding(0, 3, 3, 3)
         chkDemos.Name = "chkDemos"
-        chkDemos.Size = New Size(162, 22)
+        chkDemos.Size = New Size(130, 22)
         chkDemos.TabIndex = 12
-        chkDemos.Text = "回放 (...\demos\)"
+        chkDemos.Text = "回放 (demos\)"
         chkDemos.UseVisualStyleBackColor = True
         ' 
         ' chkAssets
         ' 
         chkAssets.AutoSize = True
         chkAssets.Dock = DockStyle.Left
-        chkAssets.Location = New Point(0, 140)
+        chkAssets.Location = New Point(0, 168)
         chkAssets.Margin = New Padding(0, 3, 3, 3)
         chkAssets.Name = "chkAssets"
-        chkAssets.Size = New Size(170, 22)
+        chkAssets.Size = New Size(138, 22)
         chkAssets.TabIndex = 11
-        chkAssets.Text = "材质 (...\assets\)"
+        chkAssets.Text = "材质 (assets\)"
         chkAssets.UseVisualStyleBackColor = True
         ' 
         ' lblSizeSettings
@@ -266,23 +247,11 @@ Partial Class FormBackup
         lblSizeDemos.Text = "Label4"
         lblSizeDemos.TextAlign = ContentAlignment.MiddleRight
         ' 
-        ' lblSizeVideos
-        ' 
-        lblSizeVideos.AutoSize = True
-        lblSizeVideos.Dock = DockStyle.Right
-        lblSizeVideos.Location = New Point(302, 112)
-        lblSizeVideos.Margin = New Padding(3, 3, 0, 3)
-        lblSizeVideos.Name = "lblSizeVideos"
-        lblSizeVideos.Size = New Size(56, 22)
-        lblSizeVideos.TabIndex = 56
-        lblSizeVideos.Text = "Label5"
-        lblSizeVideos.TextAlign = ContentAlignment.MiddleRight
-        ' 
         ' lblSizeAssets
         ' 
         lblSizeAssets.AutoSize = True
         lblSizeAssets.Dock = DockStyle.Right
-        lblSizeAssets.Location = New Point(302, 140)
+        lblSizeAssets.Location = New Point(302, 168)
         lblSizeAssets.Margin = New Padding(3, 3, 0, 3)
         lblSizeAssets.Name = "lblSizeAssets"
         lblSizeAssets.Size = New Size(56, 22)
@@ -294,7 +263,7 @@ Partial Class FormBackup
         ' 
         lblSizeGhosts.AutoSize = True
         lblSizeGhosts.Dock = DockStyle.Right
-        lblSizeGhosts.Location = New Point(302, 168)
+        lblSizeGhosts.Location = New Point(302, 196)
         lblSizeGhosts.Margin = New Padding(3, 3, 0, 3)
         lblSizeGhosts.Name = "lblSizeGhosts"
         lblSizeGhosts.Size = New Size(56, 22)
@@ -362,6 +331,63 @@ Partial Class FormBackup
         lblCountDemos.Text = "-"
         lblCountDemos.TextAlign = ContentAlignment.MiddleRight
         ' 
+        ' lblCountAssets
+        ' 
+        lblCountAssets.AutoSize = True
+        lblCountAssets.Dock = DockStyle.Right
+        lblCountAssets.Location = New Point(280, 168)
+        lblCountAssets.Margin = New Padding(3)
+        lblCountAssets.Name = "lblCountAssets"
+        lblCountAssets.Size = New Size(16, 22)
+        lblCountAssets.TabIndex = 67
+        lblCountAssets.Text = "-"
+        lblCountAssets.TextAlign = ContentAlignment.MiddleRight
+        ' 
+        ' lblCountGhosts
+        ' 
+        lblCountGhosts.AutoSize = True
+        lblCountGhosts.Dock = DockStyle.Right
+        lblCountGhosts.Location = New Point(280, 196)
+        lblCountGhosts.Margin = New Padding(3)
+        lblCountGhosts.Name = "lblCountGhosts"
+        lblCountGhosts.Size = New Size(16, 22)
+        lblCountGhosts.TabIndex = 68
+        lblCountGhosts.Text = "-"
+        lblCountGhosts.TextAlign = ContentAlignment.MiddleRight
+        ' 
+        ' splitExport
+        ' 
+        TableLayoutPanel1.SetColumnSpan(splitExport, 3)
+        splitExport.ForeColor = Color.DarkGray
+        splitExport.Location = New Point(3, 224)
+        splitExport.Margin = New Padding(3)
+        splitExport.Name = "splitExport"
+        splitExport.Size = New Size(352, 16)
+        splitExport.TabIndex = 69
+        splitExport.Text = "─────────────────────────────────────────────────────────"
+        ' 
+        ' chkVideos
+        ' 
+        chkVideos.AutoSize = True
+        chkVideos.Location = New Point(0, 112)
+        chkVideos.Margin = New Padding(0, 3, 3, 3)
+        chkVideos.Name = "chkVideos"
+        chkVideos.Size = New Size(138, 22)
+        chkVideos.TabIndex = 51
+        chkVideos.Text = "渲染 (videos\)"
+        chkVideos.UseVisualStyleBackColor = True
+        ' 
+        ' chkScreenshots
+        ' 
+        chkScreenshots.AutoSize = True
+        chkScreenshots.Location = New Point(0, 140)
+        chkScreenshots.Margin = New Padding(0, 3, 3, 3)
+        chkScreenshots.Name = "chkScreenshots"
+        chkScreenshots.Size = New Size(178, 22)
+        chkScreenshots.TabIndex = 71
+        chkScreenshots.Text = "截屏 (screenshots\)"
+        chkScreenshots.UseVisualStyleBackColor = True
+        ' 
         ' lblCountVideos
         ' 
         lblCountVideos.AutoSize = True
@@ -374,40 +400,51 @@ Partial Class FormBackup
         lblCountVideos.Text = "-"
         lblCountVideos.TextAlign = ContentAlignment.MiddleRight
         ' 
-        ' lblCountAssets
+        ' lblSizeVideos
         ' 
-        lblCountAssets.AutoSize = True
-        lblCountAssets.Dock = DockStyle.Right
-        lblCountAssets.Location = New Point(280, 140)
-        lblCountAssets.Margin = New Padding(3)
-        lblCountAssets.Name = "lblCountAssets"
-        lblCountAssets.Size = New Size(16, 22)
-        lblCountAssets.TabIndex = 67
-        lblCountAssets.Text = "-"
-        lblCountAssets.TextAlign = ContentAlignment.MiddleRight
+        lblSizeVideos.AutoSize = True
+        lblSizeVideos.Dock = DockStyle.Right
+        lblSizeVideos.Location = New Point(302, 112)
+        lblSizeVideos.Margin = New Padding(3, 3, 0, 3)
+        lblSizeVideos.Name = "lblSizeVideos"
+        lblSizeVideos.Size = New Size(56, 22)
+        lblSizeVideos.TabIndex = 56
+        lblSizeVideos.Text = "Label5"
+        lblSizeVideos.TextAlign = ContentAlignment.MiddleRight
         ' 
-        ' lblCountGhosts
+        ' lblCountScreenshots
         ' 
-        lblCountGhosts.AutoSize = True
-        lblCountGhosts.Dock = DockStyle.Right
-        lblCountGhosts.Location = New Point(280, 168)
-        lblCountGhosts.Margin = New Padding(3)
-        lblCountGhosts.Name = "lblCountGhosts"
-        lblCountGhosts.Size = New Size(16, 22)
-        lblCountGhosts.TabIndex = 68
-        lblCountGhosts.Text = "-"
-        lblCountGhosts.TextAlign = ContentAlignment.MiddleRight
+        lblCountScreenshots.AutoSize = True
+        lblCountScreenshots.Dock = DockStyle.Right
+        lblCountScreenshots.Location = New Point(280, 140)
+        lblCountScreenshots.Margin = New Padding(3)
+        lblCountScreenshots.Name = "lblCountScreenshots"
+        lblCountScreenshots.Size = New Size(16, 22)
+        lblCountScreenshots.TabIndex = 72
+        lblCountScreenshots.Text = "-"
+        lblCountScreenshots.TextAlign = ContentAlignment.MiddleRight
         ' 
-        ' splitExport
+        ' lblSizeScreenshots
         ' 
-        TableLayoutPanel1.SetColumnSpan(splitExport, 3)
-        splitExport.ForeColor = Color.DarkGray
-        splitExport.Location = New Point(3, 196)
-        splitExport.Margin = New Padding(3)
-        splitExport.Name = "splitExport"
-        splitExport.Size = New Size(352, 16)
-        splitExport.TabIndex = 69
-        splitExport.Text = "─────────────────────────────────────────────────────────"
+        lblSizeScreenshots.AutoSize = True
+        lblSizeScreenshots.Dock = DockStyle.Right
+        lblSizeScreenshots.Location = New Point(302, 140)
+        lblSizeScreenshots.Margin = New Padding(3, 3, 0, 3)
+        lblSizeScreenshots.Name = "lblSizeScreenshots"
+        lblSizeScreenshots.Size = New Size(56, 22)
+        lblSizeScreenshots.TabIndex = 73
+        lblSizeScreenshots.Text = "Label5"
+        lblSizeScreenshots.TextAlign = ContentAlignment.MiddleRight
+        ' 
+        ' ProgressBar2
+        ' 
+        ProgressBar2.BackColor = Color.WhiteSmoke
+        ProgressBar2.Dock = DockStyle.Fill
+        ProgressBar2.Location = New Point(3, 3)
+        ProgressBar2.Name = "ProgressBar2"
+        ProgressBar2.Size = New Size(211, 24)
+        ProgressBar2.TabIndex = 7
+        ProgressBar2.Visible = False
         ' 
         ' btnSelectAll
         ' 
@@ -423,68 +460,41 @@ Partial Class FormBackup
         ' 
         ' tblExport
         ' 
+        tblExport.AutoSize = True
         tblExport.BackColor = Color.Transparent
-        tblExport.ColumnCount = 5
-        tblExport.ColumnStyles.Add(New ColumnStyle())
-        tblExport.ColumnStyles.Add(New ColumnStyle())
+        tblExport.ColumnCount = 3
         tblExport.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         tblExport.ColumnStyles.Add(New ColumnStyle())
         tblExport.ColumnStyles.Add(New ColumnStyle())
-        tblExport.Controls.Add(btnBackup, 4, 0)
-        tblExport.Controls.Add(ProgressBar2, 2, 0)
-        tblExport.Controls.Add(btnSelectAll, 3, 0)
-        tblExport.Controls.Add(chkExtra, 0, 0)
-        tblExport.Location = New Point(12, 275)
+        tblExport.Controls.Add(btnBackup, 2, 0)
+        tblExport.Controls.Add(btnSelectAll, 1, 0)
+        tblExport.Controls.Add(ProgressBar2, 0, 0)
+        tblExport.Location = New Point(12, 303)
         tblExport.Name = "tblExport"
         tblExport.RowCount = 1
         tblExport.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
+        tblExport.RowStyles.Add(New RowStyle(SizeType.Absolute, 20F))
         tblExport.Size = New Size(358, 30)
         tblExport.TabIndex = 50
         ' 
-        ' ProgressBar2
+        ' Label1
         ' 
-        ProgressBar2.BackColor = Color.WhiteSmoke
-        ProgressBar2.Dock = DockStyle.Fill
-        ProgressBar2.Location = New Point(114, 3)
-        ProgressBar2.Name = "ProgressBar2"
-        ProgressBar2.Size = New Size(100, 24)
-        ProgressBar2.TabIndex = 7
-        ProgressBar2.Visible = False
-        ' 
-        ' chkExtra
-        ' 
-        chkExtra.Appearance = Appearance.Button
-        chkExtra.Location = New Point(0, 0)
-        chkExtra.Margin = New Padding(0, 0, 3, 0)
-        chkExtra.Name = "chkExtra"
-        chkExtra.Size = New Size(108, 30)
-        chkExtra.TabIndex = 24
-        chkExtra.Text = "包含安装目录"
-        chkExtra.TextAlign = ContentAlignment.MiddleCenter
-        chkExtra.UseVisualStyleBackColor = True
-        ' 
-        ' btnSnapshot
-        ' 
-        btnSnapshot.Location = New Point(351, 224)
-        btnSnapshot.Margin = New Padding(3, 0, 3, 0)
-        btnSnapshot.Name = "btnSnapshot"
-        btnSnapshot.Padding = New Padding(3, 0, 3, 0)
-        btnSnapshot.Size = New Size(52, 30)
-        btnSnapshot.TabIndex = 10
-        btnSnapshot.Text = "快照"
-        ToolTip1.SetToolTip(btnSnapshot, "快速保存设置文件和存档密码")
-        btnSnapshot.UseVisualStyleBackColor = True
-        btnSnapshot.Visible = False
+        Label1.AutoSize = True
+        Label1.Location = New Point(12, 282)
+        Label1.Name = "Label1"
+        Label1.Size = New Size(56, 18)
+        Label1.TabIndex = 51
+        Label1.Text = "Label1"
+        Label1.Visible = False
         ' 
         ' FormBackup
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 317)
-        Controls.Add(btnSnapshot)
+        ClientSize = New Size(382, 345)
+        Controls.Add(Label1)
         Controls.Add(tblExport)
-        Controls.Add(btnCancel)
         Controls.Add(TableLayoutPanel1)
         Font = New Font("等距更纱黑体 Slab SC", 9F, FontStyle.Regular, GraphicsUnit.Point, CByte(134))
         ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
@@ -498,17 +508,16 @@ Partial Class FormBackup
         TableLayoutPanel1.PerformLayout()
         tblExport.ResumeLayout(False)
         ResumeLayout(False)
+        PerformLayout()
     End Sub
 
     Friend WithEvents btnBackup As Button
-    Friend WithEvents btnCancel As Button
     Friend WithEvents TableLayoutPanel1 As TableLayoutPanel
     Friend WithEvents chkCfg As CheckBox
     Friend WithEvents chkSaves As CheckBox
     Friend WithEvents chkSettings As CheckBox
     Friend WithEvents chkDemos As CheckBox
     Friend WithEvents tblExport As TableLayoutPanel
-    Friend WithEvents ProgressBar2 As ProgressBar
     Friend WithEvents lblSizeSettings As Label
     Friend WithEvents lblSizeCfg As Label
     Friend WithEvents lblSizeSaves As Label
@@ -530,6 +539,9 @@ Partial Class FormBackup
     Friend WithEvents lblCountGhosts As Label
     Friend WithEvents splitExport As Label
     Friend WithEvents lblSizeTotal As Label
-    Friend WithEvents btnSnapshot As Button
-    Friend WithEvents chkExtra As CheckBox
+    Friend WithEvents chkScreenshots As CheckBox
+    Friend WithEvents lblCountScreenshots As Label
+    Friend WithEvents lblSizeScreenshots As Label
+    Friend WithEvents ProgressBar2 As ProgressBar
+    Friend WithEvents Label1 As Label
 End Class

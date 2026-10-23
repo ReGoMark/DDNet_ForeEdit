@@ -32,9 +32,9 @@ Partial Class FormSearch
         lblStatus = New Label()
         btnTurn = New Button()
         btnSelectAll = New Button()
-        cmbCases = New CheckBox()
-        cmbAllwords = New CheckBox()
-        cmbFormal = New CheckBox()
+        chkCases = New CheckBox()
+        chkAllwords = New CheckBox()
+        chkFormal = New CheckBox()
         ToolTip1 = New ToolTip(components)
         Label10 = New Label()
         SuspendLayout()
@@ -137,47 +137,50 @@ Partial Class FormSearch
         btnSelectAll.Text = "全选"
         btnSelectAll.UseVisualStyleBackColor = True
         ' 
-        ' cmbCases
+        ' chkCases
         ' 
-        cmbCases.Appearance = Appearance.Button
-        cmbCases.Image = CType(resources.GetObject("cmbCases.Image"), Image)
-        cmbCases.ImageAlign = ContentAlignment.MiddleRight
-        cmbCases.Location = New Point(100, 108)
-        cmbCases.Name = "cmbCases"
-        cmbCases.Size = New Size(82, 30)
-        cmbCases.TabIndex = 23
-        cmbCases.Text = "大小写"
-        cmbCases.TextAlign = ContentAlignment.MiddleCenter
-        cmbCases.TextImageRelation = TextImageRelation.ImageBeforeText
-        cmbCases.UseVisualStyleBackColor = True
+        chkCases.Appearance = Appearance.Button
+        chkCases.Image = CType(resources.GetObject("chkCases.Image"), Image)
+        chkCases.ImageAlign = ContentAlignment.MiddleRight
+        chkCases.Location = New Point(100, 108)
+        chkCases.Name = "chkCases"
+        chkCases.Size = New Size(82, 30)
+        chkCases.TabIndex = 23
+        chkCases.Text = "大小写"
+        chkCases.TextAlign = ContentAlignment.MiddleCenter
+        chkCases.TextImageRelation = TextImageRelation.ImageBeforeText
+        ToolTip1.SetToolTip(chkCases, "区分大小写:" & vbCrLf & "「SANS」SANS" & vbCrLf & "「Sans」Sans" & vbCrLf & "「sans」sans")
+        chkCases.UseVisualStyleBackColor = True
         ' 
-        ' cmbAllwords
+        ' chkAllwords
         ' 
-        cmbAllwords.Appearance = Appearance.Button
-        cmbAllwords.Image = CType(resources.GetObject("cmbAllwords.Image"), Image)
-        cmbAllwords.ImageAlign = ContentAlignment.MiddleRight
-        cmbAllwords.Location = New Point(12, 108)
-        cmbAllwords.Name = "cmbAllwords"
-        cmbAllwords.Size = New Size(82, 30)
-        cmbAllwords.TabIndex = 24
-        cmbAllwords.Text = "全字段"
-        cmbAllwords.TextAlign = ContentAlignment.MiddleCenter
-        cmbAllwords.TextImageRelation = TextImageRelation.ImageBeforeText
-        cmbAllwords.UseVisualStyleBackColor = True
+        chkAllwords.Appearance = Appearance.Button
+        chkAllwords.Image = CType(resources.GetObject("chkAllwords.Image"), Image)
+        chkAllwords.ImageAlign = ContentAlignment.MiddleRight
+        chkAllwords.Location = New Point(12, 108)
+        chkAllwords.Name = "chkAllwords"
+        chkAllwords.Size = New Size(82, 30)
+        chkAllwords.TabIndex = 24
+        chkAllwords.Text = "全字段"
+        chkAllwords.TextAlign = ContentAlignment.MiddleCenter
+        chkAllwords.TextImageRelation = TextImageRelation.ImageBeforeText
+        ToolTip1.SetToolTip(chkAllwords, "全字段匹配:" & vbCrLf & "「Arial」Arial" & vbCrLf & "「Arial Black」Arial Black")
+        chkAllwords.UseVisualStyleBackColor = True
         ' 
-        ' cmbFormal
+        ' chkFormal
         ' 
-        cmbFormal.Appearance = Appearance.Button
-        cmbFormal.Image = CType(resources.GetObject("cmbFormal.Image"), Image)
-        cmbFormal.ImageAlign = ContentAlignment.MiddleRight
-        cmbFormal.Location = New Point(188, 108)
-        cmbFormal.Name = "cmbFormal"
-        cmbFormal.Size = New Size(82, 30)
-        cmbFormal.TabIndex = 25
-        cmbFormal.Text = "正规则"
-        cmbFormal.TextAlign = ContentAlignment.MiddleCenter
-        cmbFormal.TextImageRelation = TextImageRelation.ImageBeforeText
-        cmbFormal.UseVisualStyleBackColor = True
+        chkFormal.Appearance = Appearance.Button
+        chkFormal.Image = CType(resources.GetObject("chkFormal.Image"), Image)
+        chkFormal.ImageAlign = ContentAlignment.MiddleRight
+        chkFormal.Location = New Point(188, 108)
+        chkFormal.Name = "chkFormal"
+        chkFormal.Size = New Size(82, 30)
+        chkFormal.TabIndex = 25
+        chkFormal.Text = "正规则"
+        chkFormal.TextAlign = ContentAlignment.MiddleCenter
+        chkFormal.TextImageRelation = TextImageRelation.ImageBeforeText
+        ToolTip1.SetToolTip(chkFormal, "正规则表达式:" & vbCrLf & "^ 匹配开头, $ 匹配结尾" & vbCrLf & ". 匹配任意字符, * 匹配 0 次或 n 次" & vbCrLf & "+ 匹配1次或多次, | 表示或" & vbCrLf & "\d 匹配数字, \w 匹配字母/数字/下划线" & vbCrLf & "[abc] 包含abc任一字符, [^abc] 排除abc")
+        chkFormal.UseVisualStyleBackColor = True
         ' 
         ' Label10
         ' 
@@ -197,9 +200,9 @@ Partial Class FormSearch
         BackColor = Color.White
         ClientSize = New Size(382, 205)
         Controls.Add(Label10)
-        Controls.Add(cmbFormal)
-        Controls.Add(cmbAllwords)
-        Controls.Add(cmbCases)
+        Controls.Add(chkFormal)
+        Controls.Add(chkAllwords)
+        Controls.Add(chkCases)
         Controls.Add(btnSelectAll)
         Controls.Add(btnTurn)
         Controls.Add(lblStatus)
@@ -229,9 +232,9 @@ Partial Class FormSearch
     Friend WithEvents lblStatus As Label
     Friend WithEvents btnTurn As Button
     Friend WithEvents btnSelectAll As Button
-    Friend WithEvents cmbCases As CheckBox
-    Friend WithEvents cmbAllwords As CheckBox
-    Friend WithEvents cmbFormal As CheckBox
+    Friend WithEvents chkCases As CheckBox
+    Friend WithEvents chkAllwords As CheckBox
+    Friend WithEvents chkFormal As CheckBox
     Friend WithEvents ToolTip1 As ToolTip
     Friend WithEvents Label10 As Label
 End Class

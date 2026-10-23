@@ -41,9 +41,9 @@ Partial Class DialogSponsor
         ' pic1
         ' 
         pic1.Image = CType(resources.GetObject("pic1.Image"), Image)
-        pic1.Location = New Point(12, 97)
+        pic1.Location = New Point(12, 108)
         pic1.Name = "pic1"
-        pic1.Size = New Size(358, 113)
+        pic1.Size = New Size(358, 99)
         pic1.SizeMode = PictureBoxSizeMode.Zoom
         pic1.TabIndex = 1
         pic1.TabStop = False

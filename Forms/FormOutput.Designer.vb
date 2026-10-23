@@ -36,9 +36,10 @@ Partial Class FormOutput
         Label2 = New Label()
         tblExport = New TableLayoutPanel()
         btnCfg = New Button()
-        ProgressBar1 = New ProgressBar()
         btnDNFP = New Button()
+        ProgressBar1 = New ProgressBar()
         lblSizeTotal = New Label()
+        Label3 = New Label()
         tblExportMode.SuspendLayout()
         tblExport.SuspendLayout()
         SuspendLayout()
@@ -234,14 +235,15 @@ Partial Class FormOutput
         ' 
         ' tblExport
         ' 
+        tblExport.AutoSize = True
         tblExport.BackColor = Color.Transparent
         tblExport.ColumnCount = 3
         tblExport.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         tblExport.ColumnStyles.Add(New ColumnStyle())
         tblExport.ColumnStyles.Add(New ColumnStyle())
         tblExport.Controls.Add(btnCfg, 1, 0)
-        tblExport.Controls.Add(ProgressBar1, 0, 0)
         tblExport.Controls.Add(btnDNFP, 2, 0)
+        tblExport.Controls.Add(ProgressBar1, 0, 0)
         tblExport.Location = New Point(12, 313)
         tblExport.Name = "tblExport"
         tblExport.RowCount = 1
@@ -260,17 +262,6 @@ Partial Class FormOutput
         btnCfg.Text = "配置另存为"
         btnCfg.UseVisualStyleBackColor = True
         ' 
-        ' ProgressBar1
-        ' 
-        ProgressBar1.BackColor = Color.WhiteSmoke
-        ProgressBar1.Dock = DockStyle.Fill
-        ProgressBar1.Location = New Point(0, 3)
-        ProgressBar1.Margin = New Padding(0, 3, 3, 3)
-        ProgressBar1.Name = "ProgressBar1"
-        ProgressBar1.Size = New Size(158, 24)
-        ProgressBar1.TabIndex = 7
-        ProgressBar1.Visible = False
-        ' 
         ' btnDNFP
         ' 
         btnDNFP.BackColor = Color.Transparent
@@ -284,6 +275,16 @@ Partial Class FormOutput
         btnDNFP.Text = "导出字体包"
         btnDNFP.UseVisualStyleBackColor = False
         ' 
+        ' ProgressBar1
+        ' 
+        ProgressBar1.BackColor = Color.WhiteSmoke
+        ProgressBar1.Dock = DockStyle.Fill
+        ProgressBar1.Location = New Point(3, 3)
+        ProgressBar1.Name = "ProgressBar1"
+        ProgressBar1.Size = New Size(155, 24)
+        ProgressBar1.TabIndex = 7
+        ProgressBar1.Visible = False
+        ' 
         ' lblSizeTotal
         ' 
         lblSizeTotal.AutoSize = True
@@ -295,12 +296,23 @@ Partial Class FormOutput
         lblSizeTotal.TabIndex = 72
         lblSizeTotal.Text = "备份大小:"
         ' 
+        ' Label3
+        ' 
+        Label3.AutoSize = True
+        Label3.Location = New Point(12, 292)
+        Label3.Name = "Label3"
+        Label3.Size = New Size(56, 18)
+        Label3.TabIndex = 73
+        Label3.Text = "Label3"
+        Label3.Visible = False
+        ' 
         ' FormOutput
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(382, 355)
+        Controls.Add(Label3)
         Controls.Add(lblSizeTotal)
         Controls.Add(tblExport)
         Controls.Add(tblExportMode)
@@ -335,4 +347,5 @@ Partial Class FormOutput
     Friend WithEvents lblSizeTotal As Label
     Friend WithEvents Label1 As Label
     Friend WithEvents Label2 As Label
+    Friend WithEvents Label3 As Label
 End Class

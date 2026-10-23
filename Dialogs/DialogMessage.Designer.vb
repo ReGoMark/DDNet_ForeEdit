@@ -65,6 +65,7 @@ Partial Class DialogMessage
         ' 
         btnOK.Location = New Point(260, 268)
         btnOK.Name = "btnOK"
+        btnOK.Padding = New Padding(3, 0, 3, 0)
         btnOK.Size = New Size(52, 30)
         btnOK.TabIndex = 4
         btnOK.Text = "确定"
@@ -74,6 +75,7 @@ Partial Class DialogMessage
         ' 
         btnCancel.Location = New Point(318, 268)
         btnCancel.Name = "btnCancel"
+        btnCancel.Padding = New Padding(3, 0, 3, 0)
         btnCancel.Size = New Size(52, 30)
         btnCancel.TabIndex = 5
         btnCancel.Text = "取消"

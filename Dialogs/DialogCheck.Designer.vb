@@ -35,6 +35,7 @@ Partial Class DialogCheck
         ' 
         ' lblTitle
         ' 
+        lblTitle.AutoEllipsis = True
         lblTitle.Font = New Font("Segoe UI", 9F)
         lblTitle.ForeColor = SystemColors.Highlight
         lblTitle.Location = New Point(12, 12)
