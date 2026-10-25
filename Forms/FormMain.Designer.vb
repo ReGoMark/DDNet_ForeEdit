@@ -861,6 +861,7 @@ Partial Class FormMain
         ' 
         ' chkLanguage
         ' 
+        chkLanguage.AutoEllipsis = True
         chkLanguage.AutoSize = True
         tblConfigFonts.SetColumnSpan(chkLanguage, 2)
         chkLanguage.Location = New Point(0, 34)

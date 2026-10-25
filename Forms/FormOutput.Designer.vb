@@ -292,9 +292,9 @@ Partial Class FormOutput
         lblSizeTotal.Location = New Point(12, 271)
         lblSizeTotal.Margin = New Padding(3)
         lblSizeTotal.Name = "lblSizeTotal"
-        lblSizeTotal.Size = New Size(72, 18)
+        lblSizeTotal.Size = New Size(86, 18)
         lblSizeTotal.TabIndex = 72
-        lblSizeTotal.Text = "备份大小:"
+        lblSizeTotal.Text = "字体包大小:"
         ' 
         ' Label3
         ' 

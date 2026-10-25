@@ -7,7 +7,7 @@ Imports System.Threading
 ''' 备份对话框：选择要备份的数据范围，打包为 zip。
 ''' 主来源：%AppData%\DDNet\（Local）。
 ''' 附加来源：由 FormMain 传入的当前加载 data 目录（Install，可选）。
-''' 自动包含附加目录，分别放入 local/ 和 install/ 子文件夹。
+''' 是否包含附加目录由 chkExtra 控制；勾选时分别放入 local/ 和 install/ 子文件夹。
 ''' 打包在后台线程执行，支持关闭窗体取消。
 ''' </summary>
 Public Class FormBackup
@@ -41,7 +41,7 @@ Public Class FormBackup
 
     ''' <summary>
     ''' 由 FormMain 传入的附加数据目录（当前加载的 fonts 目录的父级）。
-    ''' 为空表示主窗体未加载字体目录，此时禁用「附加目录」相关选项。
+    ''' 为空表示主窗体未加载字体目录，此时禁用 chkExtra。
     ''' </summary>
     <System.ComponentModel.Browsable(False),
      System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)>
@@ -74,6 +74,7 @@ Public Class FormBackup
 
     ''' <summary>
     ''' 附加目录是否可用：非空、存在、且与主目录不是同一路径（避免重复统计与打包）。
+    ''' 注意：这只是「环境前提」，是否真正包含还取决于 chkExtra.Checked。
     ''' </summary>
     Private Function IsExtraAvailable() As Boolean
         If String.IsNullOrEmpty(DataDirectory) OrElse Not Directory.Exists(DataDirectory) Then Return False
@@ -86,20 +87,23 @@ Public Class FormBackup
         End Try
     End Function
 
+    ''' <summary>当前是否真正应当包含附加目录：环境可用 + 用户勾选。</summary>
+    Private Function ShouldIncludeExtra() As Boolean
+        Return chkExtra.Checked AndAlso IsExtraAvailable()
+    End Function
+
 #End Region
 
 #Region "── 窗体生命周期 ────────────────────────────────────────"
 
     ' 注：方法名为历史遗留 DialogBackup_Load（类名实为 FormBackup），保留以维持 Handles 绑定。
     Private Sub DialogBackup_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' 根据是否包含安装目录，动态设置初始标题
-        Dim hasExtra As Boolean = IsExtraAvailable()
-        If hasExtra Then
-            Me.Text = "备份 - 用户目录, 安装目录"
-        Else
-            Me.Text = "备份 - 用户目录"
-        End If
+        ' 初始化 chkExtra：不可用时禁用；可用时默认勾选（保持原「自动包含」行为）
+        Dim extraAvailable As Boolean = IsExtraAvailable()
+        chkExtra.Enabled = extraAvailable
+        'If extraAvailable Then chkExtra.Checked = False
 
+        UpdateTitle()
         RefreshSizes()
         UpdateRowEnabledStates()
 
@@ -132,14 +136,32 @@ Public Class FormBackup
 
 #End Region
 
+#Region "── 标题栏 ──────────────────────────────────────────────"
+
+    ''' <summary>
+    ''' 根据 chkExtra 勾选状态刷新标题。
+    ''' 备份进行中（_cts IsNot Nothing）不改标题，避免覆盖进度文本。
+    ''' </summary>
+    Private Sub UpdateTitle()
+        If _cts IsNot Nothing Then Return
+
+        If ShouldIncludeExtra() Then
+            Me.Text = "备份 - 用户, 安装目录"
+        Else
+            Me.Text = "备份 - 用户目录"
+        End If
+    End Sub
+
+#End Region
+
 #Region "── 大小与数量显示 ──────────────────────────────────────"
 
     ''' <summary>
     ''' 刷新各组大小 + 数量。
-    ''' 自动判断是否包含安装目录，按「分区」统计（local / install 同项均计入）。
+    ''' incExtra 由 chkExtra.Checked 与 IsExtraAvailable() 共同决定。
     ''' </summary>
     Private Sub RefreshSizes()
-        Dim incExtra As Boolean = IsExtraAvailable()
+        Dim incExtra As Boolean = ShouldIncludeExtra()
 
         Dim a = GetSingleFileInfo("settings_ddnet.cfg", incExtra)
         _sizeCache("settings") = a.size
@@ -330,7 +352,7 @@ Public Class FormBackup
 
 #End Region
 
-#Region "── 勾选 / 全选 ──────────────────────────────────────────"
+#Region "── 勾选 / 全选 / 附加目录切换 ──────────────────────────"
 
     Private Sub AnyCheckBox_CheckedChanged(sender As Object, e As EventArgs) _
         Handles chkSettings.CheckedChanged, chkCfg.CheckedChanged, chkSaves.CheckedChanged,
@@ -340,7 +362,16 @@ Public Class FormBackup
         UpdateRowEnabledStates()
     End Sub
 
-    ''' <summary>全选 / 全不选（按当前状态取反）。</summary>
+    ''' <summary>
+    ''' 「安装目录」切换按钮：勾选状态变化时更新标题并重算大小。
+    ''' 备份中触发也不会破坏进度显示（UpdateTitle 内部会跳过）。
+    ''' </summary>
+    Private Sub chkExtra_CheckedChanged(sender As Object, e As EventArgs) Handles chkExtra.CheckedChanged
+        UpdateTitle()
+        RefreshSizes()
+    End Sub
+
+    ''' <summary>全选 / 全不选（按当前状态取反）。仅作用于 8 个数据项，不影响 chkExtra。</summary>
     Private Sub btnSelectAll_Click(sender As Object, e As EventArgs) Handles btnSelectAll.Click
         Dim allChecked As Boolean =
             chkSettings.Checked AndAlso chkCfg.Checked AndAlso chkSaves.Checked AndAlso
@@ -393,7 +424,7 @@ Public Class FormBackup
         End If
 
         Dim hasPrimary As Boolean = PrimaryAvailable
-        Dim hasExtra As Boolean = IsExtraAvailable()
+        Dim hasExtra As Boolean = ShouldIncludeExtra()
         If Not hasPrimary AndAlso Not hasExtra Then
             MessageBox.Show($"找不到可备份的目录：{DdnetDir}" & vbCrLf &
                             "请在 FormMain 中加载字体目录后重试。",

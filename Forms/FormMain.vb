@@ -288,7 +288,7 @@ Public Class FormMain
                     New Win32ContextMenu.MenuItem() With {.Id = 96, .Text = "快捷键参考(&K)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\DNFE_hotkeys.pdf")},
                     Win32ContextMenu.MenuItem.Separator,
                     New Win32ContextMenu.MenuItem() With {.Id = 97, .Text = "更新日志(&L)", .OnClick = Sub() OpenLocalFile(Application.StartupPath & "\data\updates.txt")},
-                    New Win32ContextMenu.MenuItem() With {.Id = 98, .Text = "获取更新(&U)", .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit/releases", .UseShellExecute = True})}
+                    New Win32ContextMenu.MenuItem() With {.Id = 98, .Text = "获取更新(&U)", .Icon = GetMenuIcon("link"), .OnClick = Sub() Process.Start(New ProcessStartInfo With {.FileName = "https://github.com/ReGoMark/DDNet_ForeEdit/releases", .UseShellExecute = True})}
                 }},
             New Win32ContextMenu.MenuItem() With {.Id = 10, .Text = "关于(&A)", .Icon = GetMenuIcon("about"), .OnClick = Sub() FormAbout.ShowDialog(Me)}})
 
@@ -314,7 +314,7 @@ Public Class FormMain
             New Win32ContextMenu.MenuItem() With {.Id = 5, .Text = "复制字体名称(&N)", .ShortcutText = "Ctrl+Shift+N", .OnClick = Sub() CopySelectedFontName()},
             New Win32ContextMenu.MenuItem() With {.Id = 6, .Text = "复制家族名称(&F)", .ShortcutText = "Ctrl+Shift+F", .OnClick = Sub() CopySelectedFamilyName()},
             Win32ContextMenu.MenuItem.Separator,
-            New Win32ContextMenu.MenuItem() With {.Id = 7, .Text = "打开位置(&L)", .OnClick = Sub() OpenSelectedFontFolder()},
+            New Win32ContextMenu.MenuItem() With {.Id = 7, .Text = "定位位置(&L)", .OnClick = Sub() OpenSelectedFontFolder()},
             Win32ContextMenu.MenuItem.Separator,
             New Win32ContextMenu.MenuItem() With {.Id = 8, .Text = "属性(&I)", .ShortcutText = "Alt+Return", .OnClick = Sub() ShowFontPropertiesForSelected()}
         })
