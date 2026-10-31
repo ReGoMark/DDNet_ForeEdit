@@ -292,6 +292,7 @@ Partial Class FormMain
         ' 
         tagFontFamily.AutoSize = True
         tagFontFamily.Dock = DockStyle.Left
+        tagFontFamily.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         tagFontFamily.Location = New Point(3, 26)
         tagFontFamily.Margin = New Padding(3, 2, 3, 2)
         tagFontFamily.Name = "tagFontFamily"
@@ -304,6 +305,7 @@ Partial Class FormMain
         ' 
         tagFontType.AutoSize = True
         tagFontType.Dock = DockStyle.Left
+        tagFontType.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         tagFontType.Location = New Point(3, 50)
         tagFontType.Margin = New Padding(3, 2, 3, 2)
         tagFontType.Name = "tagFontType"
@@ -316,6 +318,7 @@ Partial Class FormMain
         ' 
         tagFontCoverage.AutoSize = True
         tagFontCoverage.Dock = DockStyle.Left
+        tagFontCoverage.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         tagFontCoverage.Location = New Point(3, 74)
         tagFontCoverage.Margin = New Padding(3, 2, 3, 2)
         tagFontCoverage.Name = "tagFontCoverage"
@@ -328,6 +331,7 @@ Partial Class FormMain
         ' 
         tagFontSize.AutoSize = True
         tagFontSize.Dock = DockStyle.Left
+        tagFontSize.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         tagFontSize.Location = New Point(3, 98)
         tagFontSize.Margin = New Padding(3, 2, 3, 2)
         tagFontSize.Name = "tagFontSize"
@@ -340,6 +344,7 @@ Partial Class FormMain
         ' 
         tagFontModify.AutoSize = True
         tagFontModify.Dock = DockStyle.Left
+        tagFontModify.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         tagFontModify.Location = New Point(3, 122)
         tagFontModify.Margin = New Padding(3, 2, 3, 2)
         tagFontModify.Name = "tagFontModify"
@@ -426,6 +431,7 @@ Partial Class FormMain
         ' 
         tagFontName.AutoSize = True
         tagFontName.Dock = DockStyle.Left
+        tagFontName.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         tagFontName.Location = New Point(3, 2)
         tagFontName.Margin = New Padding(3, 2, 3, 2)
         tagFontName.Name = "tagFontName"
@@ -861,7 +867,6 @@ Partial Class FormMain
         ' 
         ' chkLanguage
         ' 
-        chkLanguage.AutoEllipsis = True
         chkLanguage.AutoSize = True
         tblConfigFonts.SetColumnSpan(chkLanguage, 2)
         chkLanguage.Location = New Point(0, 34)

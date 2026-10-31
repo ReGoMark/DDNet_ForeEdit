@@ -120,19 +120,20 @@ Partial Class FormBackup
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
         TableLayoutPanel1.RowStyles.Add(New RowStyle())
-        TableLayoutPanel1.Size = New Size(358, 295)
+        TableLayoutPanel1.Size = New Size(358, 303)
         TableLayoutPanel1.TabIndex = 10
         ' 
         ' chkExtra
         ' 
-        chkExtra.AutoEllipsis = True
-        chkExtra.Dock = DockStyle.Fill
+        chkExtra.Appearance = Appearance.Button
+        chkExtra.Dock = DockStyle.Left
         chkExtra.Location = New Point(0, 224)
         chkExtra.Margin = New Padding(0, 3, 3, 3)
         chkExtra.Name = "chkExtra"
-        chkExtra.Size = New Size(274, 22)
+        chkExtra.Size = New Size(150, 30)
         chkExtra.TabIndex = 74
         chkExtra.Text = "也包含安装目录数据"
+        chkExtra.TextAlign = ContentAlignment.MiddleCenter
         chkExtra.UseVisualStyleBackColor = True
         ' 
         ' lblCountSettings
@@ -427,7 +428,7 @@ Partial Class FormBackup
         ' 
         TableLayoutPanel1.SetColumnSpan(splitExport, 3)
         splitExport.ForeColor = Color.DarkGray
-        splitExport.Location = New Point(3, 252)
+        splitExport.Location = New Point(3, 260)
         splitExport.Margin = New Padding(3)
         splitExport.Name = "splitExport"
         splitExport.Size = New Size(352, 16)
@@ -438,7 +439,7 @@ Partial Class FormBackup
         ' 
         lblSizeTotal.AutoSize = True
         lblSizeTotal.ForeColor = Color.DarkGray
-        lblSizeTotal.Location = New Point(0, 274)
+        lblSizeTotal.Location = New Point(0, 282)
         lblSizeTotal.Margin = New Padding(0, 3, 0, 3)
         lblSizeTotal.Name = "lblSizeTotal"
         lblSizeTotal.Size = New Size(72, 18)
@@ -478,7 +479,7 @@ Partial Class FormBackup
         tblExport.Controls.Add(btnBackup, 3, 0)
         tblExport.Controls.Add(btnSelectAll, 2, 0)
         tblExport.Controls.Add(ProgressBar2, 1, 0)
-        tblExport.Location = New Point(12, 331)
+        tblExport.Location = New Point(12, 339)
         tblExport.Name = "tblExport"
         tblExport.RowCount = 1
         tblExport.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
@@ -488,7 +489,7 @@ Partial Class FormBackup
         ' Label1
         ' 
         Label1.AutoSize = True
-        Label1.Location = New Point(12, 310)
+        Label1.Location = New Point(12, 318)
         Label1.Name = "Label1"
         Label1.Size = New Size(56, 18)
         Label1.TabIndex = 51
@@ -500,7 +501,7 @@ Partial Class FormBackup
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
-        ClientSize = New Size(382, 373)
+        ClientSize = New Size(382, 381)
         Controls.Add(Label1)
         Controls.Add(tblExport)
         Controls.Add(TableLayoutPanel1)

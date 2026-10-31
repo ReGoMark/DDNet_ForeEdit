@@ -6,35 +6,98 @@
     <StartupObject>Sub Main</StartupObject>
     <UseWindowsForms>true</UseWindowsForms>
     <MyType>WindowsForms</MyType>
-    <ApplicationIcon>Resources\title\DNFE_modern.ico</ApplicationIcon>
+    <ApplicationIcon>Icons\titlebar\dnfe.ico</ApplicationIcon>
     <AssemblyName>DDNet ForeEdit</AssemblyName>
     <AssemblyTitle>DDNet ForeEdit</AssemblyTitle>
     <RootNamespace>DNFE</RootNamespace>
-    <Version>2602.1023.152</Version>
     <Authors>ReGoMark</Authors>
     <Company>Bilibili @ReGoMark</Company>
     <Product>DDNet ForeEdit</Product>
     <Copyright>Copyright © 2026 ReGoMark</Copyright>
 	<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
-	<AssemblyVersion>2602.1021.30</AssemblyVersion>
-	<FileVersion>2602.1021.30</FileVersion>
 	<ApplicationManifest>My Project\app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="Dialogs\dated\**" />
+    <Compile Remove="Icons\**" />
     <Compile Remove="Modules\dated\**" />
-    <Compile Remove="Resources\dated\**" />
+    <Compile Remove="Resources\**" />
     <EmbeddedResource Remove="Dialogs\dated\**" />
+    <EmbeddedResource Remove="Icons\**" />
     <EmbeddedResource Remove="Modules\dated\**" />
-    <EmbeddedResource Remove="Resources\dated\**" />
+    <EmbeddedResource Remove="Resources\**" />
     <None Remove="Dialogs\dated\**" />
+    <None Remove="Icons\**" />
     <None Remove="Modules\dated\**" />
-    <None Remove="Resources\dated\**" />
+    <None Remove="Resources\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Resources\title\DNFE_modern.ico" />
+    <Content Include="Icons\size_16\about_16.png" />
+    <Content Include="Icons\size_16\allwords_16.png" />
+    <Content Include="Icons\size_16\backups_16.png" />
+    <Content Include="Icons\size_16\cases_16.png" />
+    <Content Include="Icons\size_16\default_16.png" />
+    <Content Include="Icons\size_16\dock_16.png" />
+    <Content Include="Icons\size_16\drag_16.png" />
+    <Content Include="Icons\size_16\following_16.png" />
+    <Content Include="Icons\size_16\formal_16.png" />
+    <Content Include="Icons\size_16\head_16.png" />
+    <Content Include="Icons\size_16\help_16.png" />
+    <Content Include="Icons\size_16\install_16.png" />
+    <Content Include="Icons\size_16\itemdown_16.png" />
+    <Content Include="Icons\size_16\iteminsert_16.png" />
+    <Content Include="Icons\size_16\itemremove_16.png" />
+    <Content Include="Icons\size_16\itemup_16.png" />
+    <Content Include="Icons\size_16\link_16.png" />
+    <Content Include="Icons\size_16\menu_16.png" />
+    <Content Include="Icons\size_16\output_16.png" />
+    <Content Include="Icons\size_16\preview_16.png" />
+    <Content Include="Icons\size_16\prior_16.png" />
+    <Content Include="Icons\size_16\recovery_16.png" />
+    <Content Include="Icons\size_16\refresh_16.png" />
+    <Content Include="Icons\size_16\search_16.png" />
+    <Content Include="Icons\size_16\tail_16.png" />
+    <Content Include="Icons\size_20\about_20.png" />
+    <Content Include="Icons\size_20\allwords_20.png" />
+    <Content Include="Icons\size_20\backups_20.png" />
+    <Content Include="Icons\size_20\cases_20.png" />
+    <Content Include="Icons\size_20\default_20.png" />
+    <Content Include="Icons\size_20\dock_20.png" />
+    <Content Include="Icons\size_20\drag_20.png" />
+    <Content Include="Icons\size_20\following_20.png" />
+    <Content Include="Icons\size_20\formal_20.png" />
+    <Content Include="Icons\size_20\head_20.png" />
+    <Content Include="Icons\size_20\help_20.png" />
+    <Content Include="Icons\size_20\install_20.png" />
+    <Content Include="Icons\size_20\itemdown_20.png" />
+    <Content Include="Icons\size_20\iteminsert_20.png" />
+    <Content Include="Icons\size_20\itemremove_20.png" />
+    <Content Include="Icons\size_20\itemup_20.png" />
+    <Content Include="Icons\size_20\link_20.png" />
+    <Content Include="Icons\size_20\menu_20.png" />
+    <Content Include="Icons\size_20\output_20.png" />
+    <Content Include="Icons\size_20\preview_20.png" />
+    <Content Include="Icons\size_20\prior_20.png" />
+    <Content Include="Icons\size_20\recovery_20.png" />
+    <Content Include="Icons\size_20\refresh_20.png" />
+    <Content Include="Icons\size_20\search_20.png" />
+    <Content Include="Icons\size_20\tail_20.png" />
+    <Content Include="Icons\size_32\ddnet_32.png" />
+    <Content Include="Icons\size_32\json&amp;config_32.png" />
+    <Content Include="Icons\size_32\json_32.png" />
+    <Content Include="Icons\size_32\output_default_32.png" />
+    <Content Include="Icons\size_32\output_full_32.png" />
+    <Content Include="Icons\size_32\output_standard_32.png" />
+    <Content Include="Icons\size_32\teeworlds_32.png" />
+    <Content Include="Icons\titlebar\backups.ico" />
+    <Content Include="Icons\titlebar\blade_title.ico" />
+    <Content Include="Icons\titlebar\dnfe.ico" />
+    <Content Include="Icons\titlebar\dnfe_old.ico" />
+    <Content Include="Icons\titlebar\output_title.ico" />
+    <Content Include="Icons\titlebar\preview_title.ico" />
+    <Content Include="Icons\titlebar\search_title.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -80,13 +143,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\DNFE_documents.pdf">
+    <None Update="Data\changelogs.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Data\DNFE_hotkeys.pdf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Data\documents.pdf">
+    <None Update="Data\library.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Data\hotkeys.pdf">
@@ -110,9 +170,6 @@
     <None Update="Data\standard\SourceHanSans.ttc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Data\updates.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -124,9 +181,50 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Data\" />
-    <Folder Include="Resources\titles\" />
-  </ItemGroup>
+  <PropertyGroup>
+    <VersionFile>$(MSBuildProjectDirectory)\version.txt</VersionFile>
+  </PropertyGroup>
+
+  <!-- Debug: only read version.txt. Release: recompute (YY+half . MMdd . counter) and write back. -->
+  <Target Name="AutoVersion" BeforeTargets="GetAssemblyVersion;GenerateAssemblyInfo" Condition="'$(DesignTimeBuild)' != 'true'">
+    <PropertyGroup>
+      <_Cur>2602.1023.152</_Cur>
+      <_Cur Condition="Exists('$(VersionFile)')">$([System.IO.File]::ReadAllText('$(VersionFile)').Trim())</_Cur>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+      <_YY>$([System.DateTime]::Now.ToString('yy'))</_YY>
+      <_Half>01</_Half>
+      <_Half Condition="$([System.DateTime]::Now.Month) &gt; 6">02</_Half>
+      <_MD>$([System.DateTime]::Now.ToString('MMdd'))</_MD>
+      <_Cnt>$([MSBuild]::Add($(_Cur.Split('.')[2]), 1))</_Cnt>
+    </PropertyGroup>
+
+    <!-- Locate git: PATH first, then the copy bundled with Visual Studio, then Git for Windows -->
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+      <_GitExe>git</_GitExe>
+      <_GitExe Condition="Exists('$(DevEnvDir)CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\cmd\git.exe')">$(DevEnvDir)CommonExtensions\Microsoft\TeamFoundation\Team Explorer\Git\cmd\git.exe</_GitExe>
+      <_GitExe Condition="Exists('$(ProgramFiles)\Git\cmd\git.exe')">$(ProgramFiles)\Git\cmd\git.exe</_GitExe>
+    </PropertyGroup>
+
+    <!-- Release: count git changes (same number as VS bottom-right); falls back to +1 if git is unavailable -->
+    <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(_GitExe)&quot; status --porcelain -uall" WorkingDirectory="$(MSBuildProjectDirectory)" ConsoleToMSBuild="true" StandardOutputImportance="low" StandardErrorImportance="low" IgnoreStandardErrorWarningFormat="true" IgnoreExitCode="true" ContinueOnError="true">
+      <Output TaskParameter="ConsoleOutput" ItemName="_GitLines" />
+      <Output TaskParameter="ExitCode" PropertyName="_GitExit" />
+    </Exec>
+
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+      <_Cnt Condition="'$(_GitExit)' == '0'">@(_GitLines-&gt;Count())</_Cnt>
+      <_Cur>$(_YY)$(_Half).$(_MD).$(_Cnt)</_Cur>
+    </PropertyGroup>
+    <Message Importance="high" Text="AutoVersion: config=$(Configuration), git=$(_GitExe), git exit=$(_GitExit), git changes=@(_GitLines-&gt;Count()), version=$(_Cur)" />
+    <WriteLinesToFile File="$(VersionFile)" Lines="$(_Cur)" Overwrite="true" Condition="'$(Configuration)' == 'Release'" />
+
+    <PropertyGroup>
+      <Version>$(_Cur)</Version>
+      <AssemblyVersion>$(_Cur)</AssemblyVersion>
+      <FileVersion>$(_Cur)</FileVersion>
+    </PropertyGroup>
+  </Target>
 
 </Project>

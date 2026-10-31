@@ -146,7 +146,7 @@ Public Class FormBackup
         If _cts IsNot Nothing Then Return
 
         If ShouldIncludeExtra() Then
-            Me.Text = "备份 - 用户, 安装目录"
+            Me.Text = "备份 - 完整目录"
         Else
             Me.Text = "备份 - 用户目录"
         End If

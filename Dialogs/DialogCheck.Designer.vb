@@ -149,7 +149,7 @@ Partial Class DialogCheck
         MinimizeBox = False
         Name = "DialogCheck"
         StartPosition = FormStartPosition.CenterScreen
-        Text = "自检程序"
+        Text = "DDNet ForeEdit 自检程序"
         ResumeLayout(False)
         PerformLayout()
     End Sub

@@ -16,3 +16,6 @@ packages/
 
 # Publish output
 publish/
+
+# Auto-generated build version (written by MSBuild on Release builds)
+version.txt

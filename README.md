@@ -1,4 +1,4 @@
-<img width="96" height="96" alt="DNFE_modern" src="Resources/images/DNFE_modern.png" />
+<img width="96" height="96" alt="DNFE_modern" src="./Screenshots/dnfe_512.png" />
 
 
 # DDNet ForeEdit
@@ -44,42 +44,42 @@ DDNet ForeEdit 是一款面向 DDNet 的字体管理工具，旨在简化游戏�
 <table>
   <tr>
     <td>
-      <a href="./Resources/screenshots/main.png">
-        <img src="./Resources/screenshots/main.png" width="600" alt="主界面">
+      <a href="./Screenshots/main.png">
+        <img src="./Screenshots/main.png" width="600" alt="主界面">
       </a>
       <br>主界面
     </td>
     <td>
-      <a href="./Resources/screenshots/install.png">
-        <img src="./Resources/screenshots/install.png" width="600" alt="字体安装">
+      <a href="./Screenshots/install.png">
+        <img src="./Screenshots/install.png" width="600" alt="字体安装">
       </a>
       <br>字体包/配置安装
     </td>
   </tr>
   <tr>
     <td>
-      <a href="./Resources/screenshots/backup.png">
-        <img src="./Resources/screenshots/backup.png" width="600" alt="备份">
+      <a href="./Screenshots/backup.png">
+        <img src="./Screenshots/backup.png" width="600" alt="备份">
       </a>
       <br>游戏数据备份
     </td>
     <td>
-      <a href="./Resources/screenshots/search.png">
-        <img src="./Resources/screenshots/search.png" width="600" alt="查找">
+      <a href="./Screenshots/search.png">
+        <img src="./Screenshots/search.png" width="600" alt="查找">
       </a>
       <br>字体查找
     </td>
   </tr>
   <tr>
     <td>
-      <a href="./Resources/screenshots/output.png">
-        <img src="./Resources/screenshots/output.png" width="600" alt="导出">
+      <a href="./Screenshots/output.png">
+        <img src="./Screenshots/output.png" width="600" alt="导出">
       </a>
       <br>字体包/配置导出
     </td>
     <td>
-      <a href="./Resources/screenshots/preview.png">
-        <img src="./Resources/screenshots/preview.png" width="600" alt="预览">
+      <a href="./Screenshots/preview.png">
+        <img src="./Screenshots/preview.png" width="600" alt="预览">
       </a>
       <br>字体预览
     </td>
@@ -90,7 +90,7 @@ DDNet ForeEdit 是一款面向 DDNet 的字体管理工具，旨在简化游戏�
 
 ## 使用指南
 
-📕 [说明文档](./Data/DNFE_documents.pdf)
+📕 [说明文档](./Data/library.pdf)
 
 ### 1. 加载字体目录
 
@@ -192,5 +192,5 @@ DDNet 字体可能位于游戏安装目录或用户目录中。用户目录又�
 
 ## 赞助
 
-<img width="200" src="Resources/images/sponsorships.png" />
+<img width="200" src="./Screenshots/sponsorships.png" />
 

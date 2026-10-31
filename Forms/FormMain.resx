@@ -120,11 +120,10 @@
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="btnSearch.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
-        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAAlwSFlzAAAS
-        cQAAEnEB89x6jgAAAKFJREFUOE+tku0NgzAQQzNAy27s0e6QAZiEMToU6r/WDznoQCFCCpaeONnm+Ey3
-        KefcpKlY0DyKj1gM8+i4vqyYOk7id8IUuzthCq5M8SteYjDMeGR0fFYQpuBWKb1tb8JzRsduEKYoV3nY
-        3oTnjI7dIEyHXQu6H+HSS/Qpeykox9ZnhHktHqXA0zpXfyQxi/MlRSrUeDq7tqSl25Z47FVKf4Vs5eJv
-        sHKBAAAAAElFTkSuQmCC
+        iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAKFJREFUOE+t
+        ku0NgzAQQzNAy27s0e6QAZiEMToU6r/WDznoQCFCCpaeONnm+Ey3KefcpKlY0DyKj1gM8+i4vqyYOk7i
+        d8IUuzthCq5M8SteYjDMeGR0fFYQpuBWKb1tb8JzRsduEKYoV3nY3oTnjI7dIEyHXQu6H+HSS/Qpeyko
+        x9ZnhHktHqXA0zpXfyQxi/MlRSrUeDq7tqSl25Z47FVKf4Vs5eJvsHKBAAAAAElFTkSuQmCC
 </value>
   </data>
   <metadata name="ToolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">

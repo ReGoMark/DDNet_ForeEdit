@@ -107,9 +107,9 @@ Namespace My.Resources
         '''<summary>
         '''  查找 System.Drawing.Bitmap 类型的本地化资源。
         '''</summary>
-        Friend Shared ReadOnly Property backup_16() As System.Drawing.Bitmap
+        Friend Shared ReadOnly Property backups_16() As System.Drawing.Bitmap
             Get
-                Dim obj As Object = ResourceManager.GetObject("backup_16", resourceCulture)
+                Dim obj As Object = ResourceManager.GetObject("backups_16", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property
@@ -117,29 +117,9 @@ Namespace My.Resources
         '''<summary>
         '''  查找 System.Drawing.Bitmap 类型的本地化资源。
         '''</summary>
-        Friend Shared ReadOnly Property backup_20() As System.Drawing.Bitmap
+        Friend Shared ReadOnly Property backups_20() As System.Drawing.Bitmap
             Get
-                Dim obj As Object = ResourceManager.GetObject("backup_20", resourceCulture)
-                Return CType(obj,System.Drawing.Bitmap)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  查找 System.Drawing.Bitmap 类型的本地化资源。
-        '''</summary>
-        Friend Shared ReadOnly Property blade_16() As System.Drawing.Bitmap
-            Get
-                Dim obj As Object = ResourceManager.GetObject("blade_16", resourceCulture)
-                Return CType(obj,System.Drawing.Bitmap)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  查找 System.Drawing.Bitmap 类型的本地化资源。
-        '''</summary>
-        Friend Shared ReadOnly Property blade_20() As System.Drawing.Bitmap
-            Get
-                Dim obj As Object = ResourceManager.GetObject("blade_20", resourceCulture)
+                Dim obj As Object = ResourceManager.GetObject("backups_20", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property
@@ -300,6 +280,26 @@ Namespace My.Resources
         Friend Shared ReadOnly Property help_20() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("help_20", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  查找 System.Drawing.Bitmap 类型的本地化资源。
+        '''</summary>
+        Friend Shared ReadOnly Property install_16() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("install_16", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  查找 System.Drawing.Bitmap 类型的本地化资源。
+        '''</summary>
+        Friend Shared ReadOnly Property install_20() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("install_20", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
             End Get
         End Property
