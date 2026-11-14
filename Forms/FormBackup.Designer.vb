@@ -130,9 +130,9 @@ Partial Class FormBackup
         chkExtra.Location = New Point(0, 224)
         chkExtra.Margin = New Padding(0, 3, 3, 3)
         chkExtra.Name = "chkExtra"
-        chkExtra.Size = New Size(150, 30)
+        chkExtra.Size = New Size(122, 30)
         chkExtra.TabIndex = 74
-        chkExtra.Text = "也包含安装目录数据"
+        chkExtra.Text = "也包含安装目录"
         chkExtra.TextAlign = ContentAlignment.MiddleCenter
         chkExtra.UseVisualStyleBackColor = True
         ' 

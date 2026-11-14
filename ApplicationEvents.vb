@@ -27,8 +27,8 @@ Namespace My
 
     Partial Friend Class MyApplication
         Private Sub MyApplication_Startup(sender As Object, e As ApplicationServices.StartupEventArgs) Handles Me.Startup
-            If Not DialogCheck.IsFontInstalled() Then
-                Using frm As New DialogCheck()
+            If Not Check.IsFontInstalled() Then
+                Using frm As New Check()
                     If frm.ShowDialog() = DialogResult.Abort Then
                         ' 用户选择「退出程序」→ 取消主窗体启动
                         e.Cancel = True

@@ -8,6 +8,7 @@ Imports System.Text.RegularExpressions
 ''' <summary>
 ''' BLADE 字体包安装窗体：加载 .dnfp / .json 并直接部署到当前 fonts 目录。
 ''' 导出功能在 FormOutput；打包/安装的公共分析逻辑通过 Shared 方法对外复用（FormMain 拖放安装）。
+''' verification.txt 中的 note 字段以字面 "\n" 转义换行，读取时还原为真正的多行文本。
 ''' </summary>
 Public Class FormInstall
 
@@ -208,6 +209,7 @@ Public Class FormInstall
     ''' <summary>
     ''' 加载并解析 .dnfp 字体包（仅读取元信息与文件清单，不执行安装）。
     ''' 校验：必须含 verification.txt 与 fonts/index.json。
+    ''' note 字段以字面 "\n" 转义换行，读取时还原为多行文本。
     ''' </summary>
     Private Sub LoadPackage(filePath As String)
         ResetLoadState()
@@ -247,9 +249,16 @@ Public Class FormInstall
                     Next
                 End Using
 
-                ' 备注
+                ' 备注（单行展示，换行折叠为 " / "，完整内容进 ToolTip）
                 Dim noteVal As String = ""
-                lblZipNote.Text = If(verData.TryGetValue("note", noteVal) AndAlso Not String.IsNullOrWhiteSpace(noteVal), noteVal, "-")
+                If verData.TryGetValue("note", noteVal) AndAlso Not String.IsNullOrWhiteSpace(noteVal) Then
+                    Dim fullNote = noteVal.Replace("\n", vbCrLf)
+                    lblZipNote.Text = fullNote.Replace(vbCrLf, " / ")
+                    ToolTip1.SetToolTip(lblZipNote, fullNote)
+                Else
+                    lblZipNote.Text = "-"
+                    ToolTip1.SetToolTip(lblZipNote, Nothing)
+                End If
 
                 ' 打包模式
                 Dim modeVal As String = ""
@@ -702,9 +711,9 @@ Public Class FormInstall
                     If displayMsg.Length > 40 Then displayMsg = "..." & displayMsg.Substring(displayMsg.Length - 37)
 
                     If p.Total > 0 AndAlso Not p.IsMarquee Then
-                        Text = $"{origTitle} - {displayMsg} ({p.Current}/{p.Total})"
+                        Text = $"安装 - {displayMsg} ({p.Current}/{p.Total})"
                     Else
-                        Text = $"{origTitle} - {displayMsg}"
+                        Text = $"安装 - {displayMsg}"
                     End If
                 End If
             End Sub)

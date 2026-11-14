@@ -143,31 +143,31 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Data\changelogs.txt">
+    <None Update="data\changelogs.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Data\library.pdf">
+    <None Update="data\brochure.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Data\hotkeys.pdf">
+    <None Update="data\hotkeys.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Data\SarasaMonoSlabSC-Regular.ttf">
+    <None Update="data\SarasaMonoSlabSC-Regular.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Data\standard\DejaVuSans.ttf">
+    <None Update="data\standard\DejaVuSans.ttf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Data\standard\Font_Awesome_6_Free-Solid-900.otf">
+    <None Update="data\standard\Font_Awesome_6_Free-Solid-900.otf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Data\standard\GlowSansJ-Compressed-Book.otf">
+    <None Update="data\standard\GlowSansJ-Compressed-Book.otf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Data\standard\index.json">
+    <None Update="data\standard\index.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Data\standard\SourceHanSans.ttc">
+    <None Update="data\standard\SourceHanSans.ttc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="My Project\Application.myapp">

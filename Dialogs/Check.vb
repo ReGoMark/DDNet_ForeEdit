@@ -4,7 +4,7 @@ Imports System.IO
 ''' <summary>
 ''' 启动自检对话框：检测系统是否安装必备字体，提供安装指引。
 ''' </summary>
-Public Class DialogCheck
+Public Class Check
 
 #Region "常量"
 
@@ -66,7 +66,7 @@ Public Class DialogCheck
     End Sub
 
     Private Sub DialogCheck_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        Dim fontFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", FontFileName)
+        Dim fontFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data")
         Label1.Text = fontFile
     End Sub
 

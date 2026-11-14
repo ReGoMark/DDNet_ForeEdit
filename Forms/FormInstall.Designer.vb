@@ -22,6 +22,7 @@ Partial Class FormInstall
     '不要使用代码编辑器修改它。
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        components = New ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(FormInstall))
         btnOpen = New Button()
         btnInstall = New Button()
@@ -43,6 +44,7 @@ Partial Class FormInstall
         ProgressBar1 = New ProgressBar()
         tblExport = New TableLayoutPanel()
         Label1 = New Label()
+        ToolTip1 = New ToolTip(components)
         Panel1.SuspendLayout()
         tblPackInfo.SuspendLayout()
         tblExport.SuspendLayout()
@@ -249,7 +251,7 @@ Partial Class FormInstall
         btnBroswe.Name = "btnBroswe"
         btnBroswe.Size = New Size(68, 30)
         btnBroswe.TabIndex = 1
-        btnBroswe.Text = "浏览"
+        btnBroswe.Text = "安装"
         btnBroswe.TextImageRelation = TextImageRelation.ImageBeforeText
         btnBroswe.UseVisualStyleBackColor = False
         ' 
@@ -362,4 +364,5 @@ Partial Class FormInstall
     Friend WithEvents ProgressBar1 As ProgressBar
     Friend WithEvents tblExport As TableLayoutPanel
     Friend WithEvents Label1 As Label
+    Friend WithEvents ToolTip1 As ToolTip
 End Class

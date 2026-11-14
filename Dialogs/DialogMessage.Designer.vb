@@ -95,7 +95,6 @@ Partial Class DialogMessage
         ' 
         ' TableLayoutPanel1
         ' 
-        TableLayoutPanel1.AutoSize = True
         TableLayoutPanel1.ColumnCount = 1
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
         TableLayoutPanel1.ColumnStyles.Add(New ColumnStyle(SizeType.Absolute, 20F))
@@ -151,7 +150,6 @@ Partial Class DialogMessage
         TableLayoutPanel1.ResumeLayout(False)
         TableLayoutPanel1.PerformLayout()
         ResumeLayout(False)
-        PerformLayout()
     End Sub
 
     Friend WithEvents lblTitle As Label

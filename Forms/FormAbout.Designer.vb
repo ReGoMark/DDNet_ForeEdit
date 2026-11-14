@@ -41,6 +41,7 @@ Partial Class FormAbout
         ToolTip1 = New ToolTip(components)
         lblGitee = New Label()
         lblBilibili = New Label()
+        Label2 = New Label()
         Label1 = New Label()
         SuspendLayout()
         ' 
@@ -81,8 +82,8 @@ Partial Class FormAbout
         lblTeeworlds.AutoSize = True
         lblTeeworlds.Cursor = Cursors.Hand
         lblTeeworlds.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
-        lblTeeworlds.Location = New Point(194, 156)
-        lblTeeworlds.Margin = New Padding(3)
+        lblTeeworlds.Location = New Point(184, 156)
+        lblTeeworlds.Margin = New Padding(0, 3, 3, 3)
         lblTeeworlds.Name = "lblTeeworlds"
         lblTeeworlds.Size = New Size(80, 18)
         lblTeeworlds.TabIndex = 11
@@ -97,7 +98,7 @@ Partial Class FormAbout
         Label10.Name = "Label10"
         Label10.Size = New Size(358, 18)
         Label10.TabIndex = 12
-        Label10.Text = "联络  ───────────────────────────────────────────────────────────"
+        Label10.Text = "联络和说明  ───────────────────────────────────────────────────────────"
         Label10.TextAlign = ContentAlignment.MiddleLeft
         ' 
         ' lblMail
@@ -130,7 +131,7 @@ Partial Class FormAbout
         lblLicense.AutoSize = True
         lblLicense.Cursor = Cursors.Hand
         lblLicense.ForeColor = SystemColors.Highlight
-        lblLicense.Location = New Point(180, 204)
+        lblLicense.Location = New Point(198, 204)
         lblLicense.Margin = New Padding(3)
         lblLicense.Name = "lblLicense"
         lblLicense.Size = New Size(64, 18)
@@ -147,9 +148,9 @@ Partial Class FormAbout
         lblSarasaSans.Location = New Point(12, 132)
         lblSarasaSans.Margin = New Padding(3)
         lblSarasaSans.Name = "lblSarasaSans"
-        lblSarasaSans.Size = New Size(192, 18)
+        lblSarasaSans.Size = New Size(220, 18)
         lblSarasaSans.TabIndex = 36
-        lblSarasaSans.Text = "Sarasa Gothic (更纱黑体)"
+        lblSarasaSans.Text = "字体: Sarasa Gothic 更纱黑体"
         ToolTip1.SetToolTip(lblSarasaSans, "访问「更纱黑体」官方仓库")
         ' 
         ' lblDDNet
@@ -159,11 +160,11 @@ Partial Class FormAbout
         lblDDNet.Cursor = Cursors.Hand
         lblDDNet.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
         lblDDNet.Location = New Point(12, 156)
-        lblDDNet.Margin = New Padding(3)
+        lblDDNet.Margin = New Padding(3, 3, 0, 3)
         lblDDNet.Name = "lblDDNet"
-        lblDDNet.Size = New Size(176, 18)
+        lblDDNet.Size = New Size(156, 18)
         lblDDNet.TabIndex = 37
-        lblDDNet.Text = "DDNet (DDraceNetwork)"
+        lblDDNet.Text = "项目: DDraceNetwork"
         ToolTip1.SetToolTip(lblDDNet, "访问「DDNet」官方仓库")
         ' 
         ' lblThanks
@@ -208,7 +209,8 @@ Partial Class FormAbout
         lbldotNET10.Cursor = Cursors.Hand
         lbldotNET10.ForeColor = SystemColors.Highlight
         lbldotNET10.ImageAlign = ContentAlignment.MiddleRight
-        lbldotNET10.Location = New Point(250, 204)
+        lbldotNET10.Location = New Point(128, 204)
+        lbldotNET10.Margin = New Padding(3)
         lbldotNET10.Name = "lbldotNET10"
         lbldotNET10.Size = New Size(64, 18)
         lbldotNET10.TabIndex = 41
@@ -224,9 +226,9 @@ Partial Class FormAbout
         lblGitee.Location = New Point(74, 204)
         lblGitee.Margin = New Padding(3)
         lblGitee.Name = "lblGitee"
-        lblGitee.Size = New Size(100, 18)
+        lblGitee.Size = New Size(48, 18)
         lblGitee.TabIndex = 43
-        lblGitee.Text = "Gitee (国内)"
+        lblGitee.Text = "Gitee"
         ToolTip1.SetToolTip(lblGitee, "访问本项目仓库主页(国内)")
         ' 
         ' lblBilibili
@@ -241,6 +243,20 @@ Partial Class FormAbout
         lblBilibili.TabIndex = 44
         lblBilibili.Text = "哔哩哔哩"
         ToolTip1.SetToolTip(lblBilibili, "查看哔哩哔哩主页")
+        ' 
+        ' Label2
+        ' 
+        Label2.AutoEllipsis = True
+        Label2.AutoSize = True
+        Label2.Cursor = Cursors.Hand
+        Label2.ForeColor = Color.FromArgb(CByte(64), CByte(64), CByte(64))
+        Label2.Location = New Point(168, 156)
+        Label2.Margin = New Padding(0, 3, 0, 3)
+        Label2.Name = "Label2"
+        Label2.Size = New Size(16, 18)
+        Label2.TabIndex = 45
+        Label2.Text = "/"
+        ToolTip1.SetToolTip(Label2, "访问「Teeworlds」官方仓库")
         ' 
         ' Label1
         ' 
@@ -260,6 +276,7 @@ Partial Class FormAbout
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.White
         ClientSize = New Size(382, 294)
+        Controls.Add(Label2)
         Controls.Add(lblBilibili)
         Controls.Add(lblGitee)
         Controls.Add(Label1)
@@ -308,4 +325,5 @@ Partial Class FormAbout
     Friend WithEvents Label1 As Label
     Friend WithEvents lblGitee As Label
     Friend WithEvents lblBilibili As Label
+    Friend WithEvents Label2 As Label
 End Class

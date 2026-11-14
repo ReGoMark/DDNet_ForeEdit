@@ -7,6 +7,8 @@ Imports System.Threading
 ''' <summary>
 ''' 导出窗体：将当前字体目录的字体和配置导出为 .dnfp 字体包或 index.json 配置文件。
 ''' 打包为异步操作，支持用户取消。
+''' 备注支持多行（内部以字面 "\n" 转义存入 verification.txt，读取端还原）。
+''' verification.txt 中写入 version 字段（当前不读取，保留供未来使用）。
 ''' 本窗体不做 DPI 图标自适应（RadioButton 图标保持 Designer 原图）。
 ''' </summary>
 Public Class FormOutput
@@ -22,10 +24,6 @@ Public Class FormOutput
 #End Region
 
 #Region "── 公开属性（由 FormMain 传入） ────────────────────────"
-
-    ''' <summary>当前正在操作的字体目录路径。</summary>
-    <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
-    Public Property FontDir As String = ""
 
     ''' <summary>当前已使用的字体文件列表（用于默认打包）。</summary>
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
@@ -43,7 +41,7 @@ Public Class FormOutput
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property JsonContent As String = ""
 
-    ''' <summary>应用程序版本号。</summary>
+    ''' <summary>应用程序版本号（写入 verification.txt 的 version 字段）。</summary>
     <Browsable(False), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)>
     Public Property AppVersion As String = ""
 
@@ -74,7 +72,8 @@ Public Class FormOutput
         If FullFontFiles Is Nothing Then FullFontFiles = New List(Of String)
         If String.IsNullOrEmpty(JsonContent) Then JsonContent = ""
 
-        txtNote.MaxLength = 40
+        txtNote.MaxLength = 150
+        txtNote.PlaceholderText = "最多 150 个字符，可换行"
         rdoDefault.Checked = True
         chkNote.Checked = False
         txtNote.Enabled = False
@@ -237,7 +236,7 @@ Public Class FormOutput
         Else
             bytes = _sizeFull : files = FullFontFiles
         End If
-        lblSizeTotal.Text = $"字体包大小: {FormatBytes(bytes)}, 字体 {FormatCount(files)}"
+        lblSizeTotal.Text = $"字体包大小: {FormatBytes(bytes)} (字体 {FormatCount(files)})"
     End Sub
 
 #End Region
@@ -334,13 +333,15 @@ Public Class FormOutput
         Dim jsonSnapshot As String = JsonContent
         Dim noteSnapshot As String = If(chkNote.Checked, txtNote.Text.Trim(), "")
         Dim dirTypeSnapshot As String = DirectoryType
+        Dim appVersionSnapshot As String = If(AppVersion, "")
 
         Try
             Await Task.Run(Sub() DoPackZip(outputPath, filesSnapshot, jsonSnapshot,
-                                           noteSnapshot, modeStr, dirTypeSnapshot, progress, token), token)
+                                           noteSnapshot, modeStr, dirTypeSnapshot, appVersionSnapshot,
+                                           progress, token), token)
 
             If Not IsDisposed AndAlso Not Disposing Then
-                MessageBox.Show("字体包已导出。", "导出字体包", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Toast.ShowToast(Me, "字体包已导出")
             End If
         Catch ex As OperationCanceledException
             ' 用户取消或关闭：删除未完成的输出文件
@@ -378,7 +379,9 @@ Public Class FormOutput
     ''' <summary>
     ''' 后台线程：打包所有字体到 .dnfp 文件。支持取消。
     ''' 结构：fonts/index.json + fonts/{字体文件} + verification.txt。
-    ''' index.json 用 Optimal（小文本值得压），字体文件用 Fastest（体积大、压缩率已接近极限，Optimal 收益极小但耗时高）。
+    ''' verification.txt 字段：app / version / date / mode / source / fonts / note。
+    ''' version 字段当前不读取，保留供未来使用。
+    ''' 备注中的换行会被转义为字面 "\n"，保证 verification.txt 每行仍是 key=value。
     ''' </summary>
     Private Sub DoPackZip(outputPath As String,
                           filesToPack As List(Of String),
@@ -386,6 +389,7 @@ Public Class FormOutput
                           noteText As String,
                           modeStr As String,
                           dirType As String,
+                          appVersion As String,
                           progress As IProgress(Of PackProgress),
                           token As CancellationToken)
         Dim tempJsonPath As String = Path.Combine(Path.GetTempPath(),
@@ -419,12 +423,17 @@ Public Class FormOutput
                 Dim verEntry As ZipArchiveEntry = zipArchive.CreateEntry("verification.txt", CompressionLevel.Optimal)
                 Using writer As New StreamWriter(verEntry.Open(), Encoding.UTF8)
                     writer.WriteLine("app=DDNetForeEdit")
+                    If Not String.IsNullOrWhiteSpace(appVersion) Then
+                        writer.WriteLine($"version={appVersion}")
+                    End If
                     writer.WriteLine($"date={DateTime.Now:yyyy/MM/dd HH:mm}")
                     writer.WriteLine($"mode={modeStr}")
                     writer.WriteLine($"source={dirType}")
                     writer.WriteLine($"fonts={filesToPack.Count}")
                     If Not String.IsNullOrWhiteSpace(noteText) Then
-                        writer.WriteLine($"note={noteText}")
+                        ' 换行转义成字面 "\n"，保证 verification.txt 保持每行一个 key=value
+                        Dim noteForFile = noteText.Replace(vbCrLf, "\n").Replace(vbCr, "\n").Replace(vbLf, "\n")
+                        writer.WriteLine($"note={noteForFile}")
                     End If
                 End Using
                 n += 1
@@ -458,7 +467,7 @@ Public Class FormOutput
             Try
                 If File.Exists(sfd.FileName) Then File.Delete(sfd.FileName)
                 File.WriteAllText(sfd.FileName, JsonContent, Encoding.UTF8)
-                MessageBox.Show("配置文件已导出。", "保存配置", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Toast.ShowToast(Me, "配置文件已导出")
             Catch ex As Exception
                 MessageBox.Show($"配置文件导出失败：{ex.Message}", "保存配置", MessageBoxButtons.OK, MessageBoxIcon.Error)
             End Try

@@ -47,7 +47,7 @@ Partial Class FormMain
         lblFontSize = New Label()
         lblFontModify = New Label()
         tagFontName = New Label()
-        TableLayoutPanel4 = New TableLayoutPanel()
+        tblFontPanel = New TableLayoutPanel()
         btnFontInstall = New Button()
         btnFontInfo = New Button()
         btnFontUninstall = New Button()
@@ -108,7 +108,7 @@ Partial Class FormMain
         tblTopBar.SuspendLayout()
         pnlFontInfo.SuspendLayout()
         tblFontInfo.SuspendLayout()
-        TableLayoutPanel4.SuspendLayout()
+        tblFontPanel.SuspendLayout()
         tblDirFonts.SuspendLayout()
         tblConfigFonts.SuspendLayout()
         pnlFallbackFonts.SuspendLayout()
@@ -276,7 +276,6 @@ Partial Class FormMain
         tblFontInfo.Controls.Add(tagFontName, 0, 0)
         tblFontInfo.Dock = DockStyle.Fill
         tblFontInfo.Location = New Point(0, 1)
-        tblFontInfo.Margin = New Padding(3, 2, 3, 2)
         tblFontInfo.Name = "tblFontInfo"
         tblFontInfo.RowCount = 6
         tblFontInfo.RowStyles.Add(New RowStyle(SizeType.Percent, 16.666666F))
@@ -440,23 +439,23 @@ Partial Class FormMain
         tagFontName.Text = "标题"
         tagFontName.TextAlign = ContentAlignment.MiddleLeft
         ' 
-        ' TableLayoutPanel4
+        ' tblFontPanel
         ' 
-        TableLayoutPanel4.AutoSize = True
-        TableLayoutPanel4.ColumnCount = 4
-        TableLayoutPanel4.ColumnStyles.Add(New ColumnStyle())
-        TableLayoutPanel4.ColumnStyles.Add(New ColumnStyle())
-        TableLayoutPanel4.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
-        TableLayoutPanel4.ColumnStyles.Add(New ColumnStyle())
-        TableLayoutPanel4.Controls.Add(btnFontInstall, 0, 0)
-        TableLayoutPanel4.Controls.Add(btnFontInfo, 3, 0)
-        TableLayoutPanel4.Controls.Add(btnFontUninstall, 1, 0)
-        TableLayoutPanel4.Location = New Point(278, 184)
-        TableLayoutPanel4.Name = "TableLayoutPanel4"
-        TableLayoutPanel4.RowCount = 1
-        TableLayoutPanel4.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
-        TableLayoutPanel4.Size = New Size(222, 30)
-        TableLayoutPanel4.TabIndex = 3
+        tblFontPanel.AutoSize = True
+        tblFontPanel.ColumnCount = 4
+        tblFontPanel.ColumnStyles.Add(New ColumnStyle())
+        tblFontPanel.ColumnStyles.Add(New ColumnStyle())
+        tblFontPanel.ColumnStyles.Add(New ColumnStyle(SizeType.Percent, 100F))
+        tblFontPanel.ColumnStyles.Add(New ColumnStyle())
+        tblFontPanel.Controls.Add(btnFontInstall, 0, 0)
+        tblFontPanel.Controls.Add(btnFontInfo, 3, 0)
+        tblFontPanel.Controls.Add(btnFontUninstall, 1, 0)
+        tblFontPanel.Location = New Point(278, 184)
+        tblFontPanel.Name = "tblFontPanel"
+        tblFontPanel.RowCount = 1
+        tblFontPanel.RowStyles.Add(New RowStyle(SizeType.Percent, 100F))
+        tblFontPanel.Size = New Size(222, 30)
+        tblFontPanel.TabIndex = 3
         ' 
         ' btnFontInstall
         ' 
@@ -468,7 +467,7 @@ Partial Class FormMain
         btnFontInstall.Name = "btnFontInstall"
         btnFontInstall.Size = New Size(68, 30)
         btnFontInstall.TabIndex = 2
-        btnFontInstall.Text = "浏览"
+        btnFontInstall.Text = "字体"
         btnFontInstall.TextImageRelation = TextImageRelation.ImageBeforeText
         ToolTip1.SetToolTip(btnFontInstall, "安装/拖放字体(Ctrl+I)")
         btnFontInstall.UseVisualStyleBackColor = True
@@ -1172,7 +1171,7 @@ Partial Class FormMain
         ' 
         pnlDirFonts.Controls.Add(lstDirFonts)
         pnlDirFonts.Controls.Add(pnlFontInfo)
-        pnlDirFonts.Controls.Add(TableLayoutPanel4)
+        pnlDirFonts.Controls.Add(tblFontPanel)
         pnlDirFonts.Controls.Add(tblDirFonts)
         pnlDirFonts.Location = New Point(0, 71)
         pnlDirFonts.Margin = New Padding(3, 2, 3, 2)
@@ -1202,15 +1201,15 @@ Partial Class FormMain
         MaximizeBox = False
         Name = "FormMain"
         StartPosition = FormStartPosition.CenterScreen
-        Text = " "
+        Text = " DDNet ForeEdit"
         tblTopBar.ResumeLayout(False)
         tblTopBar.PerformLayout()
         pnlFontInfo.ResumeLayout(False)
         pnlFontInfo.PerformLayout()
         tblFontInfo.ResumeLayout(False)
         tblFontInfo.PerformLayout()
-        TableLayoutPanel4.ResumeLayout(False)
-        TableLayoutPanel4.PerformLayout()
+        tblFontPanel.ResumeLayout(False)
+        tblFontPanel.PerformLayout()
         tblDirFonts.ResumeLayout(False)
         tblDirFonts.PerformLayout()
         tblConfigFonts.ResumeLayout(False)
@@ -1250,7 +1249,7 @@ Partial Class FormMain
     Friend WithEvents lblSystemFonts As Label
     Friend WithEvents lblDirFonts As Label
     Friend WithEvents lstDirFonts As ListBox
-    Friend WithEvents TableLayoutPanel4 As TableLayoutPanel
+    Friend WithEvents tblFontPanel As TableLayoutPanel
     Friend WithEvents btnFontInstall As Button
     Friend WithEvents btnFontInfo As Button
     Friend WithEvents btnFontUninstall As Button

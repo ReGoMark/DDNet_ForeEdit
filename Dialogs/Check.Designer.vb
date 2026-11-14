@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class DialogCheck
+Partial Class Check
     Inherits System.Windows.Forms.Form
 
     'Form 重写 Dispose，以清理组件列表。
@@ -22,7 +22,7 @@ Partial Class DialogCheck
     '不要使用代码编辑器修改它。
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(DialogCheck))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Check))
         lblTitle = New Label()
         split1 = New Label()
         lbl1 = New Label()
@@ -35,6 +35,7 @@ Partial Class DialogCheck
         ' 
         ' lblTitle
         ' 
+        lblTitle.Anchor = AnchorStyles.Top Or AnchorStyles.Bottom Or AnchorStyles.Left Or AnchorStyles.Right
         lblTitle.AutoEllipsis = True
         lblTitle.Font = New Font("Segoe UI", 9F)
         lblTitle.ForeColor = SystemColors.Highlight
@@ -120,14 +121,14 @@ Partial Class DialogCheck
         ' 
         Label1.AutoEllipsis = True
         Label1.Cursor = Cursors.Hand
-        Label1.Font = New Font("微软雅黑", 9F, FontStyle.Underline, GraphicsUnit.Point, CByte(134))
+        Label1.Font = New Font("Segoe UI", 9F, FontStyle.Underline)
         Label1.Location = New Point(12, 157)
         Label1.Name = "Label1"
         Label1.Size = New Size(358, 20)
         Label1.TabIndex = 15
         Label1.Text = "字体目录"
         ' 
-        ' DialogCheck
+        ' Check
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
@@ -147,7 +148,7 @@ Partial Class DialogCheck
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
         MaximizeBox = False
         MinimizeBox = False
-        Name = "DialogCheck"
+        Name = "Check"
         StartPosition = FormStartPosition.CenterScreen
         Text = "DDNet ForeEdit 自检程序"
         ResumeLayout(False)

@@ -143,7 +143,7 @@ Partial Class DialogDefault
         lblNote.TabIndex = 37
         lblNote.Text = "* 选择「恢复默认字体, 默认配置」: 字体将在下次启动时恢复; 配置文件立即恢复" & vbCrLf & "* 选择「恢复默认配置」: 配置文件立即恢复"
         ' 
-        ' DialogRestore
+        ' DialogDefault
         ' 
         AutoScaleDimensions = New SizeF(7F, 18F)
         AutoScaleMode = AutoScaleMode.Font
@@ -158,7 +158,7 @@ Partial Class DialogDefault
         Icon = CType(resources.GetObject("$this.Icon"), Icon)
         MaximizeBox = False
         MinimizeBox = False
-        Name = "DialogRestore"
+        Name = "DialogDefault"
         ShowIcon = False
         ShowInTaskbar = False
         StartPosition = FormStartPosition.CenterParent
